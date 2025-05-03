@@ -2,22 +2,31 @@
 
 import React, { useState } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
-import { FaUser, FaPaperclip, FaClipboard, FaUsers, FaSignOutAlt, FaHome } from 'react-icons/fa';
+import {
+  FaUser,
+  FaPaperclip,
+  FaClipboard,
+  FaUsers,
+  FaSignOutAlt,
+  FaHome,
+  FaChevronDown,
+} from 'react-icons/fa';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/redux/hooks';
 import { useLogoutMutation } from '@/redux/features/authApiSlice';
 import { logout as setLogout } from '@/redux/features/authSlice';
-import Spinner from '@/components/common/Spinner'; // Import the Spinner component
+import Spinner from '@/components/common/Spinner';
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname(); // Get the current pathname
+  const [defenseDropdownOpen, setDefenseDropdownOpen] = useState(false);
+  const [showFullScreenSpinner, setShowFullScreenSpinner] = useState(false);
+
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const [logoutMutation] = useLogoutMutation();
-
-  const [showFullScreenSpinner, setShowFullScreenSpinner] = useState(false); // Add state for full-screen spinner
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -27,8 +36,12 @@ export default function Sidebar() {
     setIsOpen(false);
   };
 
+  const toggleDefenseDropdown = () => {
+    setDefenseDropdownOpen(!defenseDropdownOpen);
+  };
+
   const handleLogout = async () => {
-    setShowFullScreenSpinner(true); // Show full-screen spinner
+    setShowFullScreenSpinner(true);
     try {
       await logoutMutation(undefined).unwrap();
       dispatch(setLogout());
@@ -36,22 +49,20 @@ export default function Sidebar() {
     } catch (error) {
       toast.error('Failed to logout');
     } finally {
-      setShowFullScreenSpinner(false); // Hide full-screen spinner
-      closeSidebar(); // Close sidebar after logout (optional, for UX)
+      setShowFullScreenSpinner(false);
+      closeSidebar();
     }
   };
 
   const menuItems = [
     { name: 'Dashboard', href: '/user', icon: <FaHome className="w-4 mr-3" /> },
-    /*{ name: 'Profile', href: '/user/profile', icon: <FaUser className="w-4 mr-3" /> },*/
     { name: 'Panel Nomination', href: '/user/panel-nomination', icon: <FaUsers className="w-4 mr-3" /> },
-    { name: 'Defense Application', href: '/user/defense-application', icon: <FaClipboard className="w-4 mr-3" /> },
     { name: 'Submit Thesis', href: '/user/submit-study', icon: <FaPaperclip className="w-4 mr-3" /> },
   ];
 
   return (
     <div className="relative">
-      {/* Menu Icon (Hamburger) */}
+      {/* Menu Icon */}
       <button
         className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
         onClick={toggleSidebar}
@@ -68,10 +79,10 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Full-screen spinner for loading */}
+      {/* Full-screen Spinner */}
       {showFullScreenSpinner && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <Spinner/>
+          <Spinner />
         </div>
       )}
 
@@ -106,10 +117,62 @@ export default function Sidebar() {
               >
                 <Link href={item.href} className="py-3 flex items-center" onClick={closeSidebar}>
                   {item.icon}
-                  {item.name}
+                  {item.name}l
                 </Link>
               </li>
             ))}
+
+            {/* Dropdown - Defense Application */}
+            <li className="text-gray-300">
+              <div
+                onClick={toggleDefenseDropdown}
+                className={`flex items-center justify-between py-3 px-4 w-full cursor-pointer transition-colors ${
+                  defenseDropdownOpen || pathname.startsWith('/user/defense-application')
+                    ? 'bg-gray-700 text-white'
+                    : 'hover:bg-gray-700'
+                }`}
+              >
+                <span className="flex items-center">
+                  <FaClipboard className="w-4 mr-3" />
+                  Defense Application
+                </span>
+                <FaChevronDown
+                  className={`transition-transform duration-300 ${defenseDropdownOpen ? 'rotate-180' : ''}`}
+                />
+              </div>
+              {defenseDropdownOpen && (
+                <ul className="ml-10">
+                  <li
+                    className={`py-2 ${
+                      pathname === '/user/defense-application/concept' ? 'text-white' : ''
+                    }`}
+                  >
+                    <Link href="/user/defense-application/concept" onClick={closeSidebar}>
+                      Concept Defense
+                    </Link>
+                  </li>
+                  <li
+                    className={`py-2 ${
+                      pathname === '/user/defense-application/proposal' ? 'text-white' : ''
+                    }`}
+                  >
+                    <Link href="/user/defense-application/proposal" onClick={closeSidebar}>
+                      Proposal Defense
+                    </Link>
+                  </li>
+                  <li
+                    className={`py-2 ${
+                      pathname === '/user/defense-application/final' ? 'text-white' : ''
+                    }`}
+                  >
+                    <Link href="/user/defense-application/final" onClick={closeSidebar}>
+                      Final Defense
+                    </Link>
+                  </li>
+                </ul>
+              )}
+            </li>
+
 
             {/* Logout */}
             <li className="px-4 cursor-pointer hover:bg-gray-700">

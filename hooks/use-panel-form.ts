@@ -1,6 +1,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { toast } from 'react-toastify';
 import { usePanelGenerateMutation } from '@/redux/features/authApiSlice';
+import { useGetFacultyQuery } from '@/redux/features/authApiSlice';
 
 interface PanelFormData {
   research_title: string;
@@ -10,13 +11,13 @@ interface PanelFormData {
   co_researcher4: string;
   co_researcher5: string;
   lead_researcher: string;
-  adviser: string;
-  panel_chair: string;
-  panel1: string;
-  panel2: string;
-  panel3: string;
+  adviser: number;
+  panel_chair: number;
+  panel1: number;
+  panel2: number;
+  panel3: number;
   [key: `co_researcher${number}`]: string;
-  [key: `panel${number}`]: string;
+  [key: `panel${number}`]: number;
 }
 
 const initialFormState: PanelFormData = {
@@ -27,15 +28,16 @@ const initialFormState: PanelFormData = {
   co_researcher4: '',
   co_researcher5: '',
   lead_researcher: '',
-  adviser: '',
-  panel_chair: '',
-  panel1: '',
-  panel2: '',
-  panel3: '',
+  adviser: 0,
+  panel_chair: 0,
+  panel1: 0,
+  panel2: 0,
+  panel3: 0,
 };
 
 export default function usePanelGeneration() {
   const [panelGenerate, { isLoading }] = usePanelGenerateMutation();
+  const { data: facultyList = [], isLoading: isFacultyLoading } = useGetFacultyQuery();
 
   const [formData, setFormData] = useState<PanelFormData>(initialFormState);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -48,18 +50,23 @@ export default function usePanelGeneration() {
     };
   }, [previewUrl]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const numericFields = ['adviser', 'panel_chair', 'panel1', 'panel2', 'panel3'];
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numericFields.includes(name) ? Number(value) : value,
+    }));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const docUrl = await panelGenerate(formData).unwrap();
-      setPreviewUrl(docUrl);
+      const responseBlob = await panelGenerate(formData).unwrap(); // response is Blob
+      const blobUrl = URL.createObjectURL(responseBlob);
+      setPreviewUrl(blobUrl);
       toast.success('Document is ready for download.');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error generating panel document:', error);
       toast.error('Failed to generate panel document');
     }
@@ -79,6 +86,8 @@ export default function usePanelGeneration() {
     formData,
     isLoading,
     previewUrl,
+    facultyList,
+    isFacultyLoading,
     handleChange,
     handleSubmit,
     handleDownload,

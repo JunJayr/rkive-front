@@ -1,6 +1,6 @@
 'use client';
 
-import { useApplicationGeneration } from '@/hooks';
+import { useFinalApplicationGeneration } from '@/hooks';
 import Spinner from '@/components/common/Spinner';
 import Footer from '@/components/common/Footer';
 import Sidebar from '@/components/common/Sidebar';
@@ -15,7 +15,7 @@ export default function ApplicationForm() {
     handleDownload,
     handleChange,
     handleSubmit,
-  } = useApplicationGeneration();
+  } = useFinalApplicationGeneration();
 
   const pdfUrl = previewUrl ? `${previewUrl}#toolbar=0` : null;
 
@@ -71,7 +71,7 @@ export default function ApplicationForm() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-8">
                 <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-                  Application for Oral Examination
+                  Application for Final Defense
                 </h2>
 
                 <div>

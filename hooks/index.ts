@@ -4,5 +4,7 @@ export { default as useVerify } from './use-verify';
 export { default as useResetPasswordConfirm } from './use-reset-password-confirm';
 export { default as useResetPassword } from './use-reset-password';
 export { default as useApplicationGeneration } from './use-application-form';
+export { default as useProposalApplicationGeneration } from './use-application-proposal-form';
+export { default as useFinalApplicationGeneration } from './use-application-final-form';
 export { default as usePanelGeneration } from './use-panel-form';
 export { default as useManuscriptSubmission} from './use-manuscript-upload';

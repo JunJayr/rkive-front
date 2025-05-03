@@ -5,7 +5,6 @@ import Spinner from '@/components/common/Spinner';
 import Footer from '@/components/common/Footer';
 import Sidebar from '@/components/common/Sidebar';
 import Layout from '@/components/utils/Layout';
-import { AiOutlineMenu } from 'react-icons/ai';
 import Link from 'next/link';
 
 export default function PanelForm() {
@@ -17,6 +16,8 @@ export default function PanelForm() {
     handleSubmit,
     setPreviewUrl,
     handleDownload,
+    facultyList,
+    isFacultyLoading,
   } = usePanelGeneration();
 
   const pdfUrl = previewUrl ? `${previewUrl}#toolbar=0` : null;
@@ -233,12 +234,11 @@ export default function PanelForm() {
                               | 'panel3';
                           }
 
-                          const facultyOptions = [
-                            'Quinto A. Tan Jr., MIT',
-                            'Jay Noel Rojo',
-                            'Jerwin S. Borres',
-                            'Christopher Daniot II, MDS',
-                          ];
+                          const facultyOptions = facultyList.map((f) => ({
+                            id: f.facultyID,
+                            name: f.name,
+                         
+                          }));
 
                           return (
                             <tr key={index}>
@@ -246,20 +246,20 @@ export default function PanelForm() {
                                 {index}
                               </td>
                               <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                <select
-                                  name={nameField}
-                                  id={nameField}
-                                  value={formData[nameField] || ''}
-                                  onChange={handleChange}
-                                  className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                                >
-                                  <option value="">Select Faculty Member</option>
-                                  {facultyOptions.map((faculty) => (
-                                    <option key={faculty} value={faculty}>
-                                      {faculty}
-                                    </option>
-                                  ))}
-                                </select>
+                              <select
+                                name={nameField}
+                                id={nameField}
+                                value={formData[nameField] ?? ''}
+                                onChange={handleChange}
+                                className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
+                              >
+                                <option value="">Select Faculty Member</option>
+                                {facultyList.map((faculty) => (
+                                  <option key={faculty.facultyID} value={faculty.facultyID}>
+                                    {faculty.name}
+                                  </option>
+                                ))}
+                              </select>
                               </td>
                               <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                 {index === 1

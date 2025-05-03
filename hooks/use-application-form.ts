@@ -46,10 +46,10 @@ const initialFormState: ApplicationFormData = {
 
 export default function useApplicationGeneration() {
   const [applicationGenerate, { isLoading }] = useApplicationGenerateMutation();
-
   const [formData, setFormData] = useState<ApplicationFormData>(initialFormState);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
+  // Revoke old blob URLs to prevent memory leaks
   useEffect(() => {
     return () => {
       if (previewUrl) {
@@ -58,7 +58,6 @@ export default function useApplicationGeneration() {
     };
   }, [previewUrl]);
 
-  // Updated handleChange to support both input and select elements
   const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -66,9 +65,10 @@ export default function useApplicationGeneration() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     try {
-      const formattedData = {
+      // Format the defense date into a readable string
+      const formattedData: ApplicationFormData = {
         ...formData,
         datetime_defense: new Date(formData.datetime_defense).toLocaleString('en-US', {
           month: 'long',
@@ -79,13 +79,14 @@ export default function useApplicationGeneration() {
           hour12: true,
         }),
       };
-  
+
       const docUrl = await applicationGenerate(formattedData).unwrap();
+
       setPreviewUrl(docUrl);
-      toast.success('Document is ready to view or download!');
+      toast.success('Document generated successfully!');
     } catch (error: any) {
-      console.error('Error generating application document:', error);
-      toast.error('Failed to generate application');
+      console.error('Document generation failed:', error);
+      toast.error('Failed to generate document. Please try again.');
     }
   };
 

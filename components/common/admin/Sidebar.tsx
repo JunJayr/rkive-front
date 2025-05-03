@@ -5,6 +5,7 @@ import { AiOutlineMenu } from 'react-icons/ai';
 import { FaUser, FaPaperclip, FaClipboard, FaUsers, FaSignOutAlt, FaHome } from 'react-icons/fa';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router';  
 import { toast } from 'react-toastify';
 import { useAppDispatch } from '@/redux/hooks';
 import { useLogoutMutation } from '@/redux/features/authApiSlice';
@@ -16,6 +17,7 @@ export default function Sidebar() {
   const pathname = usePathname(); // Get the current pathname
   const dispatch = useAppDispatch();
   const [logoutMutation] = useLogoutMutation();
+  const router = useRouter();
 
   const [showFullScreenSpinner, setShowFullScreenSpinner] = useState(false); // Add state for full-screen spinner
 
@@ -30,14 +32,20 @@ export default function Sidebar() {
   const handleLogout = async () => {
     setShowFullScreenSpinner(true); // Show full-screen spinner
     try {
-      await logoutMutation(undefined).unwrap();
-      dispatch(setLogout());
-      toast.success('Logged out');
+      console.log("Logging out...");
+      await logoutMutation(undefined).unwrap();  // Try to log out the user
+      dispatch(setLogout());  // Reset authentication state in Redux
+  
+      toast.success('Logged out'); // Display success toast
+  
+      router.push('/auth/login'); // Redirect to login page after logout
+      console.log("Redirected to login page.");
     } catch (error) {
+      console.error("Error during logout:", error);  // Log error details to console
       toast.error('Failed to logout');
     } finally {
       setShowFullScreenSpinner(false); // Hide full-screen spinner
-      closeSidebar(); // Close sidebar after logout (optional, for UX)
+      closeSidebar(); // Optionally close the sidebar after logout
     }
   };
 
