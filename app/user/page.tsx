@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
-import Layout from '@/components/utils/Layout'; // Import Layout
+import Layout from '@/components/utils/Layout';
+import { FiSearch } from 'react-icons/fi';
 
 export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,49 +23,66 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      {/* Protect this page with RequireAuth */}
-      <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter">
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 font-inter relative">
         {/* Sidebar */}
         <Sidebar />
 
         {/* Main Content */}
-        <main className="pt-16">
-          <div className="mx-auto flex flex-col items-center py-12 sm:py-24">
-            <div className="w-11/12 sm:w-2/3 lg:flex justify-center items-center flex-col mb-5 sm:mb-10">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-center text-gray-900 dark:text-gray-100">
-                Rkive
-              </h1>
-              <p className="mt-5 sm:mt-10 text-center text-xl text-gray-700 dark:text-gray-400 lg:w-10/12">
-                Search manuscripts or design inspirations.
-              </p>
-            </div>
-            <form onSubmit={handleSearch} className="flex w-11/12 md:w-8/12 xl:w-6/12">
-              <div className="flex w-full rounded-2xl shadow-md">
+        <main className="pt-24 px-4">
+          <div className="max-w-5xl mx-auto text-center flex flex-col items-center">
+            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+              Rkive
+            </h1>
+            <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-xl">
+              Effortlessly search manuscripts, inspirations, and creative ideas.
+            </p>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="w-full mt-10 max-w-2xl">
+              <div className="flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-md overflow-hidden transition-all">
+                <div className="px-4 text-gray-400 dark:text-gray-300">
+                  <FiSearch size={20} />
+                </div>
                 <input
                   type="text"
                   name="q"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full p-4 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-l-2xl focus:ring-blue-500 focus:border-blue-500 text-base shadow-sm transition-shadow duration-200"
-                  placeholder="Enter a keyword..."
+                  className="w-full py-3 px-2 bg-transparent outline-none text-base text-gray-800 dark:text-white placeholder-gray-400"
+                  placeholder="Type a keyword..."
                   required
                 />
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 bg-indigo-600 text-white 
-                            font-semibold py-3 px-6 rounded-r-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition-colors duration-200 text-lg shadow-md"
                   disabled={loading}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 font-semibold transition-colors duration-200 disabled:opacity-50"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <Spinner sm />
                     </div>
                   ) : (
-                    'Find'
+                    'Search'
                   )}
                 </button>
               </div>
             </form>
+
+            {/* Optional: Featured sections */}
+            <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full px-4">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <h3 className="font-semibold text-lg mb-2">Browse by Category</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Explore specific themes or topics.</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <h3 className="font-semibold text-lg mb-2">Recent Searches</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Quick access to what you’ve explored recently.</p>
+              </div>
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                <h3 className="font-semibold text-lg mb-2">Saved Inspirations</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">Revisit your curated content easily.</p>
+              </div>
+            </div>
           </div>
         </main>
 
