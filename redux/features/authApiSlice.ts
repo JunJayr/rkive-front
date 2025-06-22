@@ -151,10 +151,10 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  url: '/application-docx/',
 		  method: 'POST',
 		  body: formData,
-		  responseHandler: (response) => response.blob(), // Handle as Blob
+		  responseHandler: (response) => response.blob(), 
 		}),
 		transformResponse: (responseBlob: Blob) => {
-		  return URL.createObjectURL(responseBlob); // Convert blob to object URL
+		  return URL.createObjectURL(responseBlob);
 		},
 	  }),
 	  proposalGenerate: builder.mutation<string, ApplicationFormData>({
@@ -208,7 +208,7 @@ const authApiSlice = apiSlice.injectEndpoints({
 	  }),
 	  listFiles: builder.query<any[], void>({
 		query: () => '/list-files/',
-	  }),
+	  }),   
   
 	  listUsers: builder.query<User[], void>({
 		query: () => '/list-users/',

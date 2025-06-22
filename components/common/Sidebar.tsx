@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AiOutlineMenu } from 'react-icons/ai';
 import {
   FaUser,
@@ -23,22 +23,21 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [defenseDropdownOpen, setDefenseDropdownOpen] = useState(false);
   const [showFullScreenSpinner, setShowFullScreenSpinner] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const [logoutMutation] = useLogoutMutation();
 
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
-  const closeSidebar = () => {
-    setIsOpen(false);
-  };
+  if (!hasMounted) return null; // Prevent hydration mismatch
 
-  const toggleDefenseDropdown = () => {
-    setDefenseDropdownOpen(!defenseDropdownOpen);
-  };
+  const toggleSidebar = () => setIsOpen(!isOpen);
+  const closeSidebar = () => setIsOpen(false);
+  const toggleDefenseDropdown = () => setDefenseDropdownOpen(!defenseDropdownOpen);
 
   const handleLogout = async () => {
     setShowFullScreenSpinner(true);
@@ -64,6 +63,7 @@ export default function Sidebar() {
     <div className="relative">
       {/* Menu Icon */}
       <button
+        aria-label="Toggle sidebar"
         className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
         onClick={toggleSidebar}
         style={{ backgroundColor: 'transparent' }}
@@ -92,13 +92,15 @@ export default function Sidebar() {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <button
-          className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
-          onClick={toggleSidebar}
-          style={{ backgroundColor: 'transparent' }}
-        >
-          <AiOutlineMenu size={24} />
-        </button>
+        {/* Menu Icon */}
+      <button
+        aria-label="Toggle sidebar"
+        className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
+        onClick={toggleSidebar}
+        style={{ backgroundColor: 'transparent' }}
+      >
+        <AiOutlineMenu size={24} />
+      </button>
         <div className="py-3 text-2xl text-center tracking-widest bg-gray-800 border-b-2 border-gray-800 mb-8">
           <Link href="/user" className="text-white" onClick={closeSidebar}>
             Rkive
@@ -117,7 +119,7 @@ export default function Sidebar() {
               >
                 <Link href={item.href} className="py-3 flex items-center" onClick={closeSidebar}>
                   {item.icon}
-                  {item.name}l
+                  {item.name}
                 </Link>
               </li>
             ))}
@@ -127,7 +129,7 @@ export default function Sidebar() {
               <div
                 onClick={toggleDefenseDropdown}
                 className={`flex items-center justify-between py-3 px-4 w-full cursor-pointer transition-colors ${
-                  defenseDropdownOpen || pathname.startsWith('/user/defense-application')
+                  defenseDropdownOpen || pathname?.startsWith('/user/defense-application')
                     ? 'bg-gray-700 text-white'
                     : 'hover:bg-gray-700'
                 }`}
@@ -142,37 +144,21 @@ export default function Sidebar() {
               </div>
               {defenseDropdownOpen && (
                 <ul className="ml-10">
-                  <li
-                    className={`py-2 ${
-                      pathname === '/user/defense-application/concept' ? 'text-white' : ''
-                    }`}
-                  >
-                    <Link href="/user/defense-application/concept" onClick={closeSidebar}>
-                      Concept Defense
-                    </Link>
-                  </li>
-                  <li
-                    className={`py-2 ${
-                      pathname === '/user/defense-application/proposal' ? 'text-white' : ''
-                    }`}
-                  >
-                    <Link href="/user/defense-application/proposal" onClick={closeSidebar}>
-                      Proposal Defense
-                    </Link>
-                  </li>
-                  <li
-                    className={`py-2 ${
-                      pathname === '/user/defense-application/final' ? 'text-white' : ''
-                    }`}
-                  >
-                    <Link href="/user/defense-application/final" onClick={closeSidebar}>
-                      Final Defense
-                    </Link>
-                  </li>
+                  {['concept', 'proposal', 'final'].map((type) => (
+                    <li
+                      key={type}
+                      className={`py-2 ${
+                        pathname === `/user/defense-application/${type}` ? 'text-white' : ''
+                      }`}
+                    >
+                      <Link href={`/user/defense-application/${type}`} onClick={closeSidebar}>
+                        {`${type.charAt(0).toUpperCase() + type.slice(1)} Defense`}
+                      </Link>
+                    </li>
+                  ))}
                 </ul>
               )}
             </li>
-
 
             {/* Logout */}
             <li className="px-4 cursor-pointer hover:bg-gray-700">

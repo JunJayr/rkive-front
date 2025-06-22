@@ -103,7 +103,7 @@ export default function useApplicationGeneration() {
   return {
     formData,
     isLoading,
-    previewUrl,
+    previewUrl, 
     handleChange,
     handleSubmit,
     handleDownload,
