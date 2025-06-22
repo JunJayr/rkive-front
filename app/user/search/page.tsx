@@ -7,17 +7,19 @@ import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
 import { useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
 import Layout from '@/components/utils/Layout';
+import { FiSearch } from 'react-icons/fi';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
+    setHydrated(true);
     const query = searchParams.get('q') || '';
     setSearchTerm(query);
   }, [searchParams]);
 
-  // Fetch manuscripts based on searchTerm, only after the component is mounted
   const {
     data: manuscripts = [],
     isLoading: isSearching,
@@ -35,33 +37,42 @@ export default function SearchPage() {
 
   const handleResultClick = (pdfUrl: string) => {
     if (pdfUrl) {
-      console.log("Opening PDF:", pdfUrl);
       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
+  if (!hydrated) return null;
+
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter relative">
-        {/* Sidebar */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 font-inter relative">
         <Sidebar />
 
-        {/* Search Bar */}
-        <div className="fixed top-3 left-20 z-10 w-2/3">
-          <form onSubmit={handleSearch} className="flex w-full">
-            <div className="flex w-full rounded-2xl shadow-md">
+        <div className="pt-24 px-4 max-w-5xl mx-auto text-center">
+          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+            Search Results
+          </h1>
+          <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
+            Discover manuscripts that match your inspiration.
+          </p>
+
+          <form onSubmit={handleSearch} className="w-full mt-10 max-w-2xl mx-auto">
+            <div className="flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-md overflow-hidden transition-all">
+              <div className="px-4 text-gray-400 dark:text-gray-300">
+                <FiSearch size={20} />
+              </div>
               <input
                 type="search"
                 id="search"
-                className="w-full p-4 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-l-2xl focus:ring-blue-500 focus:border-blue-500 text-base shadow-sm transition-shadow duration-200"
                 placeholder="Search for manuscripts..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full py-3 px-2 bg-transparent outline-none text-base text-gray-800 dark:text-white placeholder-gray-400"
                 required
               />
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 bg-indigo-600 text-white font-semibold py-3 px-6 rounded-r-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition-colors duration-200 text-lg shadow-md"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 font-semibold transition-colors duration-200 disabled:opacity-50"
                 disabled={isSearching}
               >
                 {isSearching ? (
@@ -74,11 +85,8 @@ export default function SearchPage() {
               </button>
             </div>
           </form>
-        </div>
 
-        {/* Results Section */}
-        <main className="pt-20 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col items-start space-y-8">
-          <div className="w-full max-w-4xl mt-8">
+          <div className="mt-12 text-left">
             {isSearching && <Spinner />}
             {searchError && (
               <p className="text-red-500 text-center text-base">
@@ -86,39 +94,35 @@ export default function SearchPage() {
               </p>
             )}
 
-            {/* Render the list of manuscripts */}
             {manuscripts.length > 0 ? (
-              <ul className="space-y-4">
+              <ul className="space-y-6 mt-6">
                 {manuscripts.map((manuscript: any) => (
                   <li
                     key={manuscript.id}
                     onClick={() => handleResultClick(manuscript.pdf_url)}
-                    className="p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl shadow-md hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
+                    className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer"
                   >
-                    <div className="flex flex-col">
-                      <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {manuscript.title}
-                      </span>
-                      {manuscript.description && (
-                        <p className="text-sm text-gray-700 dark:text-gray-400 mt-1">
-                          {manuscript.description}
-                        </p>
-                      )}
-                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                      {manuscript.title}
+                    </h3>
+                    {manuscript.description && (
+                      <p className="mt-2 text-sm text-gray-700 dark:text-gray-400">
+                        {manuscript.description}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
             ) : (
               !isSearching && (
-                <p className="text-gray-700 dark:text-gray-400 text-center text-base">
+                <p className="text-gray-700 dark:text-gray-400 text-center text-base mt-6">
                   No results found.
                 </p>
               )
             )}
           </div>
-        </main>
+        </div>
 
-        {/* Footer */}
         <Footer />
       </div>
     </Layout>
