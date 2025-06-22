@@ -33,7 +33,7 @@ export default function Sidebar() {
     setHasMounted(true);
   }, []);
 
-  if (!hasMounted) return null; // Prevent hydration mismatch
+  if (!hasMounted) return null;
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
@@ -61,17 +61,14 @@ export default function Sidebar() {
 
   return (
     <div className="relative">
-      {/* Menu Icon */}
       <button
         aria-label="Toggle sidebar"
-        className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
+        className="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full fixed top-4 left-4 z-50 shadow-md"
         onClick={toggleSidebar}
-        style={{ backgroundColor: 'transparent' }}
       >
         <AiOutlineMenu size={24} />
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-10 backdrop-blur-sm z-40"
@@ -79,59 +76,50 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Full-screen Spinner */}
       {showFullScreenSpinner && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <Spinner />
         </div>
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-gray-800 transform transition-transform duration-300 z-50 w-64 ${
+        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 transform transition-transform duration-300 z-50 w-72 shadow-xl border-r border-gray-200 dark:border-gray-700 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Menu Icon */}
-      <button
-        aria-label="Toggle sidebar"
-        className="p-2 text-yellow rounded-md hover:bg-gray-200 fixed top-4 left-4 z-50"
-        onClick={toggleSidebar}
-        style={{ backgroundColor: 'transparent' }}
-      >
-        <AiOutlineMenu size={24} />
-      </button>
-        <div className="py-3 text-2xl text-center tracking-widest bg-gray-800 border-b-2 border-gray-800 mb-8">
-          <Link href="/user" className="text-white" onClick={closeSidebar}>
+        
+        <div className="py-4 px-6 text-3xl font-bold tracking-wider text-indigo-600 dark:text-white border-b border-gray-200 dark:border-gray-700">
+          <Link href="/user" onClick={closeSidebar}>
             Rkive
           </Link>
         </div>
 
-        {/* Sidebar Menu */}
-        <nav className="text-sm text-gray-300">
-          <ul className="flex flex-col">
+        <nav className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-6">
+          <ul className="flex flex-col space-y-1">
             {menuItems.map((item) => (
-              <li
-                key={item.name}
-                className={`px-4 cursor-pointer ${
-                  pathname === item.href ? 'bg-gray-700 text-white' : 'hover:bg-gray-700'
-                }`}
-              >
-                <Link href={item.href} className="py-3 flex items-center" onClick={closeSidebar}>
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  onClick={closeSidebar}
+                  className={`flex items-center px-6 py-3 rounded-xl mx-3 transition-colors ${
+                    pathname === item.href
+                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-700 dark:text-white'
+                      : 'hover:bg-indigo-50 dark:hover:bg-gray-800'
+                  }`}
+                >
                   {item.icon}
                   {item.name}
                 </Link>
               </li>
             ))}
 
-            {/* Dropdown - Defense Application */}
-            <li className="text-gray-300">
+            <li>
               <div
                 onClick={toggleDefenseDropdown}
-                className={`flex items-center justify-between py-3 px-4 w-full cursor-pointer transition-colors ${
-                  defenseDropdownOpen || pathname?.startsWith('/user/defense-application')
-                    ? 'bg-gray-700 text-white'
-                    : 'hover:bg-gray-700'
+                className={`flex items-center justify-between px-6 py-3 rounded-xl mx-3 cursor-pointer transition-colors ${
+                  pathname?.startsWith('/user/defense-application') || defenseDropdownOpen
+                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-700 dark:text-white'
+                    : 'hover:bg-indigo-50 dark:hover:bg-gray-800'
                 }`}
               >
                 <span className="flex items-center">
@@ -139,19 +127,24 @@ export default function Sidebar() {
                   Defense Application
                 </span>
                 <FaChevronDown
-                  className={`transition-transform duration-300 ${defenseDropdownOpen ? 'rotate-180' : ''}`}
+                  className={`transition-transform duration-300 ${
+                    defenseDropdownOpen ? 'rotate-180' : ''
+                  }`}
                 />
               </div>
               {defenseDropdownOpen && (
-                <ul className="ml-10">
+                <ul className="ml-10 mt-1 space-y-1">
                   {['concept', 'proposal', 'final'].map((type) => (
-                    <li
-                      key={type}
-                      className={`py-2 ${
-                        pathname === `/user/defense-application/${type}` ? 'text-white' : ''
-                      }`}
-                    >
-                      <Link href={`/user/defense-application/${type}`} onClick={closeSidebar}>
+                    <li key={type}>
+                      <Link
+                        href={`/user/defense-application/${type}`}
+                        onClick={closeSidebar}
+                        className={`block px-4 py-2 rounded-md transition ${
+                          pathname === `/user/defense-application/${type}`
+                            ? 'text-indigo-700 dark:text-white font-semibold'
+                            : 'hover:text-indigo-700 dark:hover:text-white'
+                        }`}
+                      >
                         {`${type.charAt(0).toUpperCase() + type.slice(1)} Defense`}
                       </Link>
                     </li>
@@ -160,13 +153,12 @@ export default function Sidebar() {
               )}
             </li>
 
-            {/* Logout */}
-            <li className="px-4 cursor-pointer hover:bg-gray-700">
+            <li className="px-6">
               <button
                 onClick={handleLogout}
-                className="py-3 flex items-center w-full text-left text-gray-300 hover:text-white"
+                className="w-full flex items-center gap-3 px-4 py-3 mt-4 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
               >
-                <FaSignOutAlt className="w-4 mr-3" />
+                <FaSignOutAlt className="w-4" />
                 Logout
               </button>
             </li>
