@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AiOutlineMenu } from 'react-icons/ai';
+import { AiOutlineMenu, AiOutlineInfoCircle } from 'react-icons/ai';
 import {
   FaUser,
   FaPaperclip,
@@ -87,8 +87,15 @@ export default function Sidebar() {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        
-        <div className="py-4 px-6 text-3xl font-bold tracking-wider text-indigo-600 dark:text-white border-b border-gray-200 dark:border-gray-700">
+        <button
+        aria-label="Toggle sidebar"
+        className="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full fixed top-4 left-4 z-50 shadow-md"
+        onClick={toggleSidebar}
+      >
+        <AiOutlineMenu size={24} />
+      </button>
+      
+        <div className="py-4 px-6 text-3xl font-bold tracking-wider text-indigo-600 dark:text-white border-b border-gray-200 dark:border-gray-700 text-center">
           <Link href="/user" onClick={closeSidebar}>
             Rkive
           </Link>
@@ -162,6 +169,7 @@ export default function Sidebar() {
                 Logout
               </button>
             </li>
+
           </ul>
         </nav>
       </aside>
