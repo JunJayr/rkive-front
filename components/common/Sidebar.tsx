@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AiOutlineMenu, AiOutlineInfoCircle } from 'react-icons/ai';
+import { AiOutlineMenu } from 'react-icons/ai';
 import {
   FaUser,
   FaPaperclip,
@@ -61,9 +61,10 @@ export default function Sidebar() {
 
   return (
     <div className="relative">
+      {/* Toggle Button */}
       <button
         aria-label="Toggle sidebar"
-        className="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full fixed top-4 left-4 z-50 shadow-md"
+        className="p-2 text-[#FBBF24] bg-[#1E2A38] hover:bg-[#2A3646] rounded-full fixed top-4 left-4 z-50 shadow-lg border border-[#FBBF24]/50"
         onClick={toggleSidebar}
       >
         <AiOutlineMenu size={24} />
@@ -71,7 +72,7 @@ export default function Sidebar() {
 
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-10 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm z-40"
           onClick={closeSidebar}
         />
       )}
@@ -82,37 +83,39 @@ export default function Sidebar() {
         </div>
       )}
 
+      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 transform transition-transform duration-300 z-50 w-72 shadow-xl border-r border-gray-200 dark:border-gray-700 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed top-0 left-0 h-screen w-72 transform transition-transform duration-300 z-50 
+        bg-[#1E2A38]/95 backdrop-blur-lg border-r border-[#FBBF24]/30 shadow-xl
+        ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <button
         aria-label="Toggle sidebar"
-        className="p-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-full fixed top-4 left-4 z-50 shadow-md"
+        className="p-2 text-[#FBBF24] bg-[#1E2A38] hover:bg-[#2A3646] rounded-full fixed top-4 left-4 z-50 shadow-lg border border-[#FBBF24]/50"
         onClick={toggleSidebar}
       >
         <AiOutlineMenu size={24} />
       </button>
-      
-        <div className="py-4 px-6 text-3xl font-bold tracking-wider text-indigo-600 dark:text-white border-b border-gray-200 dark:border-gray-700 text-center">
+        {/* Brand */}
+        <div className="py-5 px-6 text-3xl font-extrabold tracking-wide text-[#FBBF24] border-b border-[#FBBF24]/20 text-center">
           <Link href="/user" onClick={closeSidebar}>
             Rkive
           </Link>
         </div>
 
-        <nav className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-6">
+        {/* Navigation */}
+        <nav className="mt-6 text-sm font-medium text-gray-200">
           <ul className="flex flex-col space-y-1">
             {menuItems.map((item) => (
               <li key={item.name}>
                 <Link
                   href={item.href}
                   onClick={closeSidebar}
-                  className={`flex items-center px-6 py-3 rounded-xl mx-3 transition-colors ${
-                    pathname === item.href
-                      ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-700 dark:text-white'
-                      : 'hover:bg-indigo-50 dark:hover:bg-gray-800'
-                  }`}
+                  className={`flex items-center px-6 py-3 rounded-lg mx-3 transition-all
+                    ${pathname === item.href
+                      ? 'bg-[#FBBF24] text-[#1E2A38] font-semibold shadow-md'
+                      : 'hover:bg-[#FBBF24]/10 hover:text-[#FBBF24]'
+                    }`}
                 >
                   {item.icon}
                   {item.name}
@@ -120,23 +123,22 @@ export default function Sidebar() {
               </li>
             ))}
 
+            {/* Defense Dropdown */}
             <li>
               <div
                 onClick={toggleDefenseDropdown}
-                className={`flex items-center justify-between px-6 py-3 rounded-xl mx-3 cursor-pointer transition-colors ${
-                  pathname?.startsWith('/user/defense-application') || defenseDropdownOpen
-                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-700 dark:text-white'
-                    : 'hover:bg-indigo-50 dark:hover:bg-gray-800'
-                }`}
+                className={`flex items-center justify-between px-6 py-3 rounded-lg mx-3 cursor-pointer transition-all
+                  ${(pathname?.startsWith('/user/defense-application') || defenseDropdownOpen)
+                    ? 'bg-[#FBBF24] text-[#1E2A38] font-semibold shadow-md'
+                    : 'hover:bg-[#FBBF24]/10 hover:text-[#FBBF24]'
+                  }`}
               >
                 <span className="flex items-center">
                   <FaClipboard className="w-4 mr-3" />
                   Defense Application
                 </span>
                 <FaChevronDown
-                  className={`transition-transform duration-300 ${
-                    defenseDropdownOpen ? 'rotate-180' : ''
-                  }`}
+                  className={`transition-transform duration-300 ${defenseDropdownOpen ? 'rotate-180' : ''}`}
                 />
               </div>
               {defenseDropdownOpen && (
@@ -146,11 +148,11 @@ export default function Sidebar() {
                       <Link
                         href={`/user/defense-application/${type}`}
                         onClick={closeSidebar}
-                        className={`block px-4 py-2 rounded-md transition ${
-                          pathname === `/user/defense-application/${type}`
-                            ? 'text-indigo-700 dark:text-white font-semibold'
-                            : 'hover:text-indigo-700 dark:hover:text-white'
-                        }`}
+                        className={`block px-4 py-2 rounded-md transition-all
+                          ${pathname === `/user/defense-application/${type}`
+                            ? 'text-[#FBBF24] font-semibold'
+                            : 'hover:text-[#FBBF24]'
+                          }`}
                       >
                         {`${type.charAt(0).toUpperCase() + type.slice(1)} Defense`}
                       </Link>
@@ -160,16 +162,17 @@ export default function Sidebar() {
               )}
             </li>
 
-            <li className="px-6">
+            {/* Logout */}
+            <li className="px-6 mt-4">
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-3 px-4 py-3 mt-4 bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all
+                  bg-red-600 hover:bg-red-700 text-white shadow-md"
               >
                 <FaSignOutAlt className="w-4" />
                 Logout
               </button>
             </li>
-
           </ul>
         </nav>
       </aside>

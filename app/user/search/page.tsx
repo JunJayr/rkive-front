@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
@@ -11,14 +11,9 @@ import { FiSearch } from 'react-icons/fi';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [hydrated, setHydrated] = useState(false);
 
-  useEffect(() => {
-    setHydrated(true);
-    const query = searchParams.get('q') || '';
-    setSearchTerm(query);
-  }, [searchParams]);
+  // Initialize searchTerm correctly to avoid hydration mismatch
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
 
   const {
     data: manuscripts = [],
@@ -40,8 +35,6 @@ export default function SearchPage() {
       window.open(pdfUrl, '_blank', 'noopener,noreferrer');
     }
   };
-
-  if (!hydrated) return null;
 
   return (
     <Layout>
