@@ -14,7 +14,6 @@ export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  // Ensure consistent SSR vs CSR render
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -29,134 +28,67 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      <div className="flex h-screen relative bg-gradient-to-br from-[#1E2A38] via-[#1C2434] to-black">
+      <div className="flex h-screen bg-white text-[#0A4D9C]">
         {/* Sidebar */}
         <Sidebar />
 
         {/* Main Content */}
-        <div className="flex flex-col flex-grow items-center justify-start p-8 overflow-y-auto mt-16">
-          
-          {/* Header Box (Title + Search) */}
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight text-[#FBBF24]">
-            Rkive
-          </h1>
-          <p className="mt-4 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto text-center">
-            A Repository for Capstone & Thesis Projects at CITC – USTP
-          </p>
+        <main className="flex flex-col flex-grow items-center justify-center px-6 py-12 overflow-y-auto">
+          <div className="w-full max-w-4xl text-center">
+            {/* Title */}
+            <h1 className="text-5xl font-extrabold tracking-tight select-none">
+              R<span className="text-[#FBBF24]">k</span>ive
+            </h1>
 
-          {/* Search Bar */}
-          <form onSubmit={handleSearch} className="w-full mt-8 max-w-2xl mx-auto">
-            <div className="flex items-center bg-[#1E2A38]/80 border border-[#FBBF24]/50 rounded-xl shadow-md overflow-hidden">
-              <div className="px-4 text-[#FBBF24]">
-                <FiSearch size={20} />
-              </div>
+            <p className="mt-3 text-gray-600 text-lg leading-relaxed">
+              An Academic Repository for Capstone and Thesis Projects<br />
+              <span className="text-sm text-gray-500">
+                College of Information Technology and Computing – USTP
+              </span>
+            </p>
+
+            {/* Search */}
+            <form
+              onSubmit={handleSearch}
+              className="mt-12 flex items-center gap-4 border border-gray-300 rounded-full px-6 py-4 shadow-sm focus-within:ring-2 focus-within:ring-[#FBBF24] transition bg-white"
+            >
+              <FiSearch className="text-gray-400" size={24} />
+
               <input
                 type="text"
                 name="q"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-3 px-2 bg-transparent outline-none text-base text-gray-100 placeholder-gray-400"
-                placeholder="Search projects, keywords, or authors..."
+                placeholder="Search by title, keyword, author, or year"
+                className="flex-grow outline-none text-gray-700 text-base placeholder-gray-400"
                 required
               />
+
               <button
                 type="submit"
                 disabled={loading}
-                className="flex items-center gap-2 bg-[#FBBF24] text-[#1E2A38] px-6 py-3 font-semibold rounded-r-xl
-                          hover:bg-[#FACC15] hover:shadow-lg active:bg-[#EAB308] 
-                          transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-[#FBBF24] text-[#0A4D9C] font-semibold px-6 py-2 rounded-full hover:opacity-90 transition disabled:opacity-50"
               >
-                {mounted && loading ? (
-                  <div className="flex items-center justify-center">
-                    <Spinner sm />
-                  </div>
-                ) : (
-                  <>
-                    <FiSearch size={18} />
-                    <span>Search</span>
-                  </>
-                )}
+                {mounted && loading ? <Spinner sm /> : 'Search'}
+              </button>
+            </form>
+
+            {/* Actions */}
+            <div className="mt-10 flex justify-center gap-6 flex-wrap">
+              <button
+                className="px-6 py-2 border border-[#0A4D9C] text-[#0A4D9C] rounded-full font-medium hover:bg-[#0A4D9C] hover:text-white transition"
+              >
+                Browse All Repositories
+              </button>
+
+              <button
+                className="px-6 py-2 bg-[#0A4D9C] text-white rounded-full font-medium hover:opacity-90 transition"
+              >
+                View Latest Submissions
               </button>
             </div>
-          </form>
-
-          {/* Featured Sections Grid */}
-          <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-            
-            {/* Browse */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">📂</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                Browse Repositories
-              </h3>
-              <p className="text-sm text-gray-300">
-                Explore capstone & thesis works organized by categories.
-              </p>
-            </div>
-
-            {/* Latest */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">🆕</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                Latest Submissions
-              </h3>
-              <p className="text-sm text-gray-300">
-                Stay updated with the newest uploaded projects.
-              </p>
-            </div>
-
-            {/* Top Rated */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">⭐</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                Top Rated Projects
-              </h3>
-              <p className="text-sm text-gray-300">
-                Discover the most recognized and recommended works.
-              </p>
-            </div>
-
-            {/* By Adviser */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">🎓</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                By Adviser / Panel
-              </h3>
-              <p className="text-sm text-gray-300">
-                Browse research works organized by faculty mentors.
-              </p>
-            </div>
-
-            {/* Saved */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">💾</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                Saved Projects
-              </h3>
-              <p className="text-sm text-gray-300">
-                Revisit your curated list of favorite projects.
-              </p>
-            </div>
-
-            {/* Statistics */}
-            <div className="bg-[#1E2A38]/80 border border-[#FBBF24]/40 rounded-xl shadow-md p-6 
-                            hover:scale-[1.03] hover:shadow-lg transition flex flex-col items-start">
-              <div className="text-[#FBBF24] mb-3 text-2xl">📊</div>
-              <h3 className="font-semibold text-lg mb-2 text-white">
-                Research Trends
-              </h3>
-              <p className="text-sm text-gray-300">
-                See insights into popular topics and project statistics.
-              </p>
-            </div>
-
           </div>
-        </div>
+        </main>
 
         {/* Footer */}
         <Footer />
