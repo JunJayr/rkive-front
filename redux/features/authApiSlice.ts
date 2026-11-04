@@ -32,14 +32,14 @@ interface ApplicationFormData {
   research_title: string;
   datetime_defense: string;
   place_defense: string;
-  panel_chair: string;
-  adviser: string;
-  panel1: string;
-  panel2: string;
-  panel3: string;
+  adviser: number;
+  panel_chair: number;
+  panel1: number;
+  panel2: number;
+  panel3: number;
   documenter: string;
   [key: `co_researcher${number}`]: string;
-  [key: `panel${number}`]: string;
+  [key: `panel${number}`]: number;
 }
 
 interface PanelFormData {

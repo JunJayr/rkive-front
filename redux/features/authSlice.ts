@@ -1,6 +1,7 @@
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface AuthState {
+export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   isSuperuser: boolean;
@@ -10,43 +11,66 @@ interface AuthState {
   isHeadDept: boolean;
   isFaculty: boolean;
   isStudent: boolean;
-
 }
 
-const loadAuthState = (): AuthState => {
-  if (typeof window !== 'undefined') {
-    const storedAuth = localStorage.getItem('authState');
-    if (storedAuth) {
-      return JSON.parse(storedAuth);
-    }
-  }
-  return {
-    isAuthenticated: false,
-    isLoading: true,
-    isSuperuser: false,
-    isStaff: false,
-    isActive: false,
-    isDean: false,
-    isHeadDept: false,
-    isFaculty: false,
-    isStudent: false,
-  };
+const initialState: AuthState = {
+  isAuthenticated: false,
+  isLoading: true,
+  isSuperuser: false,
+  isStaff: false,
+  isActive: false,
+  isDean: false,
+  isHeadDept: false,
+  isFaculty: false,
+  isStudent: false,
 };
 
-const initialState: AuthState = loadAuthState();
+type LoginRoles = Pick<
+  AuthState,
+  | 'isSuperuser'
+  | 'isStaff'
+  | 'isActive'
+  | 'isDean'
+  | 'isHeadDept'
+  | 'isFaculty'
+  | 'isStudent'
+>;
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
+
   reducers: {
+    restoreAuth: (
+      state,
+      action: PayloadAction<Partial<AuthState>>
+    ) => {
+      const saved = action.payload;
+
+      state.isAuthenticated = saved.isAuthenticated === true;
+      state.isSuperuser = saved.isSuperuser === true;
+      state.isStaff = saved.isStaff === true;
+      state.isActive = saved.isActive === true;
+      state.isDean = saved.isDean === true;
+      state.isHeadDept = saved.isHeadDept === true;
+      state.isFaculty = saved.isFaculty === true;
+      state.isStudent = saved.isStudent === true;
+
+      state.isLoading = false;
+    },
+
     setAuth: (state) => {
       state.isAuthenticated = true;
-      localStorage.setItem('authState', JSON.stringify(state)); // Save to localStorage
+      state.isLoading = false;
     },
-    setAuthLogin: (state, action: PayloadAction<{ isSuperuser: boolean; isStaff: boolean; isActive: boolean;
-      isDean: boolean; isHeadDept: boolean; isFaculty: boolean; isStudent: boolean;
-     }>) => {
+
+    setAuthLogin: (
+      state,
+      action: PayloadAction<LoginRoles>
+    ) => {
       state.isAuthenticated = true;
+      state.isLoading = false;
+
       state.isSuperuser = action.payload.isSuperuser;
       state.isStaff = action.payload.isStaff;
       state.isActive = action.payload.isActive;
@@ -54,11 +78,11 @@ const authSlice = createSlice({
       state.isHeadDept = action.payload.isHeadDept;
       state.isFaculty = action.payload.isFaculty;
       state.isStudent = action.payload.isStudent;
-    
-      localStorage.setItem('authState', JSON.stringify(state)); // Save to localStorage
     },
+
     logout: (state) => {
       state.isAuthenticated = false;
+      state.isLoading = false;
       state.isSuperuser = false;
       state.isStaff = false;
       state.isActive = false;
@@ -66,14 +90,20 @@ const authSlice = createSlice({
       state.isHeadDept = false;
       state.isFaculty = false;
       state.isStudent = false;
-      localStorage.removeItem('authState'); // Clear auth state on logout
     },
+
     finishInitialLoad: (state) => {
       state.isLoading = false;
-      localStorage.setItem('authState', JSON.stringify(state)); // Save to localStorage
     },
   },
 });
 
-export const { setAuth, setAuthLogin, logout, finishInitialLoad } = authSlice.actions;
+export const {
+  restoreAuth,
+  setAuth,
+  setAuthLogin,
+  logout,
+  finishInitialLoad,
+} = authSlice.actions;
+
 export default authSlice.reducer;

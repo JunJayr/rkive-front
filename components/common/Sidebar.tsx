@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FaPaperclip,
   FaClipboard,
@@ -10,14 +11,22 @@ import {
   FaChevronDown,
   FaLock,
   FaCheckCircle,
+  FaSearch,
+  FaRegCircle,
 } from 'react-icons/fa';
-import { HiMenu } from 'react-icons/hi';
+import { HiMenu, HiX } from 'react-icons/hi';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+
 import { useAppDispatch } from '@/redux/hooks';
-import { useLogoutMutation } from '@/redux/features/authApiSlice';
-import { logout as setLogout } from '@/redux/features/authSlice';
+import {
+  useLogoutMutation,
+} from '@/redux/features/authApiSlice';
+import {
+  logout as setLogout,
+} from '@/redux/features/authSlice';
+
 import Spinner from '@/components/common/Spinner';
 
 type DefenseProgress = {
@@ -26,144 +35,284 @@ type DefenseProgress = {
   finalApproved: boolean;
 };
 
+const defenseSteps = [
+  {
+    key: 'concept',
+    label: 'Concept Defense',
+    href: '/user/defense-application/concept',
+  },
+  {
+    key: 'proposal',
+    label: 'Proposal Defense',
+    href: '/user/defense-application/proposal',
+  },
+  {
+    key: 'final',
+    label: 'Final Defense',
+    href: '/user/defense-application/final',
+  },
+];
+
+const menuItems = [
+  {
+    name: 'Dashboard',
+    href: '/user',
+    icon: FaHome,
+  },
+  {
+    name: 'Search Repository',
+    href: '/user/search',
+    icon: FaSearch,
+  },
+  {
+    name: 'Panel Nomination',
+    href: '/user/panel-nomination',
+    icon: FaUsers,
+  },
+  {
+    name: 'Submit Thesis',
+    href: '/user/submit-study',
+    icon: FaPaperclip,
+  },
+];
+
 export default function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const [logoutMutation] = useLogoutMutation();
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [defenseOpen, setDefenseOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  const [logoutMutation] = useLogoutMutation();
-
-  const isDefenseRoute = pathname.startsWith('/user/defense-application');
-
+  // Placeholder until real approval data is connected.
+  // Do not treat these values as actual approval records.
   const defenseProgress: DefenseProgress = {
-    conceptApproved: true,
+    conceptApproved: false,
     proposalApproved: false,
     finalApproved: false,
   };
 
-  /** 🔹 RESTORED STEPS (this was missing) */
-  const steps = useMemo(
-    () => [
-      {
-        key: 'concept',
-        label: 'Concept Defense',
-        href: '/user/defense-application/concept',
-        approved: defenseProgress.conceptApproved,
-        locked: false,
-      },
-      {
-        key: 'proposal',
-        label: 'Proposal Defense',
-        href: '/user/defense-application/proposal',
-        approved: defenseProgress.proposalApproved,
-        locked: !defenseProgress.conceptApproved,
-      },
-      {
-        key: 'final',
-        label: 'Final Defense',
-        href: '/user/defense-application/final',
-        approved: defenseProgress.finalApproved,
-        locked: !defenseProgress.proposalApproved,
-      },
-    ],
-    [defenseProgress]
+  const isDefenseRoute = pathname.startsWith(
+    '/user/defense-application'
   );
 
-  /** 🔹 Auto-open when visiting defense routes */
+  const expanded = mobileOpen || !collapsed;
+
   useEffect(() => {
-    if (isDefenseRoute) setDefenseOpen(true);
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isDefenseRoute) {
+      setDefenseOpen(true);
+    }
   }, [isDefenseRoute]);
 
-  /** 🔹 Auto-close dropdown when sidebar collapses */
-  useEffect(() => {
-    if (collapsed) setDefenseOpen(false);
-  }, [collapsed]);
+  const getStepStatus = (key: string) => {
+    if (key === 'concept') {
+      return {
+        approved: defenseProgress.conceptApproved,
+        locked: false,
+      };
+    }
 
-  const menuItems = [
-    { name: 'Dashboard', href: '/user', icon: <FaHome size={18} /> },
-    { name: 'Panel Nomination', href: '/user/panel-nomination', icon: <FaUsers size={18} /> },
-    { name: 'Submit Thesis', href: '/user/submit-study', icon: <FaPaperclip size={18} /> },
-  ];
+    if (key === 'proposal') {
+      return {
+        approved: defenseProgress.proposalApproved,
+        locked: !defenseProgress.conceptApproved,
+      };
+    }
+
+    return {
+      approved: defenseProgress.finalApproved,
+      locked: !defenseProgress.proposalApproved,
+    };
+  };
 
   const handleLogout = async () => {
+    if (loading) return;
+
     setLoading(true);
+
     try {
       await logoutMutation(undefined).unwrap();
       dispatch(setLogout());
-      toast.success('Logged out');
+
+      toast.success('Logged out successfully');
+
+      router.replace('/auth/login');
     } catch {
-      toast.error('Logout failed');
+      toast.error('Logout failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleDefenseToggle = () => {
+    if (!expanded) {
+      setCollapsed(false);
+      setDefenseOpen(true);
+      return;
+    }
+
+    setDefenseOpen((prev) => !prev);
+  };
+
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b flex items-center px-4 z-40">
-        <button onClick={() => setMobileOpen(true)}>
-          <HiMenu size={22} />
-        </button>
-        <span className="ml-4 font-bold text-[#0A4D9C]">
-          R<span className="text-[#FBBF24]">k</span>ive
-        </span>
-      </div>
-
-      {/* Sidebar */}
-      <aside
-        onMouseEnter={() => setCollapsed(false)}
-        onMouseLeave={() => setTimeout(() => setCollapsed(true), 120)}
-        className={`
-          fixed md:static top-0 left-0 h-screen z-50
-          bg-[#1E293B] text-[#E5E7EB]
-          transition-all duration-300 ease-in-out
-          ${collapsed ? 'w-16' : 'w-72'}
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-      >
-        {/* Logo */}
+      {/* MOBILE TOP BAR */}
+      <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 md:hidden">
         <Link
           href="/user"
-          className={`h-16 flex items-center border-b border-white/10 transition-all
-            ${collapsed ? 'justify-center' : 'px-5 gap-3'}
-          `}
+          className="text-xl font-extrabold tracking-tight text-[#103F78]"
         >
-          <img src="/logo.png" className="h-7 w-7" />
-          <span
-            className={`text-lg font-semibold tracking-wide transition-all
-              ${collapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}
-            `}
-          >
-            R<span className="text-[#FBBF24]">k</span>ive
-          </span>
+          R<span className="text-amber-400">k</span>ive
         </Link>
 
-        {/* Menu */}
-        <nav className="mt-4">
-          <ul className="space-y-1 px-2">
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open navigation"
+          className="rounded-xl p-2 text-[#103F78] hover:bg-slate-100"
+        >
+          <HiMenu size={24} />
+        </button>
+      </div>
+
+      {/* MOBILE OVERLAY */}
+      {mobileOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 z-40 bg-slate-950/60 md:hidden"
+        />
+      )}
+
+      {/* SIDEBAR */}
+      <aside
+        onMouseEnter={() => {
+          if (window.innerWidth >= 768) {
+            setCollapsed(false);
+          }
+        }}
+        onMouseLeave={() => {
+          if (window.innerWidth >= 768) {
+            setCollapsed(true);
+          }
+        }}
+        className={`
+          fixed left-0 top-0 z-50 flex h-screen flex-col
+          overflow-hidden bg-[#103F78] text-white
+          shadow-xl transition-[width,transform] duration-300
+          md:sticky md:top-0 md:shrink-0
+          ${
+            expanded
+              ? 'w-72'
+              : 'w-72 md:w-[76px]'
+          }
+          ${
+            mobileOpen
+              ? 'translate-x-0'
+              : '-translate-x-full md:translate-x-0'
+          }
+        `}
+      >
+
+        {/* LOGO */}
+        <div className="flex h-20 shrink-0 items-center border-b border-white/10 px-4">
+          <Link
+            href="/user"
+            className="flex min-w-0 flex-1 items-center gap-3"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FBBF24] font-black text-[#103F78]">
+              R
+            </div>
+
+            <div
+              className={`min-w-0 overflow-hidden transition-opacity ${
+                expanded ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <p className="text-xl font-extrabold tracking-tight">
+                R<span className="text-amber-400">k</span>ive
+              </p>
+
+              <p className="whitespace-nowrap text-[10px] uppercase tracking-widest text-blue-200">
+                Academic Repository
+              </p>
+            </div>
+          </Link>
+
+          {mobileOpen && (
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close sidebar"
+              className="rounded-lg p-2 hover:bg-white/10 md:hidden"
+            >
+              <HiX size={22} />
+            </button>
+          )}
+        </div>
+
+        {/* NAVIGATION */}
+        <nav
+          aria-label="Main navigation"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-6"
+        >
+          <p
+            className={`mb-4 whitespace-nowrap px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200/70 ${
+              expanded ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            Workspace
+          </p>
+
+          <ul className="space-y-1.5">
+
             {menuItems.map((item) => {
-              const active = pathname === item.href;
+              const Icon = item.icon;
+
+              const active =
+                pathname === item.href ||
+                (
+                  item.href !== '/user' &&
+                  pathname.startsWith(`${item.href}/`)
+                );
 
               return (
                 <li key={item.name}>
                   <Link
                     href={item.href}
+                    title={!expanded ? item.name : undefined}
+                    aria-current={active ? 'page' : undefined}
                     className={`
-                      h-11 w-full flex items-center rounded-md transition
-                      ${collapsed ? 'justify-center' : 'px-4 gap-3'}
-                      ${active
-                        ? 'bg-[#0A4D9C] text-white'
-                        : 'hover:bg-white/5 text-[#E5E7EB]'}
+                      flex h-12 items-center rounded-xl
+                      transition-colors duration-200
+                      ${
+                        expanded
+                          ? 'gap-3 px-4'
+                          : 'justify-center'
+                      }
+                      ${
+                        active
+                          ? 'bg-white text-[#103F78] shadow-sm'
+                          : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                      }
                     `}
-                    title={collapsed ? item.name : undefined}
                   >
-                    {item.icon}
-                    {!collapsed && (
-                      <span className="text-sm font-medium tracking-wide">
+                    <Icon
+                      size={18}
+                      className="shrink-0"
+                    />
+
+                    {expanded && (
+                      <span className="whitespace-nowrap text-sm font-semibold">
                         {item.name}
                       </span>
                     )}
@@ -172,91 +321,152 @@ export default function Sidebar() {
               );
             })}
 
-            {/* Defense Application */}
-            <li className="pt-2 border-t border-white/10">
+            {/* DEFENSE APPLICATION */}
+            <li className="pt-5">
+              <div className="mb-4 border-t border-white/10" />
+
+              {expanded && (
+                <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200/70">
+                  Academic Workflow
+                </p>
+              )}
+
               <button
-                onClick={() => !collapsed && setDefenseOpen(v => !v)}
+                type="button"
+                onClick={handleDefenseToggle}
+                aria-expanded={expanded && defenseOpen}
+                title={!expanded ? 'Defense Application' : undefined}
                 className={`
-                  h-11 w-full flex items-center rounded-md transition
-                  ${collapsed ? 'justify-center' : 'px-4 justify-between'}
-                  ${isDefenseRoute
-                    ? 'bg-[#0A4D9C] text-white'
-                    : 'hover:bg-white/5'}
+                  flex h-12 w-full items-center rounded-xl
+                  transition-colors duration-200
+                  ${
+                    expanded
+                      ? 'justify-between px-4'
+                      : 'justify-center'
+                  }
+                  ${
+                    isDefenseRoute
+                      ? 'bg-white/15 text-white'
+                      : 'text-blue-100 hover:bg-white/10'
+                  }
                 `}
-                title={collapsed ? 'Defense Application' : undefined}
               >
                 <span className="flex items-center gap-3">
-                  <FaClipboard size={16} />
-                  {!collapsed && (
-                    <span className="text-sm font-medium">
+                  <FaClipboard size={18} />
+
+                  {expanded && (
+                    <span className="whitespace-nowrap text-sm font-semibold">
                       Defense Application
                     </span>
                   )}
                 </span>
 
-                {!collapsed && (
+                {expanded && (
                   <FaChevronDown
-                    className={`transition-transform text-xs ${
+                    size={12}
+                    className={`transition-transform duration-200 ${
                       defenseOpen ? 'rotate-180' : ''
                     }`}
                   />
                 )}
               </button>
 
-              {!collapsed && defenseOpen && (
-                <ul className="mt-1 ml-9 space-y-1 text-xs text-[#CBD5E1]">
-                  {steps.map((s) =>
-                    s.locked ? (
-                      <li
-                        key={s.key}
-                        className="flex items-center justify-between px-3 py-2 opacity-50 cursor-not-allowed"
-                      >
-                        {s.label}
-                        <FaLock size={12} />
+              {/* DEFENSE STEPS */}
+              {expanded && defenseOpen && (
+                <ul className="ml-5 mt-3 space-y-1 border-l border-white/20 pl-4">
+                  {defenseSteps.map((step) => {
+                    const status = getStepStatus(step.key);
+                    const active = pathname === step.href;
+
+                    if (status.locked) {
+                      return (
+                        <li
+                          key={step.key}
+                          className="flex min-h-11 items-center justify-between gap-2 rounded-lg px-3 py-2 text-blue-200/45"
+                          title="Complete the previous defense stage first"
+                        >
+                          <span className="text-xs font-medium">
+                            {step.label}
+                          </span>
+
+                          <FaLock size={11} />
+                        </li>
+                      );
+                    }
+
+                    return (
+                      <li key={step.key}>
+                        <Link
+                          href={step.href}
+                          aria-current={active ? 'page' : undefined}
+                          className={`
+                            flex min-h-11 items-center justify-between gap-2 rounded-lg px-3 py-2
+                            transition-colors
+                            ${
+                              active
+                                ? 'bg-[#FBBF24] font-bold text-[#103F78]'
+                                : 'text-blue-100 hover:bg-white/10 hover:text-white'
+                            }
+                          `}
+                        >
+                          <span className="text-xs font-medium">
+                            {step.label}
+                          </span>
+
+                          {status.approved ? (
+                            <FaCheckCircle
+                              size={13}
+                              className="text-emerald-400"
+                            />
+                          ) : (
+                            <FaRegCircle
+                              size={12}
+                              className={active ? 'text-[#103F78]' : 'text-blue-300/50'}
+                            />
+                          )}
+                        </Link>
                       </li>
-                    ) : (
-                      <Link
-                        key={s.key}
-                        href={s.href}
-                        className="flex items-center justify-between px-3 py-2 rounded hover:bg-white/5 hover:text-white"
-                      >
-                        {s.label}
-                        {s.approved && (
-                          <FaCheckCircle className="text-green-400" size={12} />
-                        )}
-                      </Link>
-                    )
-                  )}
+                    );
+                  })}
                 </ul>
               )}
             </li>
-
-            {/* Logout */}
-            <li className="mt-6 pt-4 border-t border-white/10">
-              <button
-                onClick={handleLogout}
-                className={`
-                  h-11 w-full flex items-center rounded-md transition
-                  ${collapsed ? 'justify-center' : 'px-4 gap-3'}
-                  bg-[#7F1D1D] text-white hover:bg-[#991B1B]
-                `}
-                title={collapsed ? 'Logout' : undefined}
-              >
-                {loading ? <Spinner sm /> : <FaSignOutAlt size={16} />}
-                {!collapsed && <span className="text-sm">Logout</span>}
-              </button>
-            </li>
           </ul>
         </nav>
-      </aside>
 
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 md:hidden z-40"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+        {/* LOGOUT */}
+        <div className="shrink-0 border-t border-white/10 p-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={loading}
+            title={!expanded ? 'Logout' : undefined}
+            className={`
+              flex h-12 w-full items-center rounded-xl
+              text-blue-100 transition-colors
+              hover:bg-red-500/20 hover:text-red-200
+              disabled:opacity-50
+              ${
+                expanded
+                  ? 'gap-3 px-4'
+                  : 'justify-center'
+              }
+            `}
+          >
+            {loading ? (
+              <Spinner sm />
+            ) : (
+              <FaSignOutAlt size={18} />
+            )}
+
+            {expanded && (
+              <span className="text-sm font-semibold">
+                Logout
+              </span>
+            )}
+          </button>
+        </div>
+      </aside>
     </>
   );
 }

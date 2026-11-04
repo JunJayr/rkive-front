@@ -1,123 +1,309 @@
+
 'use client';
 
-import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import {
+  useRouter,
+  useSearchParams,
+} from 'next/navigation';
+
 import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
-import { useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
 import Layout from '@/components/utils/Layout';
-import { FiSearch } from 'react-icons/fi';
 
-export default function SearchPage() {
+import { useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
+
+import {
+  FiSearch,
+  FiFileText,
+  FiExternalLink,
+  FiAlertCircle,
+  FiBookOpen,
+} from 'react-icons/fi';
+
+interface Manuscript {
+  id?: number | string;
+  manuscriptID?: number | string;
+  manuscript_id?: number | string;
+  title?: string;
+  description?: string;
+  pdf_url?: string;
+}
+
+function SearchContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Initialize searchTerm correctly to avoid hydration mismatch
-  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '');
+  const query = searchParams.get('q')?.trim() ?? '';
+
+  const [searchTerm, setSearchTerm] = useState(query);
+
+  useEffect(() => {
+    setSearchTerm(query);
+  }, [query]);
 
   const {
-    data: manuscripts = [],
-    isLoading: isSearching,
-    isError: searchError,
-  } = useSearchManuscriptsQuery(searchTerm, {
-    skip: !searchTerm,
+    data,
+    isLoading,
+    isFetching,
+    isError,
+  } = useSearchManuscriptsQuery(query, {
+    skip: !query,
   });
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  const manuscripts = (data ?? []) as Manuscript[];
+
+  const handleSearch = (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
-    if (searchTerm.trim()) {
-      window.location.href = `/user/search?q=${encodeURIComponent(searchTerm)}`;
-    }
+
+    const value = searchTerm.trim();
+
+    if (!value) return;
+
+    router.push(
+      `/user/search?q=${encodeURIComponent(value)}`
+    );
   };
 
-  const handleResultClick = (pdfUrl: string) => {
-    if (pdfUrl) {
-      window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-    }
+  const handleResultClick = (pdfUrl?: string) => {
+    if (!pdfUrl) return;
+
+    window.open(
+      pdfUrl,
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-gray-100 via-white to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-gray-100 font-inter relative">
+      <div className="flex min-h-screen bg-[#F6F8FC]">
         <Sidebar />
 
-        <div className="pt-24 px-4 max-w-5xl mx-auto text-center">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
-            Search Results
-          </h1>
-          <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
-            Discover manuscripts that match your inspiration.
-          </p>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="flex-1 px-5 pb-16 pt-24 sm:px-8 md:pt-12">
+            <div className="mx-auto w-full max-w-5xl">
 
-          <form onSubmit={handleSearch} className="w-full mt-10 max-w-2xl mx-auto">
-            <div className="flex items-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-2xl shadow-md overflow-hidden transition-all">
-              <div className="px-4 text-gray-400 dark:text-gray-300">
-                <FiSearch size={20} />
-              </div>
-              <input
-                type="search"
-                id="search"
-                placeholder="Search for manuscripts..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full py-3 px-2 bg-transparent outline-none text-base text-gray-800 dark:text-white placeholder-gray-400"
-                required
-              />
-              <button
-                type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 font-semibold transition-colors duration-200 disabled:opacity-50"
-                disabled={isSearching}
-              >
-                {isSearching ? (
-                  <div className="flex items-center justify-center">
-                    <Spinner sm />
-                  </div>
-                ) : (
-                  'Search'
-                )}
-              </button>
-            </div>
-          </form>
+              {/* HEADER */}
+              <div className="mb-10 text-center">
+                <div className="mb-5 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]">
+                  <FiBookOpen size={30} />
+                </div>
 
-          <div className="mt-12 text-left">
-            {isSearching && <Spinner />}
-            {searchError && (
-              <p className="text-red-500 text-center text-base">
-                Failed to fetch manuscripts. Please try again later.
-              </p>
-            )}
-
-            {manuscripts.length > 0 ? (
-              <ul className="space-y-6 mt-6">
-                {manuscripts.map((manuscript: any) => (
-                  <li
-                    key={manuscript.id}
-                    onClick={() => handleResultClick(manuscript.pdf_url)}
-                    className="p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition cursor-pointer"
-                  >
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                      {manuscript.title}
-                    </h3>
-                    {manuscript.description && (
-                      <p className="mt-2 text-sm text-gray-700 dark:text-gray-400">
-                        {manuscript.description}
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              !isSearching && (
-                <p className="text-gray-700 dark:text-gray-400 text-center text-base mt-6">
-                  No results found.
+                <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
+                  RKIVE / Research Repository
                 </p>
-              )
-            )}
-          </div>
-        </div>
 
-        <Footer />
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">
+                  Search Manuscripts
+                </h1>
+
+                <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-slate-500">
+                  Explore academic research, discover studies,
+                  and access available manuscripts.
+                </p>
+              </div>
+
+              {/* SEARCH BAR */}
+              <form
+                onSubmit={handleSearch}
+                className="mx-auto mb-10 max-w-3xl"
+              >
+                <div className="flex items-center overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-sm focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100">
+                  <FiSearch
+                    size={22}
+                    className="ml-4 shrink-0 text-slate-400"
+                  />
+
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    onChange={(e) =>
+                      setSearchTerm(e.target.value)
+                    }
+                    placeholder="Search research titles, keywords..."
+                    aria-label="Search manuscripts"
+                    className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                  />
+
+                  <button
+                    type="submit"
+                    disabled={!searchTerm.trim() || isFetching}
+                    className="rounded-xl bg-[#FBBF24] px-5 py-3 text-sm font-bold text-[#103F78] transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Search
+                  </button>
+                </div>
+              </form>
+
+              {/* RESULTS */}
+              <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-6 py-5 sm:px-8">
+                  <div>
+                    <h2 className="text-lg font-bold text-[#103F78]">
+                      Search Results
+                    </h2>
+
+                    <p className="mt-1 text-xs text-slate-500">
+                      {query
+                        ? `Results for "${query}"`
+                        : 'Enter a keyword to begin searching'}
+                    </p>
+                  </div>
+
+                  {query && !isLoading && !isError && (
+                    <span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-bold text-[#103F78]">
+                      {manuscripts.length} result(s)
+                    </span>
+                  )}
+                </div>
+
+                {(isLoading || isFetching) && (
+                  <div className="flex min-h-48 flex-col items-center justify-center gap-4">
+                    <Spinner />
+                    <p className="text-sm text-slate-500">
+                      Searching manuscripts...
+                    </p>
+                  </div>
+                )}
+
+                {isError && !isFetching && (
+                  <div className="flex flex-col items-center justify-center px-6 py-14 text-center">
+                    <FiAlertCircle
+                      size={36}
+                      className="text-red-500"
+                    />
+
+                    <h3 className="mt-4 font-bold text-slate-800">
+                      Unable to load manuscripts
+                    </h3>
+
+                    <p className="mt-2 text-sm text-slate-500">
+                      Please check your connection or login
+                      session and try again.
+                    </p>
+                  </div>
+                )}
+
+                {!query && (
+                  <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                    <FiSearch
+                      size={38}
+                      className="text-slate-300"
+                    />
+
+                    <p className="mt-4 font-semibold text-slate-700">
+                      Start exploring the repository
+                    </p>
+
+                    <p className="mt-2 text-sm text-slate-400">
+                      Enter a research title or keyword above.
+                    </p>
+                  </div>
+                )}
+
+                {query &&
+                  !isLoading &&
+                  !isFetching &&
+                  !isError &&
+                  manuscripts.length === 0 && (
+                    <div className="px-6 py-16 text-center">
+                      <FiFileText
+                        size={38}
+                        className="mx-auto text-slate-300"
+                      />
+
+                      <p className="mt-4 font-semibold text-slate-700">
+                        No manuscripts found
+                      </p>
+
+                      <p className="mt-2 text-sm text-slate-400">
+                        Try a different keyword or research title.
+                      </p>
+                    </div>
+                  )}
+
+                {query &&
+                  !isLoading &&
+                  !isFetching &&
+                  !isError &&
+                  manuscripts.length > 0 && (
+                    <ul className="divide-y divide-slate-100">
+                      {manuscripts.map((manuscript, index) => {
+                        // Use the API's unique identifier when available.
+                        // Index is only a temporary fallback.
+                        const resultKey =
+                          manuscript.id ??
+                          manuscript.manuscriptID ??
+                          manuscript.manuscript_id ??
+                          index;
+
+                        return (
+                          <li
+                            key={resultKey}
+                            className="p-6 transition hover:bg-blue-50/40 sm:px-8"
+                          >
+                            <div className="flex items-start gap-4">
+                              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]">
+                                <FiFileText size={22} />
+                              </div>
+
+                              <div className="min-w-0 flex-1">
+                                <h3 className="text-base font-bold text-[#103F78] sm:text-lg">
+                                  {manuscript.title || 'Untitled Manuscript'}
+                                </h3>
+
+                                {manuscript.description && (
+                                  <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-500">
+                                    {manuscript.description}
+                                  </p>
+                                )}
+
+                                {manuscript.pdf_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleResultClick(
+                                        manuscript.pdf_url
+                                      )
+                                    }
+                                    className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#103F78] transition hover:text-blue-600"
+                                  >
+                                    View Manuscript
+                                    <FiExternalLink size={15} />
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+              </section>
+            </div>
+          </main>
+
+          <Footer />
+        </div>
       </div>
     </Layout>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#F6F8FC]">
+          <Spinner />
+        </div>
+      }
+    >
+      <SearchContent />
+    </Suspense>
   );
 }

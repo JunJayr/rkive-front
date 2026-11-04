@@ -1,6 +1,9 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { toast } from 'react-toastify';
-import { useProposalGenerateMutation } from '@/redux/features/authApiSlice';
+import {
+  useProposalGenerateMutation,
+  useGetFacultyQuery,
+} from '@/redux/features/authApiSlice';
 
 interface ApplicationFormData {
   department: string;
@@ -14,14 +17,18 @@ interface ApplicationFormData {
   research_title: string;
   datetime_defense: string;
   place_defense: string;
-  panel_chair: string;
-  adviser: string;
-  panel1: string;
-  panel2: string;
-  panel3: string;
+
+  // ✅ NUMERIC IDs (same as PanelForm)
+  adviser: number;
+  panel_chair: number;
+  panel1: number;
+  panel2: number;
+  panel3: number;
+
   documenter: string;
+  
   [key: `co_researcher${number}`]: string;
-  [key: `panel${number}`]: string;
+  [key: `panel${number}`]: number;
 }
 
 const initialFormState: ApplicationFormData = {
@@ -36,56 +43,78 @@ const initialFormState: ApplicationFormData = {
   research_title: '',
   datetime_defense: '',
   place_defense: '',
-  panel_chair: '',
-  adviser: '',
-  panel1: '',
-  panel2: '',
-  panel3: '',
+  adviser: 0,
+  panel_chair: 0,
+  panel1: 0,
+  panel2: 0,
+  panel3: 0,
   documenter: '',
 };
 
-export default function useProposalApplicationGeneration() {
-  const [applicationGenerate, { isLoading }] = useProposalGenerateMutation();
+export default function useApplicationGeneration() {
+  const [proposalGenerate, { isLoading }] =
+    useProposalGenerateMutation();
 
-  const [formData, setFormData] = useState<ApplicationFormData>(initialFormState);
+  // ✅ FETCH FACULTY (MISSING BEFORE)
+  const { data: facultyList = [], isLoading: isFacultyLoading } =
+    useGetFacultyQuery();
+
+  const [formData, setFormData] =
+    useState<ApplicationFormData>(initialFormState);
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
-  // Updated handleChange to support both input and select elements
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    const numericFields = [
+      'adviser',
+      'panel_chair',
+      'panel1',
+      'panel2',
+      'panel3',
+    ];
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numericFields.includes(name) ? Number(value) : value,
+    }));
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
+
     try {
       const formattedData = {
         ...formData,
-        datetime_defense: new Date(formData.datetime_defense).toLocaleString('en-US', {
-          month: 'long',
-          day: 'numeric',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true,
-        }),
+        datetime_defense: new Date(formData.datetime_defense).toLocaleString(
+          'en-US',
+          {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+          }
+        ),
       };
-  
-      const docUrl = await applicationGenerate(formattedData).unwrap();
+
+      const docUrl = await proposalGenerate(formattedData).unwrap();
       setPreviewUrl(docUrl);
-      toast.success('Document is ready to view or download!');
-    } catch (error: any) {
-      console.error('Error generating application document:', error);
-      toast.error('Failed to generate application');
+
+      toast.success('Document generated successfully!');
+    } catch (error) {
+      console.error('Document generation failed:', error);
+      toast.error('Failed to generate document.');
     }
   };
 
@@ -103,6 +132,8 @@ export default function useProposalApplicationGeneration() {
     formData,
     isLoading,
     previewUrl,
+    facultyList,        // ✅ NOW EXISTS
+    isFacultyLoading,
     handleChange,
     handleSubmit,
     handleDownload,

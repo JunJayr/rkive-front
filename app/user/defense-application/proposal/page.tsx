@@ -1,6 +1,7 @@
 'use client';
 
-import { useProposalApplicationGeneration } from '@/hooks';
+import { useEffect } from 'react';
+import { useApplicationGeneration } from '@/hooks';
 import Spinner from '@/components/common/Spinner';
 import Footer from '@/components/common/Footer';
 import Sidebar from '@/components/common/Sidebar';
@@ -11,372 +12,285 @@ export default function ApplicationForm() {
     formData,
     isLoading,
     previewUrl,
-    setPreviewUrl,
-    handleDownload,
     handleChange,
     handleSubmit,
-  } = useProposalApplicationGeneration();
+    setPreviewUrl,
+    handleDownload,
+    facultyList,
+  } = useApplicationGeneration();
 
   const pdfUrl = previewUrl ? `${previewUrl}#toolbar=0` : null;
 
-  const handleClosePreview = () => {
-    setPreviewUrl(null);
-  };
+  /* 🔒 LOCK BODY SCROLL WHEN LOADING */
+  useEffect(() => {
+    document.body.style.overflow = isLoading ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isLoading]);
 
   return (
     <Layout>
-      <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 font-inter">
+      {/* FULL VIEWPORT LOCK */}
+      <div className="flex h-screen bg-[#F9FAFB] text-[#0A4D9C] overflow-hidden">
         <Sidebar />
-        <div className="flex-grow flex items-center justify-center py-16 px-4">
-          <div className="w-full max-w-2xl bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl">
-            {pdfUrl ? (
-              <div>
-                <div className="relative mb-8">
-                  <button
-                    type="button"
-                    onClick={handleClosePreview}
-                    className="absolute top-2 right-2 bg-gray-800 bg-opacity-50 hover:bg-opacity-70 text-white rounded-full w-10 h-10 flex items-center justify-center transition-colors duration-200"
-                    aria-label="Close Preview"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                  <iframe
-                    src={pdfUrl}
-                    className="w-full h-[600px] border border-gray-300 dark:border-gray-600 rounded-2xl mb-6"
-                    title="Application Document Preview"
-                  />
-                </div>
-                <div className="flex justify-center">
-                  <button
-                    onClick={handleDownload}
-                    className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-colors duration-200"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-8">
-                <h2 className="text-2xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
-                  Application for Proposal Defense
-                </h2>
 
-                <div>
-                  <label
-                    htmlFor="department"
-                    className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                  >
-                    Department
-                  </label>
-                  <select
-                    name="department"
-                    id="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                    required
-                  >
-                    <option value="">Select Department</option>
-                    <option value="Information Technology">Information Technology</option>
-                    <option value="Technology Communication Management">Technology Communication Management</option>
-                    <option value="Data Science">Data Science</option>
-                    <option value="Computer Science">Computer Science</option>
-                  </select>
-                </div>
+        <main className="flex-grow px-4 py-5 overflow-hidden">
+          <div className="max-w-3xl mx-auto h-full">
+            <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm h-full flex flex-col">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <div>
-                    <label
-                      htmlFor="lead_researcher"
-                      className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                    >
-                      Lead Researcher
-                    </label>
-                    <input
-                      type="text"
-                      name="lead_researcher"
-                      id="lead_researcher"
-                      value={formData.lead_researcher}
-                      onChange={handleChange}
-                      className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                      required
+              {pdfUrl ? (
+                <>
+                  {/* PDF PREVIEW */}
+                  <div className="flex-1 overflow-hidden p-5">
+                    <iframe
+                      src={pdfUrl}
+                      className="w-full h-full border border-[#E5E7EB] rounded-xl"
                     />
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="lead_contactno"
-                      className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
+                  {/* ACTIONS */}
+                  <div className="border-t border-[#E5E7EB] px-5 py-4 flex justify-center gap-4">
+                    <button
+                      onClick={() => setPreviewUrl(null)}
+                      className="px-6 py-2 border border-[#0A4D9C] rounded-full
+                      hover:bg-[#0A4D9C] hover:text-white transition"
                     >
-                      Lead Contact Number
-                    </label>
-                    <input
-                      type="text"
-                      name="lead_contactno"
-                      id="lead_contactno"
-                      value={formData.lead_contactno}
-                      onChange={handleChange}
-                      className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                      required
-                    />
-                  </div>
-                </div>
+                      Back to Edit
+                    </button>
 
-                {/* Research Proponents Table */}
-                <div>
-                  <label
-                    className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-4"
-                  >
-                    Research Proponents
-                  </label>
-                  <div className="overflow-x-auto rounded-2xl shadow-md">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                      <thead className="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            #
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            Name
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            Role
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {[1, 2, 3, 4, 5].map((index) => (
-                          <tr key={index}>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {index}
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              <input
-                                type="text"
-                                name={`co_researcher${index}`}
-                                value={formData[`co_researcher${index}`] || ''}
-                                onChange={handleChange}
-                                className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                              />
-                            </td>
-                            <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              Proponent
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <div>
-                  <label
-                    htmlFor="research_title"
-                    className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                  >
-                    Research Title
-                  </label>
-                  <input
-                    type="text"
-                    name="research_title"
-                    id="research_title"
-                    value={formData.research_title}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <div>
-                    <label
-                      htmlFor="datetime_defense"
-                      className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
+                    <button
+                      onClick={handleDownload}
+                      className="px-6 py-2 bg-[#0A4D9C] text-white rounded-full
+                      hover:opacity-90 transition"
                     >
-                      Defense Date & Time
-                    </label>
-                    <input
-                      type="datetime-local"
-                      name="datetime_defense"
-                      id="datetime_defense"
-                      value={formData.datetime_defense}
-                      onChange={handleChange}
-                      className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                      required
-                    />
+                      Download
+                    </button>
                   </div>
-
-                  <div>
-                    <label
-                      htmlFor="place_defense"
-                      className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                    >
-                      Defense Venue
-                    </label>
-                    <input
-                      type="text"
-                      name="place_defense"
-                      id="place_defense"
-                      value={formData.place_defense}
-                      onChange={handleChange}
-                      className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Nominated Faculty Members Table */}
-                <div>
-                  <h3
-                    className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-4"
+                </>
+              ) : (
+                <div className="flex-1 overflow-y-auto px-6 py-6">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-6 text-[14px] leading-relaxed"
                   >
-                    Nominated Faculty Members
-                  </h3>
-                  <div className="overflow-x-auto rounded-2xl shadow-md">
-                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                      <thead className="bg-gray-50 dark:bg-gray-700">
-                        <tr>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            #
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            Name
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-6 py-4 text-left text-sm font-semibold text-gray-500 dark:text-gray-300"
-                          >
-                            Role
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {[1, 2, 3, 4, 5].map((index) => {
-                          type NameField =
-                            | 'adviser'
-                            | 'panel_chair'
-                            | 'panel1'
-                            | 'panel2'
-                            | 'panel3';
-                          let nameField: NameField;
-                          if (index === 1) {
-                            nameField = 'adviser';
-                          } else if (index === 2) {
-                            nameField = 'panel_chair';
-                          } else {
-                            nameField = `panel${index - 2}` as
-                              | 'panel1'
-                              | 'panel2'
-                              | 'panel3';
-                          }
 
-                          const facultyOptions = [
-                            'Quinto A. Tan Jr., MIT',
-                            'Jay Noel Rojo',
-                            'Jerwin S. Borres',
-                            'Christopher Daniot II, MDS',
-                          ].sort(); // Sort alphabetically
+                    {/* TITLE */}
+                    <h1 className="text-lg font-bold text-center uppercase tracking-wide">
+                      Application for Concept Defense
+                    </h1>
 
-                          return (
-                            <tr key={index}>
-                              <td className="px-6 py-5 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                                {index}
-                              </td>
-                              <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                <select
-                                  name={nameField}
-                                  id={nameField}
-                                  value={formData[nameField] || ''}
-                                  onChange={handleChange}
-                                  className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                                >
-                                  <option value="">Select Faculty Member</option>
-                                  {facultyOptions.map((faculty) => (
-                                    <option key={faculty} value={faculty}>
-                                      {faculty}
-                                    </option>
-                                  ))}
-                                </select>
-                              </td>
-                              <td className="px-6 py-5 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                {index === 1
-                                  ? 'Adviser'
-                                  : index === 2
-                                  ? 'Panel Chair'
-                                  : 'Member'}
-                              </td>
+                    {/* APPLICATION INFO */}
+                    <section className="space-y-4">
+                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
+                        Application Information
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 font-medium">
+                          Department
+                        </label>
+                        <select
+                          name="department"
+                          value={formData.department}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white border border-[#E5E7EB] rounded-md px-3 py-2
+                          focus:ring-2 focus:ring-[#FBBF24]"
+                        >
+                          <option value="">Select Department</option>
+                          <option value="Information Technology">Information Technology</option>
+                          <option value="Technology Communication Management">Technology Communication Management</option>
+                          <option value="Data Science">Data Science</option>
+                          <option value="Computer Science">Computer Science</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 font-medium">
+                          Research Title
+                        </label>
+                        <input
+                          name="research_title"
+                          value={formData.research_title}
+                          onChange={handleChange}
+                          required
+                          className="w-full bg-white border border-[#E5E7EB] rounded-md px-3 py-2
+                          focus:ring-2 focus:ring-[#FBBF24]"
+                        />
+                      </div>
+                    </section>
+
+                    {/* LEAD */}
+                    <section className="space-y-4">
+                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
+                        Lead Researcher
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 font-medium">
+                          Name
+                        </label>
+                        <input
+                          name="lead_researcher"
+                          value={formData.lead_researcher}
+                          onChange={handleChange}
+                          required
+                          className="w-full border border-[#E5E7EB] rounded-md px-3 py-2"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1 font-medium">
+                          Contact Number
+                        </label>
+                        <input
+                          name="lead_contactno"
+                          value={formData.lead_contactno}
+                          onChange={handleChange}
+                          required
+                          className="w-full border border-[#E5E7EB] rounded-md px-3 py-2"
+                        />
+                      </div>
+                    </section>
+
+                    {/* PROPONENTS */}
+                    <section>
+                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm mb-3">
+                        Research Proponents
+                      </div>
+
+                      <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#F9FAFB] text-[#666]">
+                            <tr>
+                              <th className="px-3 py-2">#</th>
+                              <th className="px-3 py-2 text-left">Name</th>
+                              <th className="px-3 py-2 text-left">Role</th>
                             </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+                          </thead>
+                          <tbody>
+                            {[1, 2, 3, 4, 5].map((i) => (
+                              <tr key={i} className="border-t">
+                                <td className="px-3 py-2">{i}</td>
+                                <td className="px-3 py-2">
+                                  <input
+                                    name={`co_researcher${i}`}
+                                    value={formData[`co_researcher${i}`] || ''}
+                                    onChange={handleChange}
+                                    className="w-full border border-[#E5E7EB] rounded px-2 py-1"
+                                  />
+                                </td>
+                                <td className="px-3 py-2 text-[#666]">
+                                  Proponent
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
 
-                <div>
-                  <label
-                    htmlFor="documenter"
-                    className="block text-base font-semibold text-gray-700 dark:text-gray-300 mb-3"
-                  >
-                    Documenter
-                  </label>
-                  <input
-                    type="text"
-                    name="documenter"
-                    id="documenter"
-                    value={formData.documenter}
-                    onChange={handleChange}
-                    className="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition-shadow duration-200"
-                    required
-                  />
-                </div>
+                    {/* FACULTY */}
+                    <section>
+                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm mb-3">
+                        Nominated Faculty Members
+                      </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3 px-4 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition-colors duration-200 text-base font-semibold shadow-md"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <Spinner sm />
-                    </div>
-                  ) : (
-                    'Generate Panel'
-                  )}
-                </button>
-              </form>
-            )}
+                      <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead className="bg-[#F9FAFB] text-[#666]">
+                            <tr>
+                              <th className="px-3 py-2">#</th>
+                              <th className="px-3 py-2 text-left">Name</th>
+                              <th className="px-3 py-2 text-left">Role</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {[1, 2, 3, 4, 5].map((i) => {
+                              const nameField =
+                                i === 1
+                                  ? 'adviser'
+                                  : i === 2
+                                  ? 'panel_chair'
+                                  : `panel${i - 2}`;
+
+                              return (
+                                <tr key={i} className="border-t">
+                                  <td className="px-3 py-2">{i}</td>
+                                  <td className="px-3 py-2">
+                                    <select
+                                      name={nameField}
+                                      value={(formData as any)[nameField] ?? ''}
+                                      onChange={handleChange}
+                                      className="w-full border border-[#E5E7EB] rounded px-2 py-1"
+                                    >
+                                      <option value="">Select Faculty</option>
+                                      {facultyList.map((f) => (
+                                        <option
+                                          key={f.facultyID}
+                                          value={f.facultyID}
+                                        >
+                                          {f.name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </td>
+                                  <td className="px-3 py-2 text-[#666]">
+                                    {i === 1
+                                      ? 'Adviser'
+                                      : i === 2
+                                      ? 'Panel Chair'
+                                      : 'Member'}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+
+                    {/* DOCUMENTER */}
+                    <section>
+                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
+                        Documenter
+                      </div>
+
+                      <input
+                        name="documenter"
+                        value={formData.documenter}
+                        onChange={handleChange}
+                        required
+                        className="w-full mt-2 border border-[#E5E7EB] rounded-md px-3 py-2"
+                      />
+                    </section>
+
+                    {/* SUBMIT */}
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full py-3 bg-[#0A4D9C] text-white rounded-xl
+                      hover:opacity-90 focus:ring-4 focus:ring-[#FBBF24]
+                      transition font-semibold"
+                    >
+                      Submit Application
+                    </button>
+                  </form>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        </main>
+
         <Footer />
+
+        {/* 🔄 FULLSCREEN LOADING OVERLAY */}
+        {isLoading && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+            <Spinner />
+          </div>
+        )}
       </div>
     </Layout>
   );

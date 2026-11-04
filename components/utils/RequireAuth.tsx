@@ -1,27 +1,52 @@
+
 'use client';
 
-import { redirect } from 'next/navigation';
-import { useAppSelector } from '@/redux/hooks';
-import { Spinner } from '@/components/common';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
-interface Props {
-	children: React.ReactNode;
+import { useAppSelector } from '@/redux/hooks';
+import Spinner from '@/components/common/Spinner';
+
+interface RequireAuthProps {
+  children: ReactNode;
 }
 
-export default function RequireAuth({ children }: Props) {
-	const { isLoading, isAuthenticated } = useAppSelector(state => state.auth);
+export default function RequireAuth({
+  children,
+}: RequireAuthProps) {
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
-	if (isLoading) {
-		return (
-			<div className='flex justify-center my-8'>
-				<Spinner lg />
-			</div>
-		);
-	}
+  // This assumes authSlice has isAuthenticated.
+  const isAuthenticated = useAppSelector(
+    (state) => state.auth.isAuthenticated
+  );
 
-	if (!isAuthenticated) {
-		redirect('/auth/login');
-	}
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-	return <>{children}</>;
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (isAuthenticated === false) {
+      router.replace('/auth/login');
+    }
+  }, [mounted, isAuthenticated, router]);
+
+  // Render exactly the same HTML on the server
+  // and during the first client render.
+  if (!mounted || isAuthenticated !== true) {
+    return (
+      <div
+        role="status"
+        aria-label="Checking authentication"
+        className="flex min-h-screen items-center justify-center bg-[#F6F8FC]"
+      >
+        <Spinner />
+      </div>
+    );
+  }
+
+  return <>{children}</>;
 }

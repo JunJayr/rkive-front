@@ -1,9 +1,20 @@
-import { RequireAuth } from '@/components/utils';
 
-interface Props {
-	children: React.ReactNode;
+'use client';
+
+import type { ReactNode } from 'react';
+
+import RequireAuth from '@/components/utils/RequireAuth';
+
+interface LayoutProps {
+  children: ReactNode;
 }
 
-export default function Layout({ children }: Props) {
-	return <RequireAuth>{children}</RequireAuth>;
+export default function Layout({
+  children,
+}: LayoutProps) {
+  return (
+    <RequireAuth>
+      {children}
+    </RequireAuth>
+  );
 }
