@@ -175,13 +175,6 @@ export default function AdminDashboard() {
       detail: 'Registered users',
     },
     {
-      key: 'documents',
-      label: 'Generated Documents',
-      value: documentCount?.generated_documents_count ?? 0,
-      icon: FiFileText,
-      detail: 'Created documents',
-    },
-    {
       key: 'manuscripts',
       label: 'Manuscripts',
       value: documentCount?.manuscripts_count ?? 0,

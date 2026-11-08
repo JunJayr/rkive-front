@@ -32,11 +32,6 @@ const menuItems = [
     icon: FiHome,
   },
   {
-    name: 'Generated Documents',
-    href: '/admin/documents',
-    icon: FiFileText,
-  },
-  {
     name: 'Manuscript',
     href: '/admin/manuscript',
     icon: FiBookOpen,
