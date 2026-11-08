@@ -17,51 +17,51 @@ export default function useLogin() {
   });
 
   const { email, password } = formData;
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const onChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => { 
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrors({});
 
     try {
-      const loginResponse = await login({ email, password }).unwrap();
+      await login({ email, password }).unwrap();
       const roleResponse = await getUserRole({}).unwrap();
+
+      const isAdmin = Boolean(roleResponse.is_admin ?? (roleResponse.is_staff || roleResponse.is_superuser));
+      const isPanel = Boolean(roleResponse.is_panel ?? roleResponse.is_faculty);
+      const accountType = roleResponse.account_type ?? (isAdmin ? 'admin' : isPanel ? 'panel' : 'student');
 
       dispatch(setAuthLogin({
         isActive: roleResponse.is_active,
         isStaff: roleResponse.is_staff,
         isSuperuser: roleResponse.is_superuser,
-        isDean: roleResponse.is_dean,
-        isHeadDept: roleResponse.is_headdept,
+        isDean: false,
+        isHeadDept: false,
         isFaculty: roleResponse.is_faculty,
-        isStudent: roleResponse.is_student,
+        isStudent: accountType === 'student',
       }));
-      
+
       toast.success('Logged in');
 
-      if (roleResponse.is_superuser && roleResponse.is_staff && roleResponse.is_active) { 
-        router.push('/admin');
-      } else if (roleResponse.is_dean && roleResponse.is_active) {
-        router.push('/dean');
-      } else if (roleResponse.is_headdept && roleResponse.is_active) {
-        router.push('/department');
-      } else if (roleResponse.is_faculty && roleResponse.is_active) {
-        router.push('/faculty');
-      } else if (roleResponse.is_student && roleResponse.is_active) {
-        router.push('/user');
-      } else {
+      if (!roleResponse.is_active) {
         toast.error('Your account is not active.');
+        return;
       }
 
+      if (isAdmin) {
+        router.push('/admin');
+      } else if (isPanel) {
+        router.push('/panel');
+      } else {
+        router.push('/user');
+      }
     } catch (error: any) {
       if (error.data) {
-        // Handle validation errors
         Object.keys(error.data).forEach((field) => {
           const messages = error.data[field];
           if (Array.isArray(messages)) {
@@ -75,7 +75,6 @@ export default function useLogin() {
       }
     }
   };
-
 
   return {
     email,

@@ -3,8 +3,12 @@ import { apiSlice } from '../services/apiSlice';
 interface Faculty {
 	facultyID: number;
 	name: string;
-
-};
+	title?: string | null;
+	department?: string | null;
+	user?: number | string | null;
+	user_email?: string | null;
+	user_name?: string | null;
+}
 
 interface User {
   userID: string;
@@ -18,6 +22,9 @@ interface User {
   is_headdept: boolean;
   is_faculty: boolean;
   is_student: boolean;
+  account_type?: 'student' | 'panel' | 'admin';
+  is_admin?: boolean;
+  is_panel?: boolean;
 }
 
 interface ApplicationFormData {
@@ -59,6 +66,28 @@ interface PanelFormData {
   [key: `panel${number}`]: number;
 }
 
+interface RepositoryManuscript {
+  manuscriptID: number;
+  title: string;
+  description: string;
+  authors: string[];
+  adviser?: string | null;
+  panel_members: string[];
+  department?: string | null;
+  program?: string | null;
+  year_completed?: number | null;
+  keywords: string[];
+  category?: string | null;
+  status: 'pending' | 'under_review' | 'revision_required' | 'approved' | 'rejected';
+  visibility: 'public' | 'institution' | 'restricted';
+  allow_download: boolean;
+  approved_at?: string | null;
+  published_at?: string | null;
+  view_count?: number;
+  download_count?: number;
+  is_bookmarked?: boolean;
+}
+
 interface DocumentCount {
   generated_documents_count: number;
   manuscripts_count: number;
@@ -93,7 +122,21 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  body: { email, password },
 		}),
 	  }),
-	  getUserRole: builder.mutation<{ is_superuser: boolean; is_staff: boolean; is_active: boolean; is_dean: boolean; is_headdept: boolean; is_faculty: boolean; is_student: boolean }, {}>({
+	  getUserRole: builder.mutation<
+		{
+		  account_type?: 'student' | 'panel' | 'admin';
+		  is_admin?: boolean;
+		  is_panel?: boolean;
+		  is_superuser: boolean;
+		  is_staff: boolean;
+		  is_active: boolean;
+		  is_dean: boolean;
+		  is_headdept: boolean;
+		  is_faculty: boolean;
+		  is_student: boolean;
+		},
+		{}
+	  >({
 		query: () => ({
 		  url: '/user-role/',
 		  method: 'GET',
@@ -144,6 +187,18 @@ const authApiSlice = apiSlice.injectEndpoints({
 	  getFaculty: builder.query<Faculty[], void>({
 		query: () => '/faculty/',
 	  }),
+	  getAdminFaculty: builder.query<Faculty[], void>({
+		query: () => '/faculty/manage/',
+	  }),
+	  createFaculty: builder.mutation<Faculty, Partial<Faculty>>({
+		query: (body) => ({ url: '/faculty/manage/', method: 'POST', body }),
+	  }),
+	  updateFaculty: builder.mutation<Faculty, { facultyID: number; data: Partial<Faculty> }>({
+		query: ({ facultyID, data }) => ({ url: `/faculty/manage/${facultyID}/`, method: 'PATCH', body: data }),
+	  }),
+	  deleteFaculty: builder.mutation<{ message: string }, number>({
+		query: (facultyID) => ({ url: `/faculty/manage/${facultyID}/`, method: 'DELETE' }),
+	  }),
 	  
 	  // Forms Upload: Application and Panel Form
 	  applicationGenerate: builder.mutation<string, ApplicationFormData>({
@@ -187,7 +242,24 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  responseHandler: async (response) => await response.blob(), // ensure we parse it as Blob
 		}),
 	  }),
-  
+
+	  adminUpdateApplicationTemplate: builder.mutation<Blob, { rev?: string; date?: string }>({
+		query: (body) => ({
+		  url: '/defense-application-admin/',
+		  method: 'POST',
+		  body,
+		  responseHandler: async (response) => await response.blob(),
+		}),
+	  }),
+	  adminUpdatePanelTemplate: builder.mutation<Blob, { rev?: string; date?: string }>({
+		query: (body) => ({
+		  url: '/defense-panel-admin/',
+		  method: 'POST',
+		  body,
+		  responseHandler: async (response) => await response.blob(),
+		}),
+	  }),
+
 	  // Manuscript Submission API
 	  manuscriptSubmission: builder.mutation({
 		query: (formData: FormData) => ({
@@ -197,16 +269,89 @@ const authApiSlice = apiSlice.injectEndpoints({
 		}),
 	  }),
 	  // Retrieve Manuscripts API
-	  searchManuscripts: builder.query<any[], string>({
-		query: (searchQuery) => `/manuscripts/?q=${encodeURIComponent(searchQuery)}`,
-		transformResponse: (response: any[]) => response,
+	  searchManuscripts: builder.query<
+		RepositoryManuscript[] | { results: RepositoryManuscript[]; count: number; page: number; page_size: number; total_pages: number; has_next: boolean; has_previous: boolean },
+		string | Record<string, string | number | undefined | null>
+	  >({
+		// Approved, visibility-filtered records only. Supports q, department, program, year, keyword, author, sort, page/page_size.
+		query: (arg) => {
+		  if (typeof arg === 'string') {
+			return `/repository/manuscripts/${arg ? `?q=${encodeURIComponent(arg)}` : ''}`;
+		  }
+		  const params = new URLSearchParams();
+		  Object.entries(arg || {}).forEach(([k, v]) => {
+			if (v !== undefined && v !== null && String(v).trim() !== '') params.set(k, String(v));
+		  });
+		  const qs = params.toString();
+		  return `/repository/manuscripts/${qs ? `?${qs}` : ''}`;
+		},
+	  }),
+
+	  getRepositoryManuscript: builder.query<RepositoryManuscript, number | string>({
+		query: (manuscriptID) => `/repository/manuscripts/${manuscriptID}/`,
+	  }),
+
+	  getRelatedManuscripts: builder.query<RepositoryManuscript[], number | string>({
+		query: (manuscriptID) => `/repository/manuscripts/${manuscriptID}/related/`,
+	  }),
+
+	  getBookmarks: builder.query<RepositoryManuscript[], void>({
+		query: () => '/repository/bookmarks/',
+	  }),
+	  addBookmark: builder.mutation<{ bookmarked: boolean }, number | string>({
+		query: (manuscriptID) => ({
+		  url: '/repository/bookmarks/',
+		  method: 'POST',
+		  body: { manuscriptID },
+		}),
+	  }),
+	  removeBookmark: builder.mutation<{ bookmarked: boolean }, number | string>({
+		query: (manuscriptID) => ({
+		  url: `/repository/bookmarks/${manuscriptID}/`,
+		  method: 'DELETE',
+		}),
+	  }),
+
+	  getFacultyQueue: builder.query<any, void>({
+		query: () => '/panel/queue/',
+	  }),
+	  reviewFacultyApplication: builder.mutation<
+		{ message: string; status: string },
+		{ type: string; id: number | string; status: 'approved' | 'rejected' | 'revision_required'; comments?: string }
+	  >({
+		query: (body) => ({
+		  url: '/panel/review/',
+		  method: 'POST',
+		  body,
+		}),
+	  }),
+
+	  // Manuscript review decision (approve / reject / revision required)
+	  getAdminManuscripts: builder.query<any[], { status?: string; q?: string } | void>({
+		query: (arg) => {
+		  const params = new URLSearchParams();
+		  if (arg && arg.status) params.set('status', arg.status);
+		  if (arg && arg.q) params.set('q', arg.q);
+		  const qs = params.toString();
+		  return `/manuscripts/manage/${qs ? `?${qs}` : ''}`;
+		},
+	  }),
+	  reviewManuscript: builder.mutation<
+		{ message: string; manuscriptID: number; status: string },
+		{ manuscriptID: number | string; status: 'approved' | 'rejected' | 'revision_required'; comments?: string }
+	  >({
+		query: ({ manuscriptID, status, comments }) => ({
+		  url: `/manuscripts/${manuscriptID}/review/`,
+		  method: 'POST',
+		  body: { status, comments },
+		}),
 	  }),
   
 	  // Retrieve Stats for Admin
 	  getDocumentCount: builder.query<DocumentCount, void>({
 		query: () => '/document-count/',
 	  }),
-	  listFiles: builder.query<any[], void>({
+	  listFiles: builder.query<{ generated_documents_files: string[]; manuscripts_files: string[] }, void>({
 		query: () => '/list-files/',
 	  }),   
   
@@ -251,13 +396,28 @@ const authApiSlice = apiSlice.injectEndpoints({
 	useResetPasswordConfirmMutation,
 	
 	useGetFacultyQuery,
+	useGetAdminFacultyQuery,
+	useCreateFacultyMutation,
+	useUpdateFacultyMutation,
+	useDeleteFacultyMutation,
 	useApplicationGenerateMutation,
 	useProposalGenerateMutation,
 	useFinalGenerateMutation,
 	usePanelGenerateMutation,
-  
+	useAdminUpdateApplicationTemplateMutation,
+	useAdminUpdatePanelTemplateMutation,
+
 	useManuscriptSubmissionMutation,
 	useSearchManuscriptsQuery,
+	useGetRepositoryManuscriptQuery,
+	useGetRelatedManuscriptsQuery,
+	useGetBookmarksQuery,
+	useAddBookmarkMutation,
+	useRemoveBookmarkMutation,
+	useGetFacultyQueueQuery,
+	useReviewFacultyApplicationMutation,
+	useGetAdminManuscriptsQuery,
+	useReviewManuscriptMutation,
   
 	useGetDocumentCountQuery,
 	useListFilesQuery,

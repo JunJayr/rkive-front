@@ -63,7 +63,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#F6F8FC] text-slate-800 antialiased;
   }
 }
 

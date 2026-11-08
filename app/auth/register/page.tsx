@@ -1,133 +1,85 @@
 'use client';
 
-import Link from "next/link";
-import Spinner from "@/components/common/Spinner";
-import Footer from '@/components/common/Footer'; 
-import { useRegister } from "@/hooks";
+import Link from 'next/link';
+import Spinner from '@/components/common/Spinner';
+import Footer from '@/components/common/Footer';
+import { useRegister } from '@/hooks';
 
 export default function RegisterForm() {
   const {
-      first_name, 
-      last_name, 
-      email, password, 
-      re_password,
-      isLoading,
-      onChange,
-      onSubmit,
+    first_name,
+    last_name,
+    email,
+    password,
+    re_password,
+    isLoading,
+    onChange,
+    onSubmit,
   } = useRegister();
 
+  const inputClass =
+    'block w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15';
+
   return (
-    <div
-      className="flex h-screen w-screen items-center justify-center bg-cover bg-center"
-      style={{
-        backgroundImage: "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')",
-      }}
-    >
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm bg-white bg-opacity-60 p-6 rounded-md shadow-md">
-      <img
-          alt="New Logo"
-          src="/logo.png"
-          className="mx-auto h-20 w-auto"
-        />
-        <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-indigo-950">
-          Sign up for your account
-        </h2>
+    <div className="relative flex min-h-screen flex-col">
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')" }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#103F78]/85 via-[#103F78]/65 to-slate-900/70" aria-hidden="true" />
 
-        <form onSubmit={onSubmit}>
-          <div>
-            <div className="mt-5">
-              <input
-                id="first_name"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                name="first_name"
-                type="text"
-                placeholder="First Name"
-                onChange={onChange}
-                value={first_name}
-                required
-              />
-            </div>
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+        <div className="w-full max-w-md">
+          <div className="mb-6 text-center text-white">
+            <img alt="RKIVE logo" src="/logo.png" className="mx-auto h-16 w-auto drop-shadow-sm" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-amber-300">Research Repository</p>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-tight">Create your account</h1>
           </div>
 
-          <div>
-            <div className="mt-2">
-              <input
-                id="last_name"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                name="last_name"
-                type="text"
-                placeholder="Last Name"
-                onChange={onChange}
-                value={last_name}
-                required
-              />
-            </div>
-          </div>
+          <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl shadow-slate-900/20 backdrop-blur sm:p-8">
+            <form onSubmit={onSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="first_name" className="sr-only">First name</label>
+                  <input id="first_name" name="first_name" type="text" placeholder="First name" onChange={onChange} value={first_name} required className={inputClass} />
+                </div>
+                <div>
+                  <label htmlFor="last_name" className="sr-only">Last name</label>
+                  <input id="last_name" name="last_name" type="text" placeholder="Last name" onChange={onChange} value={last_name} required className={inputClass} />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="email" className="sr-only">Email address</label>
+                <input id="email" name="email" type="email" autoComplete="email" placeholder="Email address" onChange={onChange} value={email} required className={inputClass} />
+              </div>
+              <div>
+                <label htmlFor="password" className="sr-only">Password</label>
+                <input id="password" name="password" type="password" autoComplete="new-password" placeholder="Password" onChange={onChange} value={password} required className={inputClass} />
+              </div>
+              <div>
+                <label htmlFor="re_password" className="sr-only">Confirm password</label>
+                <input id="re_password" name="re_password" type="password" autoComplete="new-password" placeholder="Confirm password" onChange={onChange} value={re_password} required className={inputClass} />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-[#103F78] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#0b2d57] disabled:opacity-60"
+              >
+                {isLoading ? <Spinner sm /> : 'Create account'}
+              </button>
+            </form>
 
-          <div>
-            <div className="mt-2">
-              <input
-                id="email"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                onChange={onChange}
-                value={email}
-                required
-              />
-            </div>
+            <p className="mt-6 text-center text-sm text-slate-600">
+              Already have an account?{' '}
+              <Link href="/auth/login" className="font-semibold text-[#103F78] hover:underline">
+                Sign in
+              </Link>
+            </p>
           </div>
-
-          <div>
-            <div className="mt-2">
-              <input
-                id="password"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                name="password"
-                type="password"
-                placeholder="Password"
-                onChange={onChange}
-                value={password}
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="mt-2">
-              <input
-                id="re_password"
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                name="re_password"
-                type="password"
-                placeholder="Confirm Password"
-                onChange={onChange}
-                value={re_password}
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="mt-5 flex w-full justify-center rounded-md bg-indigo-800 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              {isLoading ? <Spinner sm/>: 'Sign Up'}
-            </button>
-          </div>
-        </form>
-
-        <p className="mt-5 text-center text-sm/6 text-gray-900">
-          Already have an account?{' '}
-          <Link href="/auth/login" className="font-semibold text-indigo-950 hover:text-indigo-600">
-            Login
-          </Link>
-        </p>
-      </div>
-      {/* Footer */}
-      <Footer />
+        </div>
+      </main>
+      <div className="relative z-10"><Footer /></div>
     </div>
   );
 }

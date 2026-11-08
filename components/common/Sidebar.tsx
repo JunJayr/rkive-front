@@ -13,6 +13,7 @@ import {
   FaCheckCircle,
   FaSearch,
   FaRegCircle,
+  FaBookmark,
 } from 'react-icons/fa';
 import { HiMenu, HiX } from 'react-icons/hi';
 import Link from 'next/link';
@@ -65,6 +66,11 @@ const menuItems = [
     icon: FaSearch,
   },
   {
+    name: 'Saved Manuscripts',
+    href: '/user/bookmarks',
+    icon: FaBookmark,
+  },
+  {
     name: 'Panel Nomination',
     href: '/user/panel-nomination',
     icon: FaUsers,
@@ -113,24 +119,11 @@ export default function Sidebar() {
   }, [isDefenseRoute]);
 
   const getStepStatus = (key: string) => {
-    if (key === 'concept') {
-      return {
-        approved: defenseProgress.conceptApproved,
-        locked: false,
-      };
-    }
-
-    if (key === 'proposal') {
-      return {
-        approved: defenseProgress.proposalApproved,
-        locked: !defenseProgress.conceptApproved,
-      };
-    }
-
-    return {
-      approved: defenseProgress.finalApproved,
-      locked: !defenseProgress.proposalApproved,
-    };
+    // Workflow state is not yet fully wired to review records in the sidebar.
+    // Keep steps accessible so users can apply; panels review via the panel portal.
+    if (key === 'concept') return { approved: defenseProgress.conceptApproved, locked: false };
+    if (key === 'proposal') return { approved: defenseProgress.proposalApproved, locked: false };
+    return { approved: defenseProgress.finalApproved, locked: false };
   };
 
   const handleLogout = async () => {

@@ -1,110 +1,135 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, FormEvent } from 'react'; // Updated import for FormEvent
+import { useState, FormEvent } from 'react';
+import { FiLock, FiMail, FiArrowRight } from 'react-icons/fi';
 import Spinner from '@/components/common/Spinner';
 import Footer from '@/components/common/Footer';
 import { useLogin } from '@/hooks';
 
 export default function LoginForm() {
-  const { email, password, isLoading, errors, onChange, onSubmit } = useLogin();
-
-  // Add local loading state to control the full-screen spinner
+  const { email, password, errors, onChange, onSubmit } = useLogin();
   const [showFullScreenSpinner, setShowFullScreenSpinner] = useState(false);
 
-  // Handle form submission with full-screen loading, typed correctly
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setShowFullScreenSpinner(true); // Show full-screen spinner
+    setShowFullScreenSpinner(true);
     try {
       await onSubmit(e);
     } catch (error) {
       console.error('Error during login:', error);
     } finally {
-      setShowFullScreenSpinner(false); // Hide full-screen spinner
+      setShowFullScreenSpinner(false);
     }
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="relative flex min-h-screen flex-col">
       <div
-        className="flex flex-grow items-center justify-center bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center"
         style={{
           backgroundImage:
             "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')",
         }}
-      >
-        <div className="sm:w-full sm:max-w-sm bg-white bg-opacity-60 p-6 rounded-md shadow-md">
-          <img alt="New Logo" src="/logo.png" className="mx-auto h-20 w-auto" />
-          <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-indigo-900">
-            Login to your account
-          </h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mt-3">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={onChange}
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                required
-              />
-              {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
-            </div>
-            
-            <div className="mt-3">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={onChange}
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                required
-              />
-              {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-            </div>
-            
-            <button
-              type="submit"
-              className="mt-5 w-full rounded-md bg-indigo-800 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-600"
-              disabled={showFullScreenSpinner} // Disable button while loading
-            >
-              Login
-            </button>
-          </form>
+        aria-hidden="true"
+      />
+      <div
+        className="absolute inset-0 bg-gradient-to-br from-[#103F78]/85 via-[#103F78]/65 to-slate-900/70"
+        aria-hidden="true"
+      />
 
-          <div className="mt-5 text-right text-sm">
-            <a
-              href="/password-reset"
-              className="font-semibold text-indigo-800 hover:text-indigo-600"
-            >
-              Forgot password?
-            </a>
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+        <div className="w-full max-w-md">
+          <div className="mb-8 text-center text-white">
+            <img alt="RKIVE logo" src="/logo.png" className="mx-auto h-16 w-auto drop-shadow-sm sm:h-20" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-amber-300">Research Repository</p>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight">Welcome back</h1>
+            <p className="mt-2 text-sm text-blue-100/90">Sign in to manage your research, submissions, and approvals.</p>
           </div>
-          <p className="mt-5 text-center text-sm text-gray-900">
-            Don't have an account?{' '}
-            <Link
-              href="/auth/register"
-              className="font-semibold text-indigo-800 hover:text-indigo-600"
-            >
-              Sign Up
-            </Link>
-          </p>
+
+          <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl shadow-slate-900/20 backdrop-blur sm:p-8">
+            <h2 className="text-center text-lg font-bold text-[#103F78]">Sign in to your account</h2>
+
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <div>
+                <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-slate-700">
+                  Email address
+                </label>
+                <div className="relative">
+                  <FiMail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="name@university.edu"
+                    value={email}
+                    onChange={onChange}
+                    className="block w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15"
+                    required
+                  />
+                </div>
+                {errors.email && <p className="mt-1.5 text-sm text-red-600">{errors.email}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="password" className="mb-1.5 block text-sm font-semibold text-slate-700">
+                  Password
+                </label>
+                <div className="relative">
+                  <FiLock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={onChange}
+                    className="block w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15"
+                    required
+                  />
+                </div>
+                {errors.password && <p className="mt-1.5 text-sm text-red-600">{errors.password}</p>}
+              </div>
+
+              <div className="flex items-center justify-end">
+                <Link href="/password-reset" className="text-sm font-semibold text-[#103F78] hover:text-[#0b2d57] hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+
+              <button
+                type="submit"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#103F78] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#0b2d57] focus:outline-none focus:ring-2 focus:ring-[#103F78]/30 disabled:opacity-60"
+                disabled={showFullScreenSpinner}
+              >
+                Sign in
+                <FiArrowRight size={16} />
+              </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-slate-600">
+              Don&apos;t have an account?{' '}
+              <Link href="/auth/register" className="font-semibold text-[#103F78] hover:underline">
+                Create one
+              </Link>
+            </p>
+          </div>
         </div>
+      </main>
 
-        {showFullScreenSpinner && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <Spinner/>
-          </div>
-        )}
+      <div className="relative z-10">
+        <Footer />
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {showFullScreenSpinner && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[2px]">
+          <div className="rounded-2xl bg-white px-6 py-5 shadow-xl">
+            <Spinner />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

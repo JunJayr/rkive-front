@@ -37,6 +37,11 @@ const menuItems = [
     icon: FiBookOpen,
   },
   {
+    name: 'Adviser/Panel Links',
+    href: '/admin/faculty',
+    icon: FiUsers,
+  },
+  {
     name: 'ISO Application Form',
     href: '/admin/forms/application',
     icon: FiClipboard,
@@ -44,7 +49,7 @@ const menuItems = [
   {
     name: 'ISO Panel Nomination',
     href: '/admin/forms/nomination',
-    icon: FiUsers,
+    icon: FiFileText,
   },
 ];
 

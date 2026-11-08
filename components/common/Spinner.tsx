@@ -1,23 +1,30 @@
 import cn from 'classnames';
-import { ImSpinner3 } from 'react-icons/im'
+import { ImSpinner3 } from 'react-icons/im';
 
-interface Props{
-    sm?: boolean;
-    md?: boolean;
-    lg?: boolean;
+interface Props {
+  sm?: boolean;
+  md?: boolean;
+  lg?: boolean;
+  className?: string;
+  label?: string;
 }
 
-export default function Spinner({ sm, md, lg }: Props) {
-    const className = cn('animate-spin text-white-300 fill-white-300 mr-2',{
-        'w-4 h-4': sm,
-        'w-6 h-6': md,
-        'w-8 h-8': lg,
-    });
+export default function Spinner({ sm, md, lg, className, label = 'Loading' }: Props) {
+  const iconClassName = cn(
+    'animate-spin',
+    className?.match(/\btext-/) ? null : 'text-[#103F78]',
+    {
+      'h-4 w-4': sm,
+      'h-6 w-6': md || (!sm && !lg),
+      'h-8 w-8': lg,
+    },
+    className,
+  );
 
-    return (
-        <div role='status'>
-            <ImSpinner3 className={className} />
-            <span className='sr-only'>Loading...</span>
-        </div>
-    )
+  return (
+    <div role="status" aria-live="polite" className="inline-flex items-center justify-center">
+      <ImSpinner3 className={iconClassName} aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+    </div>
+  );
 }

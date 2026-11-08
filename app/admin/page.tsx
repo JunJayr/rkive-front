@@ -32,17 +32,11 @@ const inputClass =
   'transition placeholder:text-slate-400 ' +
   'focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
 
-const roleFields = [
-  { name: 'is_active', label: 'Active Account' },
-  { name: 'is_staff', label: 'Staff' },
-  { name: 'is_superuser', label: 'Superuser' },
-  { name: 'is_dean', label: 'Dean' },
-  { name: 'is_headdept', label: 'Department Head' },
-  { name: 'is_faculty', label: 'Faculty' },
-  { name: 'is_student', label: 'Student' },
+const accountTypes = [
+  { value: 'student', label: 'Student/User', description: 'Access to the student workspace, submissions, and repository features.' },
+  { value: 'admin', label: 'Admin', description: 'Administrative access (dashboard, user management, and manuscript/review workflows).' },
+  { value: 'panel', label: 'Adviser/Panel', description: 'Reviewer access. Link this account to an adviser/panel record to receive assigned nominations, defenses, and manuscripts.' },
 ] as const;
-
-type RoleKey = (typeof roleFields)[number]['name'];
 
 export default function AdminDashboard() {
   const {
@@ -56,6 +50,8 @@ export default function AdminDashboard() {
     handleSave,
     handleDelete,
     handleAddUser,
+    getAccountType,
+    setAccountType,
     setShowModal,
   } = useAdminDashboard();
 
@@ -187,16 +183,9 @@ export default function AdminDashboard() {
   const getRoleLabels = (
     user: (typeof filteredUsers)[number]
   ): string[] => {
-    const roles: string[] = [];
-
-    if (user.is_superuser) roles.push('Superuser');
-    if (user.is_staff) roles.push('Staff');
-    if (user.is_dean) roles.push('Dean');
-    if (user.is_headdept) roles.push('Department Head');
-    if (user.is_faculty) roles.push('Faculty');
-    if (user.is_student) roles.push('Student');
-
-    return roles.length > 0 ? roles : ['No role'];
+    if (user.is_staff || user.is_superuser) return ['Admin'];
+    if (user.is_faculty) return ['Adviser/Panel'];
+    return ['Student/User'];
   };
 
 
@@ -230,7 +219,7 @@ export default function AdminDashboard() {
             </header>
 
             {/* OVERVIEW CARDS */}
-            <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
               {overviewConfig.map((item) => {
                 const Icon = item.icon;
 
@@ -731,34 +720,53 @@ export default function AdminDashboard() {
                 </div>
               </section>
 
-              {/* PERMISSIONS */}
+              {/* ACCOUNT TYPE */}
               <section>
                 <h3 className="mb-5 flex items-center gap-2 text-sm font-bold text-[#103F78]">
                   <FiShield size={18} />
-                  Account Permissions
+                  Account Type
                 </h3>
 
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {roleFields.map((field) => (
-                    <label
-                      key={field.name}
-                      className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-blue-200"
-                    >
-                      <span className="text-sm font-semibold text-slate-700">
-                        {field.label}
-                      </span>
+                <div className="space-y-3">
+                  {accountTypes.map((opt) => {
+                    const current = getAccountType(selectedUser);
+                    const active = current === opt.value;
+                    return (
+                      <label
+                        key={opt.value}
+                        className={`flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-4 transition ${
+                          active ? 'border-[#103F78] bg-blue-50/60 ring-1 ring-[#103F78]/15' : 'border-slate-200 bg-slate-50 hover:border-blue-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="account_type"
+                          value={opt.value}
+                          checked={active}
+                          onChange={() => setAccountType(opt.value)}
+                          className="mt-1 h-4 w-4 accent-[#103F78]"
+                        />
+                        <span>
+                          <span className="block text-sm font-bold text-slate-800">{opt.label}</span>
+                          <span className="mt-0.5 block text-xs leading-5 text-slate-500">{opt.description}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
 
-                      <input
-                        type="checkbox"
-                        name={field.name}
-                        checked={Boolean(
-                          selectedUser[field.name as RoleKey]
-                        )}
-                        onChange={handleInputChange}
-                        className="h-5 w-5 rounded border-slate-300 accent-[#103F78]"
-                      />
-                    </label>
-                  ))}
+                  <label className="flex cursor-pointer items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4 transition hover:border-blue-200">
+                    <span>
+                      <span className="block text-sm font-semibold text-slate-700">Active account</span>
+                      <span className="block text-xs text-slate-500">Allow this user to sign in.</span>
+                    </span>
+                    <input
+                      type="checkbox"
+                      name="is_active"
+                      checked={Boolean(selectedUser.is_active)}
+                      onChange={handleInputChange}
+                      className="h-5 w-5 rounded border-slate-300 accent-[#103F78]"
+                    />
+                  </label>
                 </div>
               </section>
 

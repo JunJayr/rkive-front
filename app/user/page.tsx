@@ -38,13 +38,16 @@ import {
 } from '@/redux/features/authApiSlice';
 
 type Manuscript = {
-  id: number | string;
+  id?: number | string;
+  manuscriptID?: number | string;
   title: string;
   description?: string | null;
-  pdf_url?: string | null;
+  authors?: string[] | null;
   author?: string | null;
   year?: string | number | null;
+  year_completed?: number | null;
   type?: string | null;
+  department?: string | null;
   created_at?: string | null;
 };
 
@@ -76,9 +79,7 @@ function SearchContent() {
     isFetching,
     isError,
     refetch,
-  } = useSearchManuscriptsQuery(query, {
-    skip: !query,
-  });
+  } = useSearchManuscriptsQuery(query);
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -142,15 +143,8 @@ function SearchContent() {
     page * PAGE_SIZE
   );
 
-  const openManuscript = (url?: string | null) => {
-    if (!url) return;
-
-    window.open(
-      url,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  };
+  // Task 1: repository APIs no longer expose raw PDF URLs.
+  // Detail/preview/download arrive in later tasks.
 
   const isBusy = isLoading || isFetching;
 
@@ -390,9 +384,14 @@ function SearchContent() {
                 {!isBusy && !isError &&
                   paginatedResults.length > 0 && (
                     <div className="space-y-4">
-                      {paginatedResults.map((item) => (
+                      {paginatedResults.map((item, idx) => {
+                        const year = item.year_completed ?? item.year;
+                        const authorText = (item.authors ?? []).length
+                          ? (item.authors ?? []).join(', ')
+                          : item.author;
+                        return (
                         <article
-                          key={item.id}
+                          key={item.manuscriptID ?? item.id ?? idx}
                           className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:border-blue-200 hover:shadow-lg sm:p-7"
                         >
                           <div className="flex items-start gap-4">
@@ -406,13 +405,17 @@ function SearchContent() {
 
                               {/* BADGES */}
                               <div className="mb-3 flex flex-wrap items-center gap-2">
-                                <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#103F78]">
-                                  {item.type || 'Manuscript'}
+                                <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-700">
+                                  Approved
                                 </span>
-
-                                {item.year && (
+                                {item.department && (
+                                  <span className="rounded-full bg-blue-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-[#103F78]">
+                                    {item.department}
+                                  </span>
+                                )}
+                                {year && (
                                   <span className="text-xs text-slate-400">
-                                    {item.year}
+                                    {year}
                                   </span>
                                 )}
                               </div>
@@ -421,9 +424,9 @@ function SearchContent() {
                                 {item.title}
                               </h3>
 
-                              {item.author && (
+                              {authorText && (
                                 <p className="mt-2 text-xs font-medium text-slate-500">
-                                  By {item.author}
+                                  By {authorText}
                                 </p>
                               )}
 
@@ -439,26 +442,14 @@ function SearchContent() {
                                   RKIVE Repository
                                 </div>
 
-                                {item.pdf_url ? (
-                                  <button
-                                    onClick={() =>
-                                      openManuscript(item.pdf_url)
-                                    }
-                                    className="inline-flex items-center gap-2 text-sm font-bold text-[#103F78] hover:text-blue-600"
-                                  >
-                                    View Manuscript
-                                    <FiArrowUpRight size={17} />
-                                  </button>
-                                ) : (
-                                  <span className="text-xs text-slate-400">
-                                    File unavailable
-                                  </span>
-                                )}
+                                <span className="text-xs text-slate-400">
+                                  Details &amp; preview coming in the next update
+                                </span>
                               </div>
                             </div>
                           </div>
                         </article>
-                      ))}
+                      );})}
                     </div>
                   )}
 

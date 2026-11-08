@@ -9,6 +9,8 @@ import {
   useAddUserMutation,
 } from '@/redux/features/authApiSlice';
 
+export type AccountType = 'student' | 'admin' | 'panel';
+
 // Export the User interface
 export interface User {
   userID: string;
@@ -22,6 +24,7 @@ export interface User {
   is_headdept: boolean;
   is_faculty: boolean;
   is_student: boolean;
+  account_type?: AccountType;
 }
 
 interface AddUserInput {
@@ -67,10 +70,43 @@ export default function useAdminDashboard() {
     }
   };
 
+  const getAccountType = (user: User | null): AccountType => {
+    if (!user) return 'student';
+    if (user.account_type) return user.account_type;
+    if (user.is_staff || user.is_superuser) return 'admin';
+    if (user.is_faculty) return 'panel';
+    return 'student';
+  };
+
+  const setAccountType = (type: AccountType) => {
+    if (!selectedUser) return;
+    setSelectedUser({
+      ...selectedUser,
+      account_type: type,
+      is_student: type === 'student',
+      is_staff: type === 'admin',
+      is_superuser: type === 'admin',
+      is_faculty: type === 'panel',
+      is_dean: false,
+      is_headdept: false,
+    });
+  };
+
   const handleSave = async () => {
     if (selectedUser) {
       try {
-        await updateUser({ userID: selectedUser.userID, userData: selectedUser }).unwrap();
+        const account_type = getAccountType(selectedUser);
+        const userData = {
+          ...selectedUser,
+          account_type,
+          is_student: account_type === 'student',
+          is_staff: account_type === 'admin',
+          is_superuser: account_type === 'admin',
+          is_faculty: account_type === 'panel',
+          is_dean: false,
+          is_headdept: false,
+        };
+        await updateUser({ userID: selectedUser.userID, userData }).unwrap();
         toast.success('User details updated successfully');
         refetch();
         setShowModal(false);
@@ -104,6 +140,8 @@ export default function useAdminDashboard() {
     handleAddUser,
     handleSave,
     handleDelete,
+    getAccountType,
+    setAccountType,
     setShowModal,
   };
 }

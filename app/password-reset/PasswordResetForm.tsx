@@ -1,62 +1,68 @@
 'use client';
 
 import Link from 'next/link';
+import { FiMail, FiArrowLeft } from 'react-icons/fi';
 import Spinner from '@/components/common/Spinner';
+import Footer from '@/components/common/Footer';
 import { useResetPassword } from '@/hooks';
 
 export default function PasswordResetForm() {
   const { email, isLoading, onChange, onSubmit } = useResetPassword();
 
   return (
-    <div className="flex h-screen">
+    <div className="relative flex min-h-screen flex-col">
       <div
-        className="flex flex-grow items-center justify-center bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')",
-        }}
-      >
-        <div className="sm:w-full sm:max-w-sm bg-white bg-opacity-60 p-6 rounded-md shadow-md">
-          <img alt="New Logo" src="/logo.png" className="mx-auto h-20 w-auto" />
-          <h2 className="mt-5 text-center text-2xl/9 font-bold tracking-tight text-indigo-900">
-            Reset your password
-          </h2>
-          <form onSubmit={onSubmit}>
-            <div className="mt-3">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={onChange}
-                className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 placeholder:text-gray-400 focus:outline focus:outline-2 focus:outline-indigo-600 sm:text-sm/6"
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="mt-5 w-full flex items-center justify-center rounded-md bg-indigo-800 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-600"
-            >
-              {isLoading ? <Spinner sm /> : 'Request password reset'}
-            </button>
-          </form>
-          <div className="mt-5 text-right text-sm">
-            <Link
-              href="/auth/login"
-              className="font-semibold text-indigo-800 hover:text-indigo-600"
-            >
-              Back to login
-            </Link>
-          </div>  
-        </div>
-      </div>
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')" }}
+        aria-hidden="true"
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#103F78]/85 via-[#103F78]/65 to-slate-900/70" aria-hidden="true" />
 
-      <footer className="absolute bottom-5 w-full">
-        <div className="flex items-center justify-center">
-          <p className="text-gray-400 text-xs">&copy; 2025 Rkive. All rights reserved.</p>
+      <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
+        <div className="w-full max-w-md">
+          <div className="mb-6 text-center text-white">
+            <img alt="RKIVE logo" src="/logo.png" className="mx-auto h-16 w-auto drop-shadow-sm" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-amber-300">Account Recovery</p>
+            <h1 className="mt-2 text-2xl font-extrabold tracking-tight">Reset your password</h1>
+            <p className="mt-2 text-sm text-blue-100/90">Enter your email and we&apos;ll send a reset link.</p>
+          </div>
+
+          <div className="rounded-3xl border border-white/20 bg-white/95 p-6 shadow-2xl shadow-slate-900/20 backdrop-blur sm:p-8">
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="mb-1.5 block text-sm font-semibold text-slate-700">Email address</label>
+                <div className="relative">
+                  <FiMail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={17} />
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    placeholder="name@university.edu"
+                    value={email}
+                    onChange={onChange}
+                    className="block w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15"
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#103F78] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#0b2d57] disabled:opacity-60"
+              >
+                {isLoading ? <Spinner sm className="text-white" /> : 'Send reset link'}
+              </button>
+            </form>
+            <div className="mt-6 text-center">
+              <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm font-semibold text-[#103F78] hover:underline">
+                <FiArrowLeft size={15} /> Back to sign in
+              </Link>
+            </div>
+          </div>
         </div>
-      </footer>
+      </main>
+      <div className="relative z-10"><Footer /></div>
     </div>
   );
 }

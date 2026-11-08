@@ -1,13 +1,38 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useApplicationGeneration } from '@/hooks';
+import {
+  FiArrowLeft,
+  FiDownload,
+  FiFileText,
+  FiUsers,
+  FiCalendar,
+  FiBookOpen,
+  FiX,
+} from 'react-icons/fi';
+import { useProposalApplicationGeneration } from '@/hooks';
 import Spinner from '@/components/common/Spinner';
 import Footer from '@/components/common/Footer';
 import Sidebar from '@/components/common/Sidebar';
 import Layout from '@/components/utils/Layout';
 
-export default function ApplicationForm() {
+const inputClass =
+  'w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15';
+const labelClass = 'mb-2 block text-sm font-semibold text-slate-700';
+const departments = [
+  'Information Technology',
+  'Technology Communication Management',
+  'Data Science',
+  'Computer Science',
+];
+const facultyFields = [
+  { name: 'adviser', label: 'Adviser' },
+  { name: 'panel_chair', label: 'Panel Chair' },
+  { name: 'panel1', label: 'Panel Member 1' },
+  { name: 'panel2', label: 'Panel Member 2' },
+  { name: 'panel3', label: 'Panel Member 3' },
+] as const;
+
+export default function ProposalDefenseApplicationPage() {
   const {
     formData,
     isLoading,
@@ -17,280 +42,126 @@ export default function ApplicationForm() {
     setPreviewUrl,
     handleDownload,
     facultyList,
-  } = useApplicationGeneration();
+  } = useProposalApplicationGeneration();
 
   const pdfUrl = previewUrl ? `${previewUrl}#toolbar=0` : null;
-
-  /* 🔒 LOCK BODY SCROLL WHEN LOADING */
-  useEffect(() => {
-    document.body.style.overflow = isLoading ? 'hidden' : '';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isLoading]);
+  const fields = formData as unknown as Record<string, string | number | undefined>;
 
   return (
     <Layout>
-      {/* FULL VIEWPORT LOCK */}
-      <div className="flex h-screen bg-[#F9FAFB] text-[#0A4D9C] overflow-hidden">
+      <div className="flex min-h-screen bg-[#F6F8FC]">
         <Sidebar />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-12">
+            <div className="mx-auto w-full max-w-5xl">
+              <header className="mb-8">
+                <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Academic Workflow</p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">Application for Proposal Defense</h1>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
+                  Complete your proposal defense details, nominate faculty, and generate the official application document.
+                </p>
+              </header>
 
-        <main className="flex-grow px-4 py-5 overflow-hidden">
-          <div className="max-w-3xl mx-auto h-full">
-            <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm h-full flex flex-col">
-
-              {pdfUrl ? (
-                <>
-                  {/* PDF PREVIEW */}
-                  <div className="flex-1 overflow-hidden p-5">
-                    <iframe
-                      src={pdfUrl}
-                      className="w-full h-full border border-[#E5E7EB] rounded-xl"
-                    />
+              <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#103F78] px-6 py-6 sm:px-8">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiFileText size={24} /></div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">{pdfUrl ? 'Application Preview' : 'Proposal Defense Details'}</h2>
+                    <p className="mt-1 text-xs text-blue-100/80">{pdfUrl ? 'Review your generated document.' : 'Fields marked with * are required.'}</p>
                   </div>
+                </div>
 
-                  {/* ACTIONS */}
-                  <div className="border-t border-[#E5E7EB] px-5 py-4 flex justify-center gap-4">
-                    <button
-                      onClick={() => setPreviewUrl(null)}
-                      className="px-6 py-2 border border-[#0A4D9C] rounded-full
-                      hover:bg-[#0A4D9C] hover:text-white transition"
-                    >
-                      Back to Edit
-                    </button>
-
-                    <button
-                      onClick={handleDownload}
-                      className="px-6 py-2 bg-[#0A4D9C] text-white rounded-full
-                      hover:opacity-90 transition"
-                    >
-                      Download
-                    </button>
+                {pdfUrl ? (
+                  <div className="p-5 sm:p-8">
+                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                      <h3 className="font-bold text-slate-800">Generated Application</h3>
+                      <button type="button" onClick={() => setPreviewUrl(null)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"><FiX size={16} /> Close Preview</button>
+                    </div>
+                    <iframe src={pdfUrl} title="Proposal Defense Application Preview" className="h-[650px] w-full rounded-xl border border-slate-200 bg-slate-50" />
+                    <div className="mt-6 flex flex-wrap justify-end gap-3">
+                      <button type="button" onClick={() => setPreviewUrl(null)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"><FiArrowLeft size={16} /> Back to Form</button>
+                      <button type="button" onClick={handleDownload} className="inline-flex items-center gap-2 rounded-xl bg-[#103F78] px-6 py-3 text-sm font-bold text-white hover:bg-[#0b2d57]"><FiDownload size={17} /> Download Application</button>
+                    </div>
                   </div>
-                </>
-              ) : (
-                <div className="flex-1 overflow-y-auto px-6 py-6">
-                  <form
-                    onSubmit={handleSubmit}
-                    className="space-y-6 text-[14px] leading-relaxed"
-                  >
-
-                    {/* TITLE */}
-                    <h1 className="text-lg font-bold text-center uppercase tracking-wide">
-                      Application for Concept Defense
-                    </h1>
-
-                    {/* APPLICATION INFO */}
-                    <section className="space-y-4">
-                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
-                        Application Information
-                      </div>
-
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-10 p-5 sm:p-8">
+                    <section className="space-y-5">
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiBookOpen size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Research Information</h3></div>
                       <div>
-                        <label className="block mb-1 font-medium">
-                          Department
-                        </label>
-                        <select
-                          name="department"
-                          value={formData.department}
-                          onChange={handleChange}
-                          required
-                          className="w-full bg-white border border-[#E5E7EB] rounded-md px-3 py-2
-                          focus:ring-2 focus:ring-[#FBBF24]"
-                        >
+                        <label htmlFor="department" className={labelClass}>Department *</label>
+                        <select id="department" name="department" value={formData.department} onChange={handleChange} required className={inputClass}>
                           <option value="">Select Department</option>
-                          <option value="Information Technology">Information Technology</option>
-                          <option value="Technology Communication Management">Technology Communication Management</option>
-                          <option value="Data Science">Data Science</option>
-                          <option value="Computer Science">Computer Science</option>
+                          {departments.map((d) => <option key={d} value={d}>{d}</option>)}
                         </select>
                       </div>
-
                       <div>
-                        <label className="block mb-1 font-medium">
-                          Research Title
-                        </label>
-                        <input
-                          name="research_title"
-                          value={formData.research_title}
-                          onChange={handleChange}
-                          required
-                          className="w-full bg-white border border-[#E5E7EB] rounded-md px-3 py-2
-                          focus:ring-2 focus:ring-[#FBBF24]"
-                        />
+                        <label htmlFor="research_title" className={labelClass}>Research Title *</label>
+                        <input id="research_title" name="research_title" value={formData.research_title} onChange={handleChange} required className={inputClass} placeholder="Enter your research title" />
                       </div>
                     </section>
 
-                    {/* LEAD */}
-                    <section className="space-y-4">
-                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
-                        Lead Researcher
+                    <section className="space-y-5">
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Research Team</h3></div>
+                      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div><label htmlFor="lead_researcher" className={labelClass}>Lead Researcher *</label><input id="lead_researcher" name="lead_researcher" value={formData.lead_researcher} onChange={handleChange} required className={inputClass} /></div>
+                        <div><label htmlFor="lead_contactno" className={labelClass}>Contact Number *</label><input id="lead_contactno" name="lead_contactno" type="tel" value={formData.lead_contactno} onChange={handleChange} required className={inputClass} placeholder="09XXXXXXXXX" /></div>
                       </div>
-
                       <div>
-                        <label className="block mb-1 font-medium">
-                          Name
-                        </label>
-                        <input
-                          name="lead_researcher"
-                          value={formData.lead_researcher}
-                          onChange={handleChange}
-                          required
-                          className="w-full border border-[#E5E7EB] rounded-md px-3 py-2"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block mb-1 font-medium">
-                          Contact Number
-                        </label>
-                        <input
-                          name="lead_contactno"
-                          value={formData.lead_contactno}
-                          onChange={handleChange}
-                          required
-                          className="w-full border border-[#E5E7EB] rounded-md px-3 py-2"
-                        />
+                        <h4 className="mb-4 text-sm font-bold text-slate-700">Research Proponents</h4>
+                        <div className="grid grid-cols-1 gap-3">
+                          {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#103F78]">{i}</div>
+                              <div className="min-w-0 flex-1">
+                                <label htmlFor={`co_researcher${i}`} className="mb-1 block text-xs font-semibold text-slate-500">Proponent {i}</label>
+                                <input id={`co_researcher${i}`} name={`co_researcher${i}`} value={fields[`co_researcher${i}`] ?? ''} onChange={handleChange} className={inputClass} placeholder="Full name" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </section>
 
-                    {/* PROPONENTS */}
-                    <section>
-                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm mb-3">
-                        Research Proponents
-                      </div>
-
-                      <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
-                        <table className="w-full text-sm">
-                          <thead className="bg-[#F9FAFB] text-[#666]">
-                            <tr>
-                              <th className="px-3 py-2">#</th>
-                              <th className="px-3 py-2 text-left">Name</th>
-                              <th className="px-3 py-2 text-left">Role</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[1, 2, 3, 4, 5].map((i) => (
-                              <tr key={i} className="border-t">
-                                <td className="px-3 py-2">{i}</td>
-                                <td className="px-3 py-2">
-                                  <input
-                                    name={`co_researcher${i}`}
-                                    value={formData[`co_researcher${i}`] || ''}
-                                    onChange={handleChange}
-                                    className="w-full border border-[#E5E7EB] rounded px-2 py-1"
-                                  />
-                                </td>
-                                <td className="px-3 py-2 text-[#666]">
-                                  Proponent
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                    <section className="space-y-5">
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiCalendar size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Defense Schedule</h3></div>
+                      <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div><label htmlFor="datetime_defense" className={labelClass}>Defense Date & Time *</label><input id="datetime_defense" type="datetime-local" name="datetime_defense" value={formData.datetime_defense} onChange={handleChange} required className={inputClass} /></div>
+                        <div><label htmlFor="place_defense" className={labelClass}>Defense Venue *</label><input id="place_defense" name="place_defense" value={formData.place_defense} onChange={handleChange} required className={inputClass} placeholder="Room or venue" /></div>
                       </div>
                     </section>
 
-                    {/* FACULTY */}
-                    <section>
-                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm mb-3">
-                        Nominated Faculty Members
-                      </div>
-
-                      <div className="border border-[#E5E7EB] rounded-md overflow-hidden">
-                        <table className="w-full text-sm">
-                          <thead className="bg-[#F9FAFB] text-[#666]">
-                            <tr>
-                              <th className="px-3 py-2">#</th>
-                              <th className="px-3 py-2 text-left">Name</th>
-                              <th className="px-3 py-2 text-left">Role</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {[1, 2, 3, 4, 5].map((i) => {
-                              const nameField =
-                                i === 1
-                                  ? 'adviser'
-                                  : i === 2
-                                  ? 'panel_chair'
-                                  : `panel${i - 2}`;
-
-                              return (
-                                <tr key={i} className="border-t">
-                                  <td className="px-3 py-2">{i}</td>
-                                  <td className="px-3 py-2">
-                                    <select
-                                      name={nameField}
-                                      value={(formData as any)[nameField] ?? ''}
-                                      onChange={handleChange}
-                                      className="w-full border border-[#E5E7EB] rounded px-2 py-1"
-                                    >
-                                      <option value="">Select Faculty</option>
-                                      {facultyList.map((f) => (
-                                        <option
-                                          key={f.facultyID}
-                                          value={f.facultyID}
-                                        >
-                                          {f.name}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </td>
-                                  <td className="px-3 py-2 text-[#666]">
-                                    {i === 1
-                                      ? 'Adviser'
-                                      : i === 2
-                                      ? 'Panel Chair'
-                                      : 'Member'}
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                    <section className="space-y-5">
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Nominated Faculty Members</h3></div>
+                      <div className="grid grid-cols-1 gap-4">
+                        {facultyFields.map((field) => (
+                          <div key={field.name} className="grid grid-cols-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-4 sm:grid-cols-[180px_1fr]">
+                            <span className="text-xs font-bold text-slate-700">{field.label}</span>
+                            <select name={field.name} aria-label={field.label} value={fields[field.name] ?? ''} onChange={handleChange} required className={inputClass}>
+                              <option value="">Select Faculty</option>
+                              {facultyList.map((f) => <option key={f.facultyID} value={f.facultyID}>{f.name}</option>)}
+                            </select>
+                          </div>
+                        ))}
                       </div>
                     </section>
 
-                    {/* DOCUMENTER */}
-                    <section>
-                      <div className="bg-[#EEF2F7] px-4 py-2 rounded-md font-semibold text-sm">
-                        Documenter
-                      </div>
-
-                      <input
-                        name="documenter"
-                        value={formData.documenter}
-                        onChange={handleChange}
-                        required
-                        className="w-full mt-2 border border-[#E5E7EB] rounded-md px-3 py-2"
-                      />
+                    <section className="space-y-5">
+                      <div className="border-b border-slate-100 pb-4"><h3 className="text-lg font-bold text-slate-800">Documentation</h3></div>
+                      <div><label htmlFor="documenter" className={labelClass}>Documenter *</label><input id="documenter" name="documenter" value={formData.documenter} onChange={handleChange} required className={inputClass} placeholder="Enter documenter's full name" /></div>
                     </section>
 
-                    {/* SUBMIT */}
-                    <button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full py-3 bg-[#0A4D9C] text-white rounded-xl
-                      hover:opacity-90 focus:ring-4 focus:ring-[#FBBF24]
-                      transition font-semibold"
-                    >
-                      Submit Application
-                    </button>
+                    <div className="flex justify-end border-t border-slate-100 pt-7">
+                      <button type="submit" disabled={isLoading} className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-[#FBBF24] px-8 text-sm font-bold text-[#103F78] transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+                        {isLoading ? <Spinner sm /> : <><FiFileText size={18} /> Generate Application</>}
+                      </button>
+                    </div>
                   </form>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        </main>
-
-        <Footer />
-
-        {/* 🔄 FULLSCREEN LOADING OVERLAY */}
-        {isLoading && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <Spinner />
-          </div>
-        )}
+          </main>
+          <Footer />
+        </div>
       </div>
     </Layout>
   );
