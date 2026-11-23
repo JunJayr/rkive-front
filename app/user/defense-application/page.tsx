@@ -14,6 +14,10 @@ import {
 } from '@/redux/features/authApiSlice';
 
 const STAGE_COPY: Record<string, { description: string; cta: string }> = {
+  panel_nomination: {
+    description: 'Nominate and submit your research adviser and panel. This must be approved first.',
+    cta: 'Open panel nomination',
+  },
   concept: {
     description: 'Prepare and generate your concept defense application details and document.',
     cta: 'Open concept defense',
@@ -60,7 +64,7 @@ export default function DefenseApplicationHub() {
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Academic Workflow</p>
                 <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Defense Applications</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                  Track Concept Defense → Proposal Defense → Final Defense → Manuscript. Each stage unlocks after the previous one is approved.
+                  Track Panel Nomination → Concept Defense → Proposal Defense → Final Defense → Manuscript. Each stage unlocks after the previous one is approved.
                 </p>
               </header>
 
@@ -74,7 +78,10 @@ export default function DefenseApplicationHub() {
                   const app = applications.find((item) => item.application_id === stage.application_id);
                   const href = stage.key === 'manuscript'
                     ? '/user/submit-study'
-                    : `/user/defense-application/${stage.key as WorkflowStage}`;
+                    : stage.key === 'panel_nomination'
+                      ? `/user/panel-nomination${stage.nomination_id ? `?nomination_id=${stage.nomination_id}` : ''}`
+                      : `/user/defense-application/${stage.key as WorkflowStage}`;
+                  const lockedReason = stage.reason || app?.submit_blockers?.[0] || '';
                   return (
                     <div key={stage.key} className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
                       <div className="flex items-start justify-between gap-3">
@@ -90,10 +97,8 @@ export default function DefenseApplicationHub() {
                       </div>
                       <h2 className="mt-4 text-lg font-bold text-slate-900">{stage.label}</h2>
                       <p className="mt-2 flex-1 text-sm leading-6 text-slate-500">{copy.description}</p>
-                      {!!app?.submit_blockers?.length && (
-                        <p className="mt-3 text-xs font-semibold text-amber-700">
-                          {app.submit_blockers[0]}
-                        </p>
+                      {!stage.available && !!lockedReason && (
+                        <p className="mt-3 text-xs font-semibold text-amber-700">{lockedReason}</p>
                       )}
                       <Link
                         href={href}
@@ -102,7 +107,7 @@ export default function DefenseApplicationHub() {
                         onClick={(event) => { if (!stage.available) event.preventDefault(); }}
                       >
                         {stage.available ? <FiArrowRight className="transition group-hover:translate-x-0.5" /> : <FiLock />}
-                        {stage.available ? copy.cta : `Requires ${stage.requires.join(' + ') || 'previous stage'}`}
+                        {stage.available ? copy.cta : 'Locked'}
                       </Link>
                     </div>
                   );

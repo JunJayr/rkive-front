@@ -10,12 +10,32 @@ import {
   FiBookOpen,
   FiCompass,
   FiClock,
+  FiLock,
 } from 'react-icons/fi';
 import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
 import Layout from '@/components/utils/Layout';
-import { useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
+import { useGetWorkflowStatusQuery, useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
+
+function statusStyle(status?: string | null): string {
+  switch (status) {
+    case 'approved': return 'bg-emerald-100 text-emerald-800';
+    case 'submitted':
+    case 'pending': return 'bg-blue-100 text-blue-800';
+    case 'rejected': return 'bg-rose-100 text-rose-800';
+    case 'revision_required': return 'bg-amber-100 text-amber-800';
+    default: return 'bg-slate-100 text-slate-600';
+  }
+}
+
+function workflowHref(stage: { key: string; nomination_id?: number | null }): string {
+  if (stage.key === 'manuscript') return '/user/submit-study';
+  if (stage.key === 'panel_nomination') {
+    return `/user/panel-nomination${stage.nomination_id ? `?nomination_id=${stage.nomination_id}` : ''}`;
+  }
+  return `/user/defense-application/${stage.key}`;
+}
 
 const quickActions = [
   {
@@ -41,7 +61,7 @@ const quickActions = [
   },
   {
     title: 'Defense Workflow',
-    description: 'Apply for concept, proposal, and final defense steps.',
+    description: 'Track panel nomination, concept, proposal, and final defense steps.',
     href: '/user/defense-application',
     icon: FiClipboard,
     accent: 'bg-white text-[#103F78] ring-1 ring-slate-200',
@@ -50,7 +70,9 @@ const quickActions = [
 
 export default function UserDashboardPage() {
   const { data, isLoading } = useSearchManuscriptsQuery({ sort: 'newest' } as any);
+  const { data: workflowStatus, isLoading: workflowLoading } = useGetWorkflowStatusQuery();
   const recent = (Array.isArray(data) ? data : (data as any)?.results ?? []).slice(0, 4);
+  const stages = workflowStatus?.stages ?? [];
 
   return (
     <Layout>
@@ -97,6 +119,50 @@ export default function UserDashboardPage() {
                     );
                   })}
                 </div>
+              </section>
+
+              <section className="mt-8 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-800">Your defense workflow</h2>
+                    <p className="mt-0.5 text-xs text-slate-500">
+                      Stages unlock in order after the previous stage is approved.
+                    </p>
+                  </div>
+                  <Link href="/user/defense-application" className="text-xs font-bold text-[#103F78] hover:underline">
+                    Open all applications
+                  </Link>
+                </div>
+                {workflowLoading ? (
+                  <div className="flex min-h-24 items-center justify-center"><Spinner /></div>
+                ) : (
+                  <ol className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {stages.map((stage, index) => (
+                      <li key={stage.key} className="flex flex-col rounded-xl border border-slate-100 bg-slate-50/70 p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#103F78]">{index + 1}</span>
+                            <span className="text-sm font-bold text-slate-800">{stage.label}</span>
+                          </div>
+                          <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${statusStyle(stage.status)}`}>
+                            {stage.status ? stage.status.replace('_', ' ') : 'not started'}
+                          </span>
+                        </div>
+                        {!stage.available && !!stage.reason && (
+                          <p className="mt-2 text-xs font-semibold text-amber-700">{stage.reason}</p>
+                        )}
+                        <Link
+                          href={workflowHref(stage)}
+                          aria-disabled={!stage.available}
+                          onClick={(event) => { if (!stage.available) event.preventDefault(); }}
+                          className={`mt-3 inline-flex items-center gap-1.5 text-xs font-bold ${stage.available ? 'text-[#103F78] hover:underline' : 'cursor-not-allowed text-slate-400'}`}
+                        >
+                          {stage.available ? 'Open stage' : <><FiLock size={13} /> Locked</>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ol>
+                )}
               </section>
 
               <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]">

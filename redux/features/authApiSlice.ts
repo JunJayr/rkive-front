@@ -75,21 +75,51 @@ interface ApplicationFormData {
   [key: `panel${number}`]: number;
 }
 
-interface PanelFormData {
+export interface FacultyRosterEntry {
+  role: string;
+  label: string;
+  faculty_id: number;
+  name: string;
+  title?: string;
+}
+
+export interface PanelNominationInput {
+  department?: string;
+  research_title?: string;
+  lead_researcher?: string;
+  lead_contactno?: string;
+  proponents?: Proponent[];
+  faculty_roster?: FacultyRosterEntry[];
+  form_data?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface PanelNomination {
+  nomination_id: number;
+  id: number;
+  panelID: number;
+  stage: 'panel_nomination';
+  stage_label: string;
+  department: string;
   research_title: string;
-  co_researcher1: string;
-  co_researcher2: string;
-  co_researcher3: string;
-  co_researcher4: string;
-  co_researcher5: string;
   lead_researcher: string;
-  adviser: number;
-  panel_chair: number;
-  panel1: number;
-  panel2: number;
-  panel3: number;
-  [key: `co_researcher${number}`]: string;
-  [key: `panel${number}`]: number;
+  lead_contactno: string;
+  proponents: Proponent[];
+  faculty_roster: FacultyRosterEntry[];
+  form_data: Record<string, unknown>;
+  status: ApplicationStatus;
+  decision_reason: string;
+  submitted_at?: string | null;
+  approved_at?: string | null;
+  attempt: number;
+  created_at?: string | null;
+  docx_file: string;
+  pdf_file: string;
+  submit_blockers: string[];
+  reason: string;
+  stage_gate: Pick<StageGate, 'stage' | 'satisfied' | 'missing' | 'message'>;
+  reviews?: Array<{ review_id: number; reviewer: string; status: string; comments: string; reviewed_at?: string | null }>;
+  already_submitted?: boolean;
 }
 
 interface RepositoryManuscript {
@@ -143,7 +173,7 @@ interface AddUserInput {
   is_active?: boolean;
 }
 
-export type WorkflowStage = 'concept' | 'proposal' | 'final' | 'manuscript';
+export type WorkflowStage = 'panel_nomination' | 'concept' | 'proposal' | 'final' | 'manuscript';
 export type ApplicationStatus =
   | 'draft' | 'submitted' | 'pending' | 'approved' | 'rejected' | 'revision_required';
 
@@ -235,6 +265,11 @@ export interface WorkflowApplication {
   lead_researcher: string;
   lead_contactno: string;
   proponents: Proponent[];
+  form_data: Record<string, unknown>;
+  faculty_roster: FacultyRosterEntry[];
+  nomination_id?: number | null;
+  roster_read_only: boolean;
+  reason?: string;
   co_researcher1?: string;
   co_researcher2?: string;
   co_researcher3?: string;
@@ -293,7 +328,9 @@ export interface WorkflowStatus {
     requires: WorkflowStage[];
     available: boolean;
     status: string;
+    reason?: string;
     application_id?: number | null;
+    nomination_id?: number | null;
   }>;
 }
 
@@ -481,12 +518,12 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  return URL.createObjectURL(responseBlob);
 		},
 	  }),
-	  panelGenerate: builder.mutation<Blob, PanelFormData>({
+	  panelGenerate: builder.mutation<Blob, PanelNominationInput & { nomination_id?: number | null; submit?: boolean }>({
 		query: (formData) => ({
 		  url: '/panel-docx/',
 		  method: 'POST',
 		  body: formData,
-		  responseHandler: async (response) => await response.blob(), // ensure we parse it as Blob
+		  responseHandler: async (response) => await response.blob(),
 		}),
 	  }),
 
@@ -645,6 +682,35 @@ const authApiSlice = apiSlice.injectEndpoints({
 	  getWorkflowStatus: builder.query<WorkflowStatus, void>({
 		query: () => '/workflow/status/',
 		providesTags: ['Workflow'],
+	  }),
+	  getPanelNominations: builder.query<PanelNomination[], { scope?: 'mine' | 'department' } | void>({
+		query: (arg) => {
+		  const params = new URLSearchParams();
+		  if (arg?.scope) params.set('scope', arg.scope);
+		  const qs = params.toString();
+		  return `/panel-nominations/${qs ? `?${qs}` : ''}`;
+		},
+		providesTags: ['Workflow'],
+	  }),
+	  getPanelNomination: builder.query<PanelNomination, number>({
+		query: (nominationID) => `/panel-nominations/${nominationID}/`,
+		providesTags: ['Workflow'],
+	  }),
+	  createPanelNomination: builder.mutation<PanelNomination, PanelNominationInput & { submit?: boolean }>({
+		query: (body) => ({ url: '/panel-nominations/', method: 'POST', body }),
+		invalidatesTags: ['Workflow'],
+	  }),
+	  updatePanelNomination: builder.mutation<PanelNomination, { nomination_id: number; data: PanelNominationInput }>({
+		query: ({ nomination_id, data }) => ({ url: `/panel-nominations/${nomination_id}/`, method: 'PATCH', body: data }),
+		invalidatesTags: ['Workflow'],
+	  }),
+	  submitPanelNomination: builder.mutation<PanelNomination, number>({
+		query: (nomination_id) => ({ url: `/panel-nominations/${nomination_id}/submit/`, method: 'POST', body: {} }),
+		invalidatesTags: ['Workflow'],
+	  }),
+	  revisePanelNomination: builder.mutation<PanelNomination, number>({
+		query: (nomination_id) => ({ url: `/panel-nominations/${nomination_id}/revise/`, method: 'POST', body: {} }),
+		invalidatesTags: ['Workflow'],
 	  }),
 	  getApplications: builder.query<WorkflowApplication[], { stage?: WorkflowStage; scope?: 'mine' | 'department' | 'all' } | void>({
 		query: (arg) => {
@@ -842,6 +908,12 @@ const authApiSlice = apiSlice.injectEndpoints({
 	useDeleteUserMutation,
 	useGetUserProfileQuery,
 	useGetWorkflowStatusQuery,
+	useGetPanelNominationsQuery,
+	useGetPanelNominationQuery,
+	useCreatePanelNominationMutation,
+	useUpdatePanelNominationMutation,
+	useSubmitPanelNominationMutation,
+	useRevisePanelNominationMutation,
 	useGetApplicationsQuery,
 	useGetApplicationQuery,
 	useCreateApplicationMutation,

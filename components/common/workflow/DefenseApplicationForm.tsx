@@ -22,7 +22,6 @@ import {
   useGetWorkflowStatusQuery,
   useGetApplicationsQuery,
   useGetApplicationQuery,
-  useGetFacultyQuery,
   useGetDepartmentsQuery,
   useCreateApplicationMutation,
   useUpdateApplicationMutation,
@@ -52,8 +51,6 @@ const inputClass =
   'w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15 disabled:bg-slate-50';
 const labelClass = 'mb-2 block text-sm font-semibold text-slate-700';
 
-type FacultyValue = string;
-
 interface FormState {
   department: string;
   research_title: string;
@@ -62,11 +59,6 @@ interface FormState {
   datetime_defense: string;
   place_defense: string;
   documenter: string;
-  adviser: FacultyValue;
-  panel_chair: FacultyValue;
-  panel1: FacultyValue;
-  panel2: FacultyValue;
-  panel3: FacultyValue;
 }
 
 interface ProponentRow {
@@ -83,11 +75,6 @@ const emptyForm: FormState = {
   datetime_defense: '',
   place_defense: '',
   documenter: '',
-  adviser: '',
-  panel_chair: '',
-  panel1: '',
-  panel2: '',
-  panel3: '',
 };
 
 function localInputValue(value?: string | null): string {
@@ -115,10 +102,6 @@ function documentDateValue(value: string): string {
   });
 }
 
-function toNumber(value: string): number | null {
-  return /^\d+$/.test(value) ? Number(value) : null;
-}
-
 function errorText(error: unknown): string {
   const data = (error as { data?: Record<string, unknown> })?.data;
   if (!data) return 'Unable to complete the request.';
@@ -141,7 +124,6 @@ function statusBadge(status?: string): string {
 export default function DefenseApplicationForm({ stage }: { stage: DefenseStage }) {
   const { data: workflowStatus, isLoading: statusLoading } = useGetWorkflowStatusQuery();
   const { data: applications, isLoading: appsLoading, refetch: refetchApplications } = useGetApplicationsQuery({ stage });
-  const { data: facultyList = [] } = useGetFacultyQuery();
   const { data: departments = [] } = useGetDepartmentsQuery();
 
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -195,11 +177,6 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
       datetime_defense: localInputValue(application.datetime_defense),
       place_defense: application.place_defense || '',
       documenter: application.documenter || '',
-      adviser: application.adviser_id ? String(application.adviser_id) : '',
-      panel_chair: application.panel_chair_id ? String(application.panel_chair_id) : '',
-      panel1: application.panel1_id ? String(application.panel1_id) : '',
-      panel2: application.panel2_id ? String(application.panel2_id) : '',
-      panel3: application.panel3_id ? String(application.panel3_id) : '',
     });
     const saved = (application.proponents || []).map((item: Proponent) => {
       const raw: unknown = item;
@@ -240,6 +217,9 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
     .filter((row) => row.name.trim())
     .map((row) => ({ name: row.name.trim(), email: row.email.trim() }));
 
+  // Faculty selection belongs to the approved Panel Nomination. The server also
+  // ignores client faculty IDs whenever a nomination/roster exists, but sending
+  // none here keeps the defense form genuinely read-only.
   const applicationPayload = {
     department: form.department,
     research_title: form.research_title,
@@ -248,11 +228,6 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
     datetime_defense: form.datetime_defense,
     place_defense: form.place_defense,
     documenter: form.documenter,
-    adviser: toNumber(form.adviser),
-    panel_chair: toNumber(form.panel_chair),
-    panel1: toNumber(form.panel1),
-    panel2: toNumber(form.panel2),
-    panel3: toNumber(form.panel3),
     proponents: applicantProponents,
   };
 
@@ -354,7 +329,14 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
   const needsRevision = Boolean(application && ['rejected', 'revision_required'].includes(application.status));
   const editable = !application || application.permissions?.can_edit !== false;
   const gate = application?.stage_gate ?? (stageState && !stageState.available
-    ? { stage, prerequisites: stageState.requires, completed: [], satisfied: false, missing: stageState.requires, message: 'Complete and approve the previous defense stage first.' }
+    ? {
+        stage,
+        prerequisites: stageState.requires,
+        completed: [],
+        satisfied: false,
+        missing: stageState.requires,
+        message: stageState.reason || 'Complete and approve the previous workflow stage first.',
+      }
     : null);
 
   const preview = previewUrl ? `${previewUrl}#toolbar=0` : null;
@@ -410,7 +392,14 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                   </div>
 
                   {gate && !gate.satisfied && (
-                    <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-800">{gate.message}</p>
+                    <div className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-800">
+                      <p>{gate.message}</p>
+                      {gate.missing.includes('panel_nomination') && (
+                        <Link href="/user/panel-nomination" className="mt-2 inline-flex items-center gap-1 font-bold text-[#103F78] hover:underline">
+                          Open Panel Nomination <FiArrowLeft size={12} className="rotate-180" />
+                        </Link>
+                      )}
+                    </div>
                   )}
                   {!!application.decision_reason && (
                     <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-xs font-semibold text-rose-700">
@@ -462,6 +451,36 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                       )}
                     </div>
                   </div>
+
+                  {!!application.faculty_roster?.length && (
+                    <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="flex items-center gap-2 text-sm font-bold text-[#103F78]">
+                          <FiUsers size={16} /> Approved panel roster (read-only)
+                        </h3>
+                        {!!application.nomination_id && (
+                          <Link
+                            href={`/user/panel-nomination?nomination_id=${application.nomination_id}`}
+                            className="text-xs font-bold text-[#103F78] hover:underline"
+                          >
+                            View nomination #{application.nomination_id}
+                          </Link>
+                        )}
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">
+                        Snapshot copied from the approved Panel Nomination. It is frozen for this submission.
+                      </p>
+                      <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                        {application.faculty_roster.map((member, index) => (
+                          <li key={`${member.role}-${member.faculty_id}-${index}`} className="rounded-lg bg-white px-3 py-2 text-xs">
+                            <span className="font-semibold text-slate-700">{member.name}</span>
+                            <span className="text-slate-400"> · {member.label || member.role}</span>
+                            {!!member.title && <span className="text-slate-400"> · {member.title}</span>}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </section>
               )}
 
@@ -567,27 +586,31 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                     </section>
 
                     <section className="space-y-5">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Nominated Faculty Members</h3></div>
-                      <p className="text-sm leading-6 text-slate-500">Nominations are recorded on the application. Actual panel assignments and acceptance are managed by the Department Head and the panelists.</p>
-                      <div className="grid grid-cols-1 gap-4">
-                        {([
-                          ['adviser', 'Adviser'],
-                          ['panel_chair', 'Panel Chair'],
-                          ['panel1', 'Panel Member 1'],
-                          ['panel2', 'Panel Member 2'],
-                          ['panel3', 'Panel Member 3'],
-                        ] as const).map(([name, label]) => (
-                          <div key={name} className="grid grid-cols-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-4 sm:grid-cols-[180px_1fr]">
-                            <span className="text-xs font-bold text-slate-700">{label}</span>
-                            <select name={name} aria-label={label} value={form[name]} onChange={changeField} disabled={!editable || busy} className={inputClass}>
-                              <option value="">Select Faculty</option>
-                              {facultyList.map((faculty) => (
-                                <option key={faculty.facultyID} value={faculty.facultyID}>{faculty.name}</option>
-                              ))}
-                            </select>
-                          </div>
-                        ))}
-                      </div>
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Approved Panel Roster</h3></div>
+                      <p className="text-sm leading-6 text-slate-500">
+                        These members and roles come from your approved Panel Nomination. Defense forms are
+                        read-only and use the same people in the same order; panel invitations and acceptance
+                        are managed separately.
+                      </p>
+                      {!!application?.faculty_roster?.length ? (
+                        <ul className="grid grid-cols-1 gap-3">
+                          {application.faculty_roster.map((member, index) => (
+                            <li key={`${member.role}-${member.faculty_id}-${index}`} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-xs">
+                              <span className="font-bold text-slate-700">{member.name}</span>
+                              <span className="text-slate-500">{member.label || member.role}{member.title ? ` · ${member.title}` : ''}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-xs text-slate-500">
+                          No approved roster is attached to this application yet.
+                          {!!application?.nomination_id && (
+                            <Link href={`/user/panel-nomination?nomination_id=${application.nomination_id}`} className="ml-1 font-bold text-[#103F78] hover:underline">
+                              Open the nomination
+                            </Link>
+                          )}
+                        </div>
+                      )}
                     </section>
 
                     <section className="space-y-5">
@@ -631,7 +654,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
               </div>
 
               <p className="mt-6 text-center text-xs text-slate-400">
-                Defense applications follow the approved Concept → Proposal → Final → Manuscript sequence.
+                Defense applications follow the approved Panel Nomination → Concept → Proposal → Final → Manuscript sequence.
               </p>
             </div>
           </main>
