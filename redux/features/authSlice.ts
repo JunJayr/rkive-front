@@ -1,6 +1,13 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export type AccountType =
+  | 'superadmin'
+  | 'admin'
+  | 'department_head'
+  | 'faculty'
+  | 'student';
+
 export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -9,8 +16,14 @@ export interface AuthState {
   isActive: boolean;
   isDean: boolean;
   isHeadDept: boolean;
+  isDepartmentHead: boolean;
   isFaculty: boolean;
   isStudent: boolean;
+  accountType: AccountType;
+  department: string;
+  canCreateAccounts: boolean;
+  canAssignPanels: boolean;
+  canManageSettings: boolean;
 }
 
 const initialState: AuthState = {
@@ -21,8 +34,14 @@ const initialState: AuthState = {
   isActive: false,
   isDean: false,
   isHeadDept: false,
+  isDepartmentHead: false,
   isFaculty: false,
   isStudent: false,
+  accountType: 'student',
+  department: '',
+  canCreateAccounts: false,
+  canAssignPanels: false,
+  canManageSettings: false,
 };
 
 type LoginRoles = Pick<
@@ -32,8 +51,14 @@ type LoginRoles = Pick<
   | 'isActive'
   | 'isDean'
   | 'isHeadDept'
+  | 'isDepartmentHead'
   | 'isFaculty'
   | 'isStudent'
+  | 'accountType'
+  | 'department'
+  | 'canCreateAccounts'
+  | 'canAssignPanels'
+  | 'canManageSettings'
 >;
 
 const authSlice = createSlice({
@@ -52,9 +77,15 @@ const authSlice = createSlice({
       state.isStaff = saved.isStaff === true;
       state.isActive = saved.isActive === true;
       state.isDean = saved.isDean === true;
-      state.isHeadDept = saved.isHeadDept === true;
+      state.isHeadDept = saved.isHeadDept === true || saved.isDepartmentHead === true;
+      state.isDepartmentHead = saved.isDepartmentHead === true || state.isHeadDept;
       state.isFaculty = saved.isFaculty === true;
       state.isStudent = saved.isStudent === true;
+      state.accountType = saved.accountType || (state.isDepartmentHead ? 'department_head' : state.accountType);
+      state.department = saved.department || '';
+      state.canCreateAccounts = saved.canCreateAccounts === true;
+      state.canAssignPanels = saved.canAssignPanels === true;
+      state.canManageSettings = saved.canManageSettings === true;
 
       state.isLoading = false;
     },
@@ -75,9 +106,15 @@ const authSlice = createSlice({
       state.isStaff = action.payload.isStaff;
       state.isActive = action.payload.isActive;
       state.isDean = action.payload.isDean;
-      state.isHeadDept = action.payload.isHeadDept;
+      state.isHeadDept = action.payload.isDepartmentHead || action.payload.isHeadDept;
+      state.isDepartmentHead = action.payload.isDepartmentHead;
       state.isFaculty = action.payload.isFaculty;
       state.isStudent = action.payload.isStudent;
+      state.accountType = action.payload.accountType;
+      state.department = action.payload.department || '';
+      state.canCreateAccounts = action.payload.canCreateAccounts;
+      state.canAssignPanels = action.payload.canAssignPanels;
+      state.canManageSettings = action.payload.canManageSettings;
     },
 
     logout: (state) => {
@@ -88,8 +125,14 @@ const authSlice = createSlice({
       state.isActive = false;
       state.isDean = false;
       state.isHeadDept = false;
+      state.isDepartmentHead = false;
       state.isFaculty = false;
       state.isStudent = false;
+      state.accountType = 'student';
+      state.department = '';
+      state.canCreateAccounts = false;
+      state.canAssignPanels = false;
+      state.canManageSettings = false;
     },
 
     finishInitialLoad: (state) => {

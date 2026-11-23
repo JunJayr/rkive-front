@@ -20,7 +20,7 @@ export default function useVerify() {
             .then(() => {
                 dispatch(setAuth());
             })
-            .catch((error) => {
+            .catch((error: any) => {
                 console.error('Verification failed:', error.data || error.message || error);
             })
             .finally(() => {

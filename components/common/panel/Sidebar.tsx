@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-import { FiMenu, FiX, FiHome, FiCheckSquare, FiBookOpen, FiLogOut, FiShield } from 'react-icons/fi';
+import { FiMenu, FiX, FiHome, FiCheckSquare, FiBookOpen, FiLogOut, FiShield, FiClock, FiFileText } from 'react-icons/fi';
 
 import { useAppDispatch } from '@/redux/hooks';
 import { useLogoutMutation } from '@/redux/features/authApiSlice';
@@ -12,7 +12,9 @@ import { logout as setLogout } from '@/redux/features/authSlice';
 
 const menuItems = [
   { name: 'Dashboard', href: '/panel', icon: FiHome },
-  { name: 'Review Queue', href: '/panel', icon: FiCheckSquare },
+  { name: 'Panel Invitations', href: '/panel#invitations', icon: FiFileText },
+  { name: 'Review Queue', href: '/panel#reviews', icon: FiCheckSquare },
+  { name: 'My Schedule', href: '/panel#schedule', icon: FiClock },
   { name: 'Repository', href: '/user/search', icon: FiBookOpen },
 ];
 

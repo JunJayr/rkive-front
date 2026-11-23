@@ -17,10 +17,12 @@ import {
   FiMenu,
   FiX,
   FiBookOpen,
+  FiShield,
+  FiCheckSquare,
 } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 
-import { useAppDispatch } from '@/redux/hooks';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { useLogoutMutation } from '@/redux/features/authApiSlice';
 import { logout as setLogout } from '@/redux/features/authSlice';
 import Spinner from '@/components/common/Spinner';
@@ -43,6 +45,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const auth = useAppSelector((state) => state.auth);
   const [logoutMutation] = useLogoutMutation();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -52,6 +55,8 @@ export default function Sidebar() {
 
   const expanded = mobileOpen || !collapsed;
   const isDefenseRoute = pathname.startsWith('/user/defense-application');
+  const showHeadPortal = auth.isSuperuser || auth.isDepartmentHead || auth.isHeadDept || auth.canAssignPanels;
+  const showPanelPortal = auth.isFaculty || auth.isSuperuser || auth.isStaff;
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
   useEffect(() => { if (isDefenseRoute) setDefenseOpen(true); }, [isDefenseRoute]);
@@ -188,6 +193,41 @@ export default function Sidebar() {
                 );
               })}
             </ul>
+          )}
+
+          {(showHeadPortal || showPanelPortal) && (
+            <>
+              <div className="my-5 border-t border-white/10" />
+              {expanded && (
+                <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.2em] text-blue-200/60">Academic Portals</p>
+              )}
+              <ul className="space-y-1">
+                {showHeadPortal && (
+                  <li>
+                    <Link
+                      href="/department-head"
+                      title={!expanded ? 'Department Head Portal' : undefined}
+                      className={`flex h-11 items-center rounded-xl text-blue-100/90 transition-colors hover:bg-white/10 hover:text-white ${expanded ? 'gap-3 px-3.5' : 'justify-center'}`}
+                    >
+                      <FiShield size={19} />
+                      {expanded && <span className="text-[13px] font-semibold">Department Head Portal</span>}
+                    </Link>
+                  </li>
+                )}
+                {showPanelPortal && (
+                  <li>
+                    <Link
+                      href="/panel"
+                      title={!expanded ? 'Faculty / Panel Workspace' : undefined}
+                      className={`flex h-11 items-center rounded-xl text-blue-100/90 transition-colors hover:bg-white/10 hover:text-white ${expanded ? 'gap-3 px-3.5' : 'justify-center'}`}
+                    >
+                      <FiCheckSquare size={19} />
+                      {expanded && <span className="text-[13px] font-semibold">Faculty / Panel Workspace</span>}
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            </>
           )}
         </nav>
 

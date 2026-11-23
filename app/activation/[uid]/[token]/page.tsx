@@ -40,6 +40,7 @@ export default function Page({ params }: Props) {
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md rounded-3xl border border-white/20 bg-white/95 p-8 text-center shadow-2xl shadow-slate-900/20 backdrop-blur">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.png" alt="RKIVE logo" className="mx-auto h-16 w-auto" />
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-amber-600">Account Activation</p>
           <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-[#103F78]">Activating your account</h1>

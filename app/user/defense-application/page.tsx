@@ -1,39 +1,54 @@
 'use client';
 
 import Link from 'next/link';
-import { FiFileText, FiArrowRight, FiCheckCircle, FiClock } from 'react-icons/fi';
+import { FiArrowRight, FiCheckCircle, FiClock, FiFileText, FiLock } from 'react-icons/fi';
+
 import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Layout from '@/components/utils/Layout';
+import Spinner from '@/components/common/Spinner';
+import {
+  useGetWorkflowStatusQuery,
+  useGetApplicationsQuery,
+  type WorkflowStage,
+} from '@/redux/features/authApiSlice';
 
-const steps = [
-  {
-    title: 'Panel Nomination',
-    href: '/user/panel-nomination',
-    description: 'Nominate your adviser and panel members for the oral examination workflow.',
-    cta: 'Open nomination',
-  },
-  {
-    title: 'Concept Defense Application',
-    href: '/user/defense-application/concept',
+const STAGE_COPY: Record<string, { description: string; cta: string }> = {
+  concept: {
     description: 'Prepare and generate your concept defense application details and document.',
     cta: 'Open concept defense',
   },
-  {
-    title: 'Proposal Defense Application',
-    href: '/user/defense-application/proposal',
+  proposal: {
     description: 'Submit your proposal defense application after concept approval in your workflow.',
     cta: 'Open proposal defense',
   },
-  {
-    title: 'Final Defense Application',
-    href: '/user/defense-application/final',
+  final: {
     description: 'Prepare your final defense application and related manuscript submission requirements.',
     cta: 'Open final defense',
   },
-];
+  manuscript: {
+    description: 'Submit the approved manuscript to the institutional repository after final defense approval.',
+    cta: 'Submit manuscript',
+  },
+};
+
+function statusStyle(status?: string | null): string {
+  switch (status) {
+    case 'approved': return 'bg-emerald-100 text-emerald-800';
+    case 'submitted':
+    case 'pending': return 'bg-blue-100 text-blue-800';
+    case 'rejected': return 'bg-rose-100 text-rose-800';
+    case 'revision_required': return 'bg-amber-100 text-amber-800';
+    default: return 'bg-slate-100 text-slate-600';
+  }
+}
 
 export default function DefenseApplicationHub() {
+  const { data: workflowStatus, isLoading } = useGetWorkflowStatusQuery();
+  const { data: applications = [] } = useGetApplicationsQuery({ scope: 'mine' });
+
+  const stages = workflowStatus?.stages ?? [];
+
   return (
     <Layout>
       <div className="flex min-h-screen bg-[#F6F8FC]">
@@ -45,30 +60,53 @@ export default function DefenseApplicationHub() {
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Academic Workflow</p>
                 <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Defense Applications</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                  Manage panel nomination and defense application steps. Faculty and assigned panel members review submissions through the panel portal.
+                  Track Concept Defense → Proposal Defense → Final Defense → Manuscript. Each stage unlocks after the previous one is approved.
                 </p>
               </header>
 
+              {isLoading && (
+                <div className="mb-6 flex min-h-40 items-center justify-center rounded-3xl border border-slate-200 bg-white"><Spinner /></div>
+              )}
+
               <div className="grid gap-4 sm:grid-cols-2">
-                {steps.map((step, i) => (
-                  <Link
-                    key={step.href}
-                    href={step.href}
-                    className="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]">
-                        <FiFileText size={20} />
+                {stages.map((stage, index) => {
+                  const copy = STAGE_COPY[stage.key] ?? { description: '', cta: 'Open' };
+                  const app = applications.find((item) => item.application_id === stage.application_id);
+                  const href = stage.key === 'manuscript'
+                    ? '/user/submit-study'
+                    : `/user/defense-application/${stage.key as WorkflowStage}`;
+                  return (
+                    <div key={stage.key} className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]">
+                          <FiFileText size={20} />
+                        </div>
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">Step {index + 1}</span>
+                          <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${statusStyle(stage.status)}`}>
+                            {stage.status ? stage.status.replace('_', ' ') : 'not started'}
+                          </span>
+                        </div>
                       </div>
-                      <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-600">Step {i + 1}</span>
+                      <h2 className="mt-4 text-lg font-bold text-slate-900">{stage.label}</h2>
+                      <p className="mt-2 flex-1 text-sm leading-6 text-slate-500">{copy.description}</p>
+                      {!!app?.submit_blockers?.length && (
+                        <p className="mt-3 text-xs font-semibold text-amber-700">
+                          {app.submit_blockers[0]}
+                        </p>
+                      )}
+                      <Link
+                        href={href}
+                        aria-disabled={!stage.available}
+                        className={`mt-5 inline-flex items-center gap-2 text-sm font-bold ${stage.available ? 'text-[#103F78]' : 'cursor-not-allowed text-slate-400'}`}
+                        onClick={(event) => { if (!stage.available) event.preventDefault(); }}
+                      >
+                        {stage.available ? <FiArrowRight className="transition group-hover:translate-x-0.5" /> : <FiLock />}
+                        {stage.available ? copy.cta : `Requires ${stage.requires.join(' + ') || 'previous stage'}`}
+                      </Link>
                     </div>
-                    <h2 className="mt-4 text-lg font-bold text-slate-900">{step.title}</h2>
-                    <p className="mt-2 text-sm leading-6 text-slate-500">{step.description}</p>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#103F78]">
-                      {step.cta} <FiArrowRight className="transition group-hover:translate-x-0.5" />
-                    </span>
-                  </Link>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="mt-6 flex flex-wrap gap-3 text-sm">

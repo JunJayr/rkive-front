@@ -18,6 +18,8 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiShield,
+  FiList,
+  FiSettings,
 } from 'react-icons/fi';
 
 import { useAppDispatch } from '@/redux/hooks';
@@ -37,9 +39,14 @@ const menuItems = [
     icon: FiBookOpen,
   },
   {
-    name: 'Adviser/Panel Links',
+    name: 'Faculty Links',
     href: '/admin/faculty',
     icon: FiUsers,
+  },
+  {
+    name: 'Audit Logs (Limited)',
+    href: '/admin/audit-logs',
+    icon: FiList,
   },
   {
     name: 'ISO Application Form',
@@ -50,6 +57,11 @@ const menuItems = [
     name: 'ISO Panel Nomination',
     href: '/admin/forms/nomination',
     icon: FiFileText,
+  },
+  {
+    name: 'Settings & Templates',
+    href: '/admin/settings',
+    icon: FiSettings,
   },
 ];
 
@@ -126,7 +138,7 @@ export default function Sidebar() {
               </h1>
 
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-200">
-                Admin Portal
+                Research Coordinator
               </p>
             </div>
           )}
@@ -199,11 +211,11 @@ export default function Sidebar() {
 
             <div className="min-w-0">
               <p className="text-sm font-semibold text-white">
-                Administrator
+                Admin
               </p>
 
               <p className="text-xs text-blue-200">
-                RKIVE Management
+                Academic Operations
               </p>
             </div>
           </div>
@@ -311,7 +323,7 @@ export default function Sidebar() {
                 RKIVE
               </h2>
               <p className="text-[10px] uppercase tracking-widest text-blue-200">
-                Admin Portal
+                Research Coordinator
               </p>
             </div>
           </div>

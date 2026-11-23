@@ -32,6 +32,7 @@ export default function RegisterForm() {
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
         <div className="w-full max-w-md">
           <div className="mb-6 text-center text-white">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img alt="RKIVE logo" src="/logo.png" className="mx-auto h-16 w-auto drop-shadow-sm" />
             <p className="mt-4 text-xs font-bold uppercase tracking-[0.22em] text-amber-300">Research Repository</p>
             <h1 className="mt-2 text-2xl font-extrabold tracking-tight">Create your account</h1>

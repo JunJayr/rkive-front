@@ -32,18 +32,30 @@ export default function useLogin() {
       await login({ email, password }).unwrap();
       const roleResponse = await getUserRole({}).unwrap();
 
-      const isAdmin = Boolean(roleResponse.is_admin ?? (roleResponse.is_staff || roleResponse.is_superuser));
-      const isPanel = Boolean(roleResponse.is_panel ?? roleResponse.is_faculty);
-      const accountType = roleResponse.account_type ?? (isAdmin ? 'admin' : isPanel ? 'panel' : 'student');
+      const rawType = (roleResponse.account_type || '').toLowerCase();
+      const accountType = rawType === 'panel' ? 'faculty' : rawType;
+      const isSuperadmin = Boolean(roleResponse.is_superadmin ?? roleResponse.is_superuser);
+      const isDepartmentHead = Boolean(roleResponse.is_department_head)
+        || accountType === 'department_head';
+      const isAdmin = Boolean(
+        roleResponse.is_admin ?? roleResponse.is_staff ?? roleResponse.is_superuser
+      ) || accountType === 'superadmin' || accountType === 'admin';
+      const isFaculty = Boolean(roleResponse.is_faculty ?? roleResponse.is_panel) || accountType === 'faculty';
 
       dispatch(setAuthLogin({
         isActive: roleResponse.is_active,
-        isStaff: roleResponse.is_staff,
-        isSuperuser: roleResponse.is_superuser,
+        isStaff: Boolean(roleResponse.is_staff || isSuperadmin || accountType === 'admin'),
+        isSuperuser: isSuperadmin,
         isDean: false,
-        isHeadDept: false,
-        isFaculty: roleResponse.is_faculty,
-        isStudent: accountType === 'student',
+        isHeadDept: isDepartmentHead,
+        isDepartmentHead,
+        isFaculty,
+        isStudent: accountType === 'student' || (!isAdmin && !isFaculty && !isDepartmentHead),
+        accountType: isDepartmentHead ? 'department_head' : (accountType as any),
+        department: roleResponse.department || '',
+        canCreateAccounts: Boolean(roleResponse.can_create_accounts),
+        canAssignPanels: Boolean(roleResponse.can_assign_panels),
+        canManageSettings: Boolean(roleResponse.can_manage_settings),
       }));
 
       toast.success('Logged in');
@@ -53,9 +65,13 @@ export default function useLogin() {
         return;
       }
 
-      if (isAdmin) {
+      if (isSuperadmin || accountType === 'superadmin') {
+        router.push('/superadmin');
+      } else if (isDepartmentHead) {
+        router.push('/department-head');
+      } else if (isAdmin) {
         router.push('/admin');
-      } else if (isPanel) {
+      } else if (isFaculty) {
         router.push('/panel');
       } else {
         router.push('/user');

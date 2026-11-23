@@ -25,6 +25,7 @@ import Sidebar from '@/components/common/admin/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
 import { useAdminDashboard } from '@/hooks/admin';
+import { useAppSelector } from '@/redux/hooks';
 
 const inputClass =
   'w-full rounded-xl border border-slate-200 bg-white ' +
@@ -32,13 +33,20 @@ const inputClass =
   'transition placeholder:text-slate-400 ' +
   'focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
 
-const accountTypes = [
-  { value: 'student', label: 'Student/User', description: 'Access to the student workspace, submissions, and repository features.' },
-  { value: 'admin', label: 'Admin', description: 'Administrative access (dashboard, user management, and manuscript/review workflows).' },
-  { value: 'panel', label: 'Adviser/Panel', description: 'Reviewer access. Link this account to an adviser/panel record to receive assigned nominations, defenses, and manuscripts.' },
+const baseAccountTypes = [
+  { value: 'student', label: 'Student / Research Group', description: 'Research workspace: applications, progress, manuscript submission, and repository access.' },
+  { value: 'faculty', label: 'Faculty (Adviser / Panelist)', description: 'Academic role account. Assignment determines adviser, panelist, or committee chair responsibilities.' },
+  { value: 'admin', label: 'Admin (Research Coordinator)', description: 'Academic operations and document management. No unrestricted system/privileged-account control.' },
+  { value: 'superadmin', label: 'Superadmin (System Owner)', description: 'System ownership, security, global configuration, and audited exceptional intervention.' },
 ] as const;
 
 export default function AdminDashboard() {
+  const auth = useAppSelector((s) => s.auth);
+  const canManageSystem = Boolean(auth.isSuperuser);
+  const accountTypes = useMemo(
+    () => baseAccountTypes.filter((t) => t.value !== 'superadmin' || canManageSystem),
+    [canManageSystem]
+  );
   const {
     users,
     documentCount,
@@ -163,29 +171,20 @@ export default function AdminDashboard() {
   };
 
   const overviewConfig = [
-    {
-      key: 'accounts',
-      label: 'Total Accounts',
-      value: users?.length ?? 0,
-      icon: FiUsers,
-      detail: 'Registered users',
-    },
-    {
-      key: 'manuscripts',
-      label: 'Manuscripts',
-      value: documentCount?.manuscripts_count ?? 0,
-      icon: FiBookOpen,
-      detail: 'Repository records',
-    },
+    { key: 'accounts', label: 'Total Accounts', value: users?.length ?? 0, icon: FiUsers, detail: 'Registered users' },
+    { key: 'groups', label: 'Research Groups', value: documentCount?.research_groups ?? 0, icon: FiUsers, detail: 'Distinct research titles' },
+    { key: 'pending', label: 'Pending Reviews', value: documentCount?.pending_reviews ?? 0, icon: FiFileText, detail: 'Awaiting decisions' },
+    { key: 'final', label: 'Completed Defenses', value: documentCount?.completed_defenses ?? 0, icon: FiCheck, detail: 'Final defense records' },
+    { key: 'published', label: 'Published Manuscripts', value: documentCount?.published_manuscripts ?? 0, icon: FiBookOpen, detail: 'Approved in repository' },
   ];
 
   
-  const getRoleLabels = (
-    user: (typeof filteredUsers)[number]
-  ): string[] => {
-    if (user.is_staff || user.is_superuser) return ['Admin'];
-    if (user.is_faculty) return ['Adviser/Panel'];
-    return ['Student/User'];
+  const getRoleLabels = (user: (typeof filteredUsers)[number]): string[] => {
+    const t = getAccountType(user as any);
+    if (t === 'superadmin') return ['Superadmin'];
+    if (t === 'admin') return ['Admin / Research Coordinator'];
+    if (t === 'faculty') return ['Faculty (Adviser/Panelist/Chair by assignment)'];
+    return ['Student / Research Group'];
   };
 
 
@@ -201,15 +200,15 @@ export default function AdminDashboard() {
             <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div>
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
-                  RKIVE / Administration
+                  RKIVE / Academic Administration
                 </p>
 
                 <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">
-                  Admin Dashboard
+                  Research Coordinator Dashboard
                 </h1>
 
-                <p className="mt-3 text-sm text-slate-500">
-                  Manage accounts, permissions, and repository activity.
+                <p className="mt-3 max-w-3xl text-sm text-slate-500">
+                  Day-to-day academic research operations and document management: monitor groups/applications, manage student/faculty accounts, support faculty assignments, manage ISO forms and repository metadata, and generate reports. System ownership and privileged access belong to Superadmin.
                 </p>
               </div>
 
@@ -219,7 +218,7 @@ export default function AdminDashboard() {
             </header>
 
             {/* OVERVIEW CARDS */}
-            <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
               {overviewConfig.map((item) => {
                 const Icon = item.icon;
 
@@ -254,6 +253,35 @@ export default function AdminDashboard() {
               })}
             </div>
 
+            {documentCount?.stages ? (
+              <section className="mb-8 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <h2 className="text-sm font-bold text-[#103F78]">Research Progress by Stage</h2>
+                <p className="mt-1 text-xs text-slate-500">Counts are calculated from RKIVE records (illustrative operational totals).</p>
+                <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {[
+                    { label: 'Concept', value: documentCount.stages.concept ?? 0 },
+                    { label: 'Proposal', value: documentCount.stages.proposal ?? 0 },
+                    { label: 'Final Defense', value: documentCount.stages.final_defense ?? 0 },
+                    { label: 'Manuscript', value: documentCount.stages.manuscript ?? 0 },
+                  ].map((s) => {
+                    const max = Math.max(1, ...(Object.values(documentCount.stages || {}).map((n) => Number(n) || 0)));
+                    const pct = Math.round(((Number(s.value) || 0) / max) * 100);
+                    return (
+                      <div key={s.label} className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="font-semibold text-slate-700">{s.label}</span>
+                          <span className="font-bold text-[#103F78]">{s.value}</span>
+                        </div>
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+                          <div className="h-full rounded-full bg-[#103F78]" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+
             {/* USER MANAGEMENT */}
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
@@ -266,11 +294,11 @@ export default function AdminDashboard() {
 
                   <div>
                     <h2 className="text-lg font-bold text-white">
-                      User Management
+                      Account Management (Academic Operations)
                     </h2>
 
                     <p className="mt-1 text-xs text-blue-100/80">
-                      View and manage registered accounts
+                      Manage student/faculty accounts. Privileged/system accounts are managed by Superadmin (API enforced).
                     </p>
                   </div>
                 </div>

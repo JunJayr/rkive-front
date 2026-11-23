@@ -5,5 +5,7 @@ interface Props {
 }
 
 export default function Layout({ children }: Props) {
-  return <RequireAuth>{children}</RequireAuth>;
+  // Faculty/adviser/panelist workspace. Admins may monitor in some setups, but the
+  // academic approval workspace is faculty-focused; keep admin access for coordination.
+  return <RequireAuth allow={['superadmin', 'admin', 'faculty']}>{children}</RequireAuth>;
 }

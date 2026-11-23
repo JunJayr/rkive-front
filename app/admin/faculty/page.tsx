@@ -165,8 +165,9 @@ export default function AdminFacultyPage() {
                     <tbody className="divide-y divide-slate-100">
                       {faculty.map((f: any) => {
                         const linked = f.user ? usersById.get(String(f.user)) : null;
-                        const isPanel = linked ? (linked.is_faculty || linked.is_panel) : false;
-                        const isAdmin = linked ? (linked.is_staff || linked.is_superuser) : false;
+                        const isSuper = Boolean(linked?.is_superuser);
+                        const isPanel = Boolean(linked && (linked.is_faculty || linked.is_panel));
+                        const isAdmin = Boolean(linked && (linked.is_staff || linked.is_superuser));
                         return (
                           <tr key={f.facultyID} className="hover:bg-blue-50/20">
                             <td className="px-6 py-4">
@@ -186,8 +187,10 @@ export default function AdminFacultyPage() {
                                   </div>
                                   <p className="mt-0.5 text-xs text-slate-500">{f.user_email}</p>
                                   <div className="mt-1.5 flex flex-wrap gap-1.5">
-                                    {isAdmin ? <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">Admin</span> : null}
-                                    {isPanel ? <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">Adviser/Panel</span> : <span className="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-700">Not an Adviser/Panel account</span>}
+                                    {isSuper ? <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">Superadmin</span> : null}
+                                    {isAdmin && !isSuper ? <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-[#103F78]">Admin</span> : null}
+                                    {isPanel && !isAdmin ? <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">Faculty (assignment-based)</span> : null}
+                                    {!isPanel && !isAdmin ? <span className="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-700">Not a Faculty reviewer account</span> : null}
                                   </div>
                                 </div>
                               ) : (
@@ -243,12 +246,12 @@ export default function AdminFacultyPage() {
               </div>
 
               <div>
-                <label htmlFor="f-user" className="mb-2 block text-sm font-semibold text-slate-700">Linked login account (Adviser/Panel)</label>
+                <label htmlFor="f-user" className="mb-2 block text-sm font-semibold text-slate-700">Linked login account (Faculty)</label>
                 <select id="f-user" value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} className={inputClass}>
                   <option value="">— Not linked —</option>
                   {users.map((u: any) => {
                     const id = String(u.userID);
-                    const type = (u.is_staff || u.is_superuser) ? 'Admin' : u.is_faculty ? 'Adviser/Panel' : 'Student/User';
+                    const type = u.is_superuser ? 'Superadmin' : u.is_staff ? 'Admin' : u.is_faculty ? 'Faculty' : 'Student';
                     return (
                       <option key={id} value={id}>
                         {`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email} ({u.email}) — {type}
@@ -257,10 +260,10 @@ export default function AdminFacultyPage() {
                   })}
                 </select>
                 {form.user && linkedUser && !(linkedUser.is_faculty || linkedUser.is_staff || linkedUser.is_superuser) && (
-                  <p className="mt-2 text-xs font-medium text-amber-700">This user is not an Adviser/Panel account. Set their Account Type to <b>Adviser/Panel</b> in User Management so they can access <b>/panel</b>.</p>
+                  <p className="mt-2 text-xs font-medium text-amber-700">This user is not a Faculty/Admin account. Set the Account Type to <b>Faculty</b> in User Management so assignment-based adviser/panelist/chair access works.</p>
                 )}
                 {form.user && linkedUser && (linkedUser.is_faculty || linkedUser.is_staff || linkedUser.is_superuser) && (
-                  <p className="mt-2 text-xs font-medium text-emerald-700">This account can access review features when assigned. Ensure it’s an <b>Adviser/Panel</b> account for normal reviewer logins.</p>
+                  <p className="mt-2 text-xs font-medium text-emerald-700">This account can receive assignments. Normal adviser/panelist/chair workflows should use a <b>Faculty</b> account.</p>
                 )}
               </div>
 

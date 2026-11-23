@@ -12,6 +12,7 @@ export default function Page() {
       <div aria-hidden="true" className="pointer-events-none absolute -top-24 left-1/2 h-72 w-[40rem] -translate-x-1/2 rounded-full bg-[#103F78]/10 blur-3xl" />
       <div className="relative w-full max-w-2xl text-center">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-white shadow-sm ring-1 ring-slate-200 md:h-24 md:w-24">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/logo.png"
             alt="RKIVE logo"

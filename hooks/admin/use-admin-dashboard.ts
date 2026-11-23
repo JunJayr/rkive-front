@@ -9,22 +9,23 @@ import {
   useAddUserMutation,
 } from '@/redux/features/authApiSlice';
 
-export type AccountType = 'student' | 'admin' | 'panel';
+export type AccountType = 'superadmin' | 'admin' | 'department_head' | 'faculty' | 'student' | 'user';
 
-// Export the User interface
 export interface User {
   userID: string;
   first_name: string;
   last_name: string;
   email: string;
+  department?: string;
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
   is_dean: boolean;
   is_headdept: boolean;
+  is_department_head?: boolean;
   is_faculty: boolean;
   is_student: boolean;
-  account_type?: AccountType;
+  account_type?: AccountType | 'panel';
 }
 
 interface AddUserInput {
@@ -33,6 +34,8 @@ interface AddUserInput {
   email: string;
   password: string;
   repassword: string;
+  account_type?: AccountType;
+  department?: string;
 }
 
 export default function useAdminDashboard() {
@@ -65,16 +68,21 @@ export default function useAdminDashboard() {
       await addUser(newUser).unwrap();
       toast.success('User added successfully');
       refetch();
-    } catch (error) {
-      toast.error('Error adding user');
+    } catch (error: any) {
+      toast.error(error?.data?.error || 'Error adding user');
     }
   };
 
   const getAccountType = (user: User | null): AccountType => {
     if (!user) return 'student';
-    if (user.account_type) return user.account_type;
-    if (user.is_staff || user.is_superuser) return 'admin';
-    if (user.is_faculty) return 'panel';
+    const raw = (user.account_type || '').toLowerCase();
+    if (raw === 'panel') return 'faculty';
+    if (raw === 'user') return 'student';
+    // Canonical precedence: superadmin > admin > department_head > faculty > student.
+    if (raw === 'superadmin' || user.is_superuser) return 'superadmin';
+    if (raw === 'admin' || user.is_staff) return 'admin';
+    if (raw === 'department_head' || user.is_department_head || user.is_headdept) return 'department_head';
+    if (raw === 'faculty' || user.is_faculty) return 'faculty';
     return 'student';
   };
 
@@ -84,11 +92,12 @@ export default function useAdminDashboard() {
       ...selectedUser,
       account_type: type,
       is_student: type === 'student',
-      is_staff: type === 'admin',
-      is_superuser: type === 'admin',
-      is_faculty: type === 'panel',
+      is_staff: type === 'admin' || type === 'superadmin',
+      is_superuser: type === 'superadmin',
+      is_faculty: type === 'faculty',
       is_dean: false,
-      is_headdept: false,
+      is_department_head: type === 'department_head',
+      is_headdept: type === 'department_head',
     });
   };
 
@@ -100,18 +109,19 @@ export default function useAdminDashboard() {
           ...selectedUser,
           account_type,
           is_student: account_type === 'student',
-          is_staff: account_type === 'admin',
-          is_superuser: account_type === 'admin',
-          is_faculty: account_type === 'panel',
+          is_staff: account_type === 'admin' || account_type === 'superadmin',
+          is_superuser: account_type === 'superadmin',
+          is_faculty: account_type === 'faculty',
           is_dean: false,
-          is_headdept: false,
+          is_department_head: account_type === 'department_head',
+          is_headdept: account_type === 'department_head',
         };
-        await updateUser({ userID: selectedUser.userID, userData }).unwrap();
+        await updateUser({ userID: selectedUser.userID, userData: userData as any }).unwrap();
         toast.success('User details updated successfully');
         refetch();
         setShowModal(false);
-      } catch (error) {
-        toast.error('Failed to update user');
+      } catch (error: any) {
+        toast.error(error?.data?.error || 'Failed to update user');
       }
     }
   };
