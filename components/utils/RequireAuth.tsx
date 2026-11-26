@@ -7,7 +7,12 @@ import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/redux/hooks';
 import Spinner from '@/components/common/Spinner';
 
-type AllowedRole = 'superadmin' | 'admin' | 'department_head' | 'faculty' | 'student';
+export type AllowedRole =
+  | 'student'
+  | 'panel'
+  | 'department_head'
+  | 'admin'
+  | 'superadmin';
 
 interface RequireAuthProps {
   children: ReactNode;
@@ -22,15 +27,17 @@ export default function RequireAuth({ children, allow }: RequireAuthProps) {
   const isAuthenticated = auth.isAuthenticated;
 
   const role: AllowedRole | null = useMemo(() => {
-    if (auth.isSuperuser) return 'superadmin';
-    if (auth.isStaff) return 'admin';
-    if (auth.isDepartmentHead || auth.isHeadDept) return 'department_head';
-    if (auth.isFaculty) return 'faculty';
+    if (auth.accountType === 'superadmin' || auth.isSuperuser) return 'superadmin';
+    if (auth.accountType === 'admin' || auth.isStaff) return 'admin';
+    if (auth.accountType === 'department_head' || auth.isDepartmentHead || auth.isHeadDept) {
+      return 'department_head';
+    }
+    if (auth.accountType === 'panel' || auth.isPanel || auth.isFaculty) return 'panel';
     if (auth.isStudent || isAuthenticated) return 'student';
     return null;
   }, [
-    auth.isDepartmentHead, auth.isHeadDept, auth.isFaculty, auth.isStaff,
-    auth.isStudent, auth.isSuperuser, isAuthenticated,
+    auth.accountType, auth.isDepartmentHead, auth.isHeadDept, auth.isFaculty,
+    auth.isPanel, auth.isStaff, auth.isStudent, auth.isSuperuser, isAuthenticated,
   ]);
 
   useEffect(() => {
@@ -47,7 +54,7 @@ export default function RequireAuth({ children, allow }: RequireAuthProps) {
       if (role === 'superadmin') router.replace('/superadmin');
       else if (role === 'admin') router.replace('/admin');
       else if (role === 'department_head') router.replace('/department-head');
-      else if (role === 'faculty') router.replace('/panel');
+      else if (role === 'panel') router.replace('/panel');
       else router.replace('/user');
     }
   }, [mounted, isAuthenticated, allow, role, router]);
@@ -57,7 +64,7 @@ export default function RequireAuth({ children, allow }: RequireAuthProps) {
       <div
         role="status"
         aria-label="Checking authentication"
-        className="flex min-h-screen items-center justify-center bg-[#F6F8FC]"
+        className="flex min-h-screen items-center justify-center bg-[#FAF9F6]"
       >
         <Spinner />
       </div>
@@ -66,7 +73,7 @@ export default function RequireAuth({ children, allow }: RequireAuthProps) {
 
   if (allow && allow.length > 0 && role && !allow.includes(role)) {
     return (
-      <div role="status" className="flex min-h-screen items-center justify-center bg-[#F6F8FC]">
+      <div role="status" className="flex min-h-screen items-center justify-center bg-[#FAF9F6]">
         <Spinner />
       </div>
     );

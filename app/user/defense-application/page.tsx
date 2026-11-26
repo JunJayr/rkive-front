@@ -55,14 +55,14 @@ export default function DefenseApplicationHub() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC]">
+      <div className="flex min-h-screen bg-[#FAF9F6]">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-12">
             <div className="mx-auto w-full max-w-5xl">
               <header className="mb-8">
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Academic Workflow</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Defense Applications</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Defense Applications</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
                   Track Panel Nomination → Concept Defense → Proposal Defense → Final Defense → Manuscript. Each stage unlocks after the previous one is approved.
                 </p>
@@ -85,7 +85,7 @@ export default function DefenseApplicationHub() {
                   return (
                     <div key={stage.key} className="group flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
                       <div className="flex items-start justify-between gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#12186E]">
                           <FiFileText size={20} />
                         </div>
                         <div className="flex flex-wrap items-center justify-end gap-2">
@@ -103,7 +103,7 @@ export default function DefenseApplicationHub() {
                       <Link
                         href={href}
                         aria-disabled={!stage.available}
-                        className={`mt-5 inline-flex items-center gap-2 text-sm font-bold ${stage.available ? 'text-[#103F78]' : 'cursor-not-allowed text-slate-400'}`}
+                        className={`mt-5 inline-flex items-center gap-2 text-sm font-bold ${stage.available ? 'text-[#12186E]' : 'cursor-not-allowed text-slate-400'}`}
                         onClick={(event) => { if (!stage.available) event.preventDefault(); }}
                       >
                         {stage.available ? <FiArrowRight className="transition group-hover:translate-x-0.5" /> : <FiLock />}
@@ -116,7 +116,7 @@ export default function DefenseApplicationHub() {
 
               <div className="mt-6 flex flex-wrap gap-3 text-sm">
                 <div className="flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-slate-700">
-                  <FiClock className="text-[#103F78]" /> Review decisions are recorded by assigned panel/faculty.
+                  <FiClock className="text-[#12186E]" /> Review decisions are recorded by assigned panel / advisers.
                 </div>
                 <div className="flex items-center gap-2 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-3 text-slate-700">
                   <FiCheckCircle className="text-emerald-600" /> Approved manuscripts can be published to the repository.

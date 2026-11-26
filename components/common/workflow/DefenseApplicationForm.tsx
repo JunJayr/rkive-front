@@ -48,7 +48,7 @@ const STAGE_TITLES: Record<DefenseStage, string> = {
 };
 
 const inputClass =
-  'w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15 disabled:bg-slate-50';
+  'w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15 disabled:bg-slate-50';
 const labelClass = 'mb-2 block text-sm font-semibold text-slate-700';
 
 interface FormState {
@@ -343,7 +343,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC]">
+      <div className="flex min-h-screen bg-[#FAF9F6]">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-12">
@@ -351,11 +351,11 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
               <header className="mb-8">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Academic Workflow</p>
-                  <Link href="/user/defense-application" className="inline-flex items-center gap-1 text-xs font-semibold text-[#103F78] hover:underline">
+                  <Link href="/user/defense-application" className="inline-flex items-center gap-1 text-xs font-semibold text-[#12186E] hover:underline">
                     <FiArrowLeft size={14} /> All applications
                   </Link>
                 </div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">{STAGE_TITLES[stage]}</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E] sm:text-4xl">{STAGE_TITLES[stage]}</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
                   Complete the research details, review your assigned panel, and submit once every panelist has accepted.
                 </p>
@@ -376,7 +376,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                 <section className="mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
-                      <h2 className="text-base font-bold text-[#103F78]">Workflow status</h2>
+                      <h2 className="text-base font-bold text-[#12186E]">Workflow status</h2>
                       <p className="mt-1 text-xs text-slate-500">
                         Attempt {application.attempt} · {application.stage_label} · {application.department || 'No department'}
                       </p>
@@ -395,7 +395,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                     <div className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-xs font-semibold text-amber-800">
                       <p>{gate.message}</p>
                       {gate.missing.includes('panel_nomination') && (
-                        <Link href="/user/panel-nomination" className="mt-2 inline-flex items-center gap-1 font-bold text-[#103F78] hover:underline">
+                        <Link href="/user/panel-nomination" className="mt-2 inline-flex items-center gap-1 font-bold text-[#12186E] hover:underline">
                           Open Panel Nomination <FiArrowLeft size={12} className="rotate-180" />
                         </Link>
                       )}
@@ -409,7 +409,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
 
                   <div className="mt-5 grid gap-4 md:grid-cols-2">
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-                      <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiUsers size={16} className="text-[#103F78]" /> Assigned panel</h3>
+                      <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiUsers size={16} className="text-[#12186E]" /> Assigned panel</h3>
                       {application.panel.length === 0 ? (
                         <p className="mt-2 text-xs text-slate-500">No panelists assigned yet. The Department Head assigns panelists for your department.</p>
                       ) : (
@@ -428,7 +428,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                       )}
                     </div>
                     <div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4">
-                      <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiCheckCircle size={16} className="text-[#103F78]" /> Panel readiness</h3>
+                      <h3 className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiCheckCircle size={16} className="text-[#12186E]" /> Panel readiness</h3>
                       <p className="mt-2 text-xs text-slate-600">
                         {application.panel_readiness.distinct_count} of at least 3 distinct panelists assigned.
                         {application.panel_readiness.all_accepted ? ' All assigned panelists accepted.' : ''}
@@ -455,13 +455,13 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                   {!!application.faculty_roster?.length && (
                     <div className="mt-4 rounded-2xl border border-blue-100 bg-blue-50/50 p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <h3 className="flex items-center gap-2 text-sm font-bold text-[#103F78]">
+                        <h3 className="flex items-center gap-2 text-sm font-bold text-[#12186E]">
                           <FiUsers size={16} /> Approved panel roster (read-only)
                         </h3>
                         {!!application.nomination_id && (
                           <Link
                             href={`/user/panel-nomination?nomination_id=${application.nomination_id}`}
-                            className="text-xs font-bold text-[#103F78] hover:underline"
+                            className="text-xs font-bold text-[#12186E] hover:underline"
                           >
                             View nomination #{application.nomination_id}
                           </Link>
@@ -485,7 +485,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
               )}
 
               <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#103F78] px-6 py-6 sm:px-8">
+                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#12186E] px-6 py-6 sm:px-8">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiFileText size={24} /></div>
                   <div>
                     <h2 className="text-lg font-bold text-white">{preview ? 'Application Preview' : 'Defense Details'}</h2>
@@ -506,7 +506,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                       <button type="button" onClick={() => setPreviewUrl(null)} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                         <FiArrowLeft size={16} /> Back to Form
                       </button>
-                      <a href={previewUrl ?? '#'} download={`application_${stage}.docx`} className="inline-flex items-center gap-2 rounded-xl bg-[#103F78] px-6 py-3 text-sm font-bold text-white hover:bg-[#0b2d57]">
+                      <a href={previewUrl ?? '#'} download={`application_${stage}.docx`} className="inline-flex items-center gap-2 rounded-xl bg-[#12186E] px-6 py-3 text-sm font-bold text-white hover:bg-[#0E1358]">
                         <FiDownload size={17} /> Download Application
                       </a>
                     </div>
@@ -514,7 +514,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                 ) : (
                   <form onSubmit={handleGenerate} className="space-y-10 p-5 sm:p-8">
                     <section className="space-y-5">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiFileText size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Research Information</h3></div>
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiFileText size={20} className="text-[#12186E]" /><h3 className="text-lg font-bold text-slate-800">Research Information</h3></div>
                       <div>
                         <label htmlFor="department" className={labelClass}>Department *</label>
                         <select id="department" name="department" value={form.department} onChange={changeField} required disabled={!editable || busy} className={inputClass}>
@@ -531,7 +531,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                     </section>
 
                     <section className="space-y-5">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Research Team</h3></div>
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#12186E]" /><h3 className="text-lg font-bold text-slate-800">Research Team</h3></div>
                       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div>
                           <label htmlFor="lead_researcher" className={labelClass}>Lead Researcher *</label>
@@ -545,7 +545,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                       <div>
                         <div className="mb-3 flex items-center justify-between">
                           <h4 className="text-sm font-bold text-slate-700">Research Proponents</h4>
-                          <button type="button" onClick={addProponent} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#103F78] px-3 py-1.5 text-xs font-bold text-[#103F78] hover:bg-blue-50 disabled:opacity-50">
+                          <button type="button" onClick={addProponent} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#12186E] px-3 py-1.5 text-xs font-bold text-[#12186E] hover:bg-blue-50 disabled:opacity-50">
                             <FiPlus size={14} /> Add Proponent
                           </button>
                         </div>
@@ -553,7 +553,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                         <div className="grid grid-cols-1 gap-3">
                           {proponents.map((row, index) => (
                             <div key={row.id} className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#103F78]">{index + 1}</div>
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#12186E]">{index + 1}</div>
                               <div className="min-w-0 flex-1">
                                 <label htmlFor={`proponent-name-${row.id}`} className="mb-1 block text-xs font-semibold text-slate-500">Full name</label>
                                 <input id={`proponent-name-${row.id}`} value={row.name} onChange={(e) => changeProponent(row.id, 'name', e.target.value)} disabled={!editable || busy} className={inputClass} placeholder="Full name" />
@@ -572,7 +572,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                     </section>
 
                     <section className="space-y-5">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiCalendar size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Defense Schedule</h3></div>
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiCalendar size={20} className="text-[#12186E]" /><h3 className="text-lg font-bold text-slate-800">Defense Schedule</h3></div>
                       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                         <div>
                           <label htmlFor="datetime_defense" className={labelClass}>Defense Date &amp; Time *</label>
@@ -586,7 +586,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                     </section>
 
                     <section className="space-y-5">
-                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#103F78]" /><h3 className="text-lg font-bold text-slate-800">Approved Panel Roster</h3></div>
+                      <div className="flex items-center gap-3 border-b border-slate-100 pb-4"><FiUsers size={20} className="text-[#12186E]" /><h3 className="text-lg font-bold text-slate-800">Approved Panel Roster</h3></div>
                       <p className="text-sm leading-6 text-slate-500">
                         These members and roles come from your approved Panel Nomination. Defense forms are
                         read-only and use the same people in the same order; panel invitations and acceptance
@@ -605,7 +605,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                         <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-xs text-slate-500">
                           No approved roster is attached to this application yet.
                           {!!application?.nomination_id && (
-                            <Link href={`/user/panel-nomination?nomination_id=${application.nomination_id}`} className="ml-1 font-bold text-[#103F78] hover:underline">
+                            <Link href={`/user/panel-nomination?nomination_id=${application.nomination_id}`} className="ml-1 font-bold text-[#12186E] hover:underline">
                               Open the nomination
                             </Link>
                           )}
@@ -644,7 +644,7 @@ export default function DefenseApplicationForm({ stage }: { stage: DefenseStage 
                         <button type="submit" disabled={!editable || busy || !stageState?.available} className="inline-flex min-h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-6 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-50">
                           {generating ? <Spinner sm /> : <><FiFileText size={18} /> Save &amp; Generate Preview</>}
                         </button>
-                        <button type="button" onClick={() => void handleSubmit()} disabled={!canSubmit || busy} className="inline-flex min-h-12 items-center gap-3 rounded-xl bg-[#FBBF24] px-8 text-sm font-bold text-[#103F78] hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
+                        <button type="button" onClick={() => void handleSubmit()} disabled={!canSubmit || busy} className="inline-flex min-h-12 items-center gap-3 rounded-xl bg-[#F9B515] px-8 text-sm font-bold text-[#12186E] hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50">
                           {submitting ? <Spinner sm /> : <><FiCheckCircle size={18} /> Submit Application</>}
                         </button>
                       </div>

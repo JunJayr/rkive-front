@@ -1,4 +1,4 @@
-// useAdminDashboard.ts
+// Shared admin dashboard hook using the canonical five-role model.
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import {
@@ -7,9 +7,12 @@ import {
   useUpdateUserMutation,
   useDeleteUserMutation,
   useAddUserMutation,
+  normalizeAccountType,
+  type AccountType,
+  type AddUserInput,
 } from '@/redux/features/authApiSlice';
 
-export type AccountType = 'superadmin' | 'admin' | 'department_head' | 'faculty' | 'student' | 'user';
+export type { AccountType } from '@/redux/features/authApiSlice';
 
 export interface User {
   userID: string;
@@ -17,25 +20,21 @@ export interface User {
   last_name: string;
   email: string;
   department?: string;
+  department_normalized?: string;
+  program_scope?: string[];
   is_active: boolean;
   is_staff: boolean;
   is_superuser: boolean;
   is_dean: boolean;
   is_headdept: boolean;
   is_department_head?: boolean;
+  /** Legacy alias retained for compatibility; canonical role is Panel / Adviser. */
   is_faculty: boolean;
   is_student: boolean;
-  account_type?: AccountType | 'panel';
-}
-
-interface AddUserInput {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-  repassword: string;
   account_type?: AccountType;
-  department?: string;
+  role?: AccountType;
+  role_label?: string;
+  role_needs_review?: boolean;
 }
 
 export default function useAdminDashboard() {
@@ -75,14 +74,14 @@ export default function useAdminDashboard() {
 
   const getAccountType = (user: User | null): AccountType => {
     if (!user) return 'student';
-    const raw = (user.account_type || '').toLowerCase();
-    if (raw === 'panel') return 'faculty';
-    if (raw === 'user') return 'student';
-    // Canonical precedence: superadmin > admin > department_head > faculty > student.
-    if (raw === 'superadmin' || user.is_superuser) return 'superadmin';
-    if (raw === 'admin' || user.is_staff) return 'admin';
-    if (raw === 'department_head' || user.is_department_head || user.is_headdept) return 'department_head';
-    if (raw === 'faculty' || user.is_faculty) return 'faculty';
+    const canonical = normalizeAccountType(user.role || user.account_type);
+    // An explicit non-student assignment always wins; legacy flags only
+    // resolve ambiguous/default student records from older data.
+    if (canonical !== 'student') return canonical;
+    if (user.is_superuser) return 'superadmin';
+    if (user.is_staff) return 'admin';
+    if (user.is_department_head || user.is_headdept) return 'department_head';
+    if (user.is_faculty) return 'panel';
     return 'student';
   };
 
@@ -91,10 +90,11 @@ export default function useAdminDashboard() {
     setSelectedUser({
       ...selectedUser,
       account_type: type,
+      role: type,
       is_student: type === 'student',
       is_staff: type === 'admin' || type === 'superadmin',
       is_superuser: type === 'superadmin',
-      is_faculty: type === 'faculty',
+      is_faculty: type === 'panel',
       is_dean: false,
       is_department_head: type === 'department_head',
       is_headdept: type === 'department_head',
@@ -108,10 +108,11 @@ export default function useAdminDashboard() {
         const userData = {
           ...selectedUser,
           account_type,
+          role: account_type,
           is_student: account_type === 'student',
           is_staff: account_type === 'admin' || account_type === 'superadmin',
           is_superuser: account_type === 'superadmin',
-          is_faculty: account_type === 'faculty',
+          is_faculty: account_type === 'panel',
           is_dean: false,
           is_department_head: account_type === 'department_head',
           is_headdept: account_type === 'department_head',
@@ -133,7 +134,7 @@ export default function useAdminDashboard() {
         toast.success('User deleted successfully');
         refetch();
         setShowModal(false);
-      } catch (error) {
+      } catch {
         toast.error('Failed to delete user');
       }
     }

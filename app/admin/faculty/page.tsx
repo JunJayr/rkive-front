@@ -11,10 +11,11 @@ import {
   useUpdateFacultyMutation,
   useDeleteFacultyMutation,
   useListUsersQuery,
+  normalizeAccountType,
 } from '@/redux/features/authApiSlice';
 
 const inputClass =
-  'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15';
+  'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15';
 
 type FacultyForm = {
   facultyID?: number;
@@ -98,7 +99,7 @@ export default function AdminFacultyPage() {
   const busy = creating || updating || deleting;
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
@@ -106,22 +107,22 @@ export default function AdminFacultyPage() {
             <header className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Administration</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Adviser/Panel Links</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Adviser/Panel Links</h1>
                 <p className="mt-2 max-w-2xl text-sm text-slate-500">
                   Manage adviser/panel records used in nominations and defenses, and link each record to an <span className="font-semibold">Adviser/Panel</span> login account so assigned reviews appear in <span className="font-semibold">/panel</span>.
                 </p>
               </div>
-              <button type="button" onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#FBBF24] px-5 py-3 text-sm font-bold text-[#103F78] transition hover:bg-amber-300">
+              <button type="button" onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#F9B515] px-5 py-3 text-sm font-bold text-[#12186E] transition hover:bg-amber-300">
                 <FiPlus size={18} /> Add Adviser/Panel
               </button>
             </header>
 
             <div className="mb-6 flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-4 text-sm text-slate-700">
-              <FiInfo className="mt-0.5 shrink-0 text-[#103F78]" />
+              <FiInfo className="mt-0.5 shrink-0 text-[#12186E]" />
               <div>
-                <p className="font-semibold text-[#103F78]">How Adviser/Panel accounts get assignments</p>
+                <p className="font-semibold text-[#12186E]">How Adviser/Panel accounts get assignments</p>
                 <p className="mt-1 text-xs leading-6 text-slate-600">
-                  1) Set the login account’s type to <b>Adviser/Panel</b> in User Management. 2) Create or select an adviser/panel record here and link that user. 3) When that member is assigned as adviser, panel chair, or panel member on an application or manuscript, the item appears in their <b>/panel</b> queue.
+                  Creating a <b>Panel / Adviser</b> account automatically adds that name to the nomination and defense roster. You can refine the title here, or link an older manually created roster record. Assignments as adviser, chair, or panel member then appear in the account’s <b>/panel</b> queue.
                 </p>
               </div>
             </div>
@@ -133,7 +134,7 @@ export default function AdminFacultyPage() {
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]"><FiUsers size={22} /></div>
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#12186E]"><FiUsers size={22} /></div>
                   <div>
                     <h2 className="text-lg font-bold text-slate-800">Adviser/Panel Records</h2>
                     <p className="text-xs text-slate-500">{faculty.length} record(s){isFetching ? ' · refreshing…' : ''}</p>
@@ -188,9 +189,9 @@ export default function AdminFacultyPage() {
                                   <p className="mt-0.5 text-xs text-slate-500">{f.user_email}</p>
                                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                                     {isSuper ? <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold text-white">Superadmin</span> : null}
-                                    {isAdmin && !isSuper ? <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-[#103F78]">Admin</span> : null}
-                                    {isPanel && !isAdmin ? <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">Faculty (assignment-based)</span> : null}
-                                    {!isPanel && !isAdmin ? <span className="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-700">Not a Faculty reviewer account</span> : null}
+                                    {isAdmin && !isSuper ? <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-[#12186E]">Admin</span> : null}
+                                    {isPanel && !isAdmin ? <span className="rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">Panel / Adviser (assignment-based)</span> : null}
+                                    {!isPanel && !isAdmin ? <span className="rounded-md bg-red-50 px-2 py-0.5 text-[10px] font-bold text-red-700">Not a Panel / Adviser reviewer account</span> : null}
                                   </div>
                                 </div>
                               ) : (
@@ -199,7 +200,7 @@ export default function AdminFacultyPage() {
                             </td>
                             <td className="px-6 py-4 text-right">
                               <div className="inline-flex gap-2">
-                                <button type="button" onClick={() => openEdit(f)} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-[#103F78] hover:bg-blue-50"><FiEdit2 size={14} /> Edit / Link</button>
+                                <button type="button" onClick={() => openEdit(f)} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-[#12186E] hover:bg-blue-50"><FiEdit2 size={14} /> Edit / Link</button>
                                 <button type="button" onClick={() => onDelete(f.facultyID, f.name)} disabled={busy} className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-50 disabled:opacity-50"><FiTrash2 size={14} /> Delete</button>
                               </div>
                             </td>
@@ -219,7 +220,7 @@ export default function AdminFacultyPage() {
       {open && (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
           <div role="dialog" aria-modal="true" aria-labelledby="faculty-modal-title" className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-center justify-between bg-[#103F78] px-6 py-5">
+            <div className="sticky top-0 z-10 flex items-center justify-between bg-[#12186E] px-6 py-5">
               <div>
                 <h2 id="faculty-modal-title" className="text-lg font-bold text-white">{form.facultyID ? 'Edit Adviser/Panel & Link Account' : 'Add Adviser/Panel Record'}</h2>
                 <p className="mt-1 text-xs text-blue-100">Records are used for adviser/panel selection and assignment.</p>
@@ -246,12 +247,18 @@ export default function AdminFacultyPage() {
               </div>
 
               <div>
-                <label htmlFor="f-user" className="mb-2 block text-sm font-semibold text-slate-700">Linked login account (Faculty)</label>
+                <label htmlFor="f-user" className="mb-2 block text-sm font-semibold text-slate-700">Linked login account (Panel / Adviser)</label>
                 <select id="f-user" value={form.user} onChange={(e) => setForm({ ...form, user: e.target.value })} className={inputClass}>
                   <option value="">— Not linked —</option>
                   {users.map((u: any) => {
                     const id = String(u.userID);
-                    const type = u.is_superuser ? 'Superadmin' : u.is_staff ? 'Admin' : u.is_faculty ? 'Faculty' : 'Student';
+                    const type = normalizeAccountType(u.role || u.account_type) === 'superadmin'
+                      ? 'Superadmin'
+                      : normalizeAccountType(u.role || u.account_type) === 'admin' || u.is_staff
+                        ? 'Admin'
+                        : u.is_faculty || normalizeAccountType(u.role || u.account_type) === 'panel'
+                          ? 'Panel / Adviser'
+                          : 'Student';
                     return (
                       <option key={id} value={id}>
                         {`${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email} ({u.email}) — {type}
@@ -260,16 +267,16 @@ export default function AdminFacultyPage() {
                   })}
                 </select>
                 {form.user && linkedUser && !(linkedUser.is_faculty || linkedUser.is_staff || linkedUser.is_superuser) && (
-                  <p className="mt-2 text-xs font-medium text-amber-700">This user is not a Faculty/Admin account. Set the Account Type to <b>Faculty</b> in User Management so assignment-based adviser/panelist/chair access works.</p>
+                  <p className="mt-2 text-xs font-medium text-amber-700">This user is not a Panel / Adviser account. Change the role to <b>Panel / Adviser</b> in Accounts &amp; Privileged Access so assignment-based adviser/panelist/chair access works.</p>
                 )}
                 {form.user && linkedUser && (linkedUser.is_faculty || linkedUser.is_staff || linkedUser.is_superuser) && (
-                  <p className="mt-2 text-xs font-medium text-emerald-700">This account can receive assignments. Normal adviser/panelist/chair workflows should use a <b>Faculty</b> account.</p>
+                  <p className="mt-2 text-xs font-medium text-emerald-700">This account can receive assignments. Normal adviser/panelist/chair workflows should use a <b>Panel / Adviser</b> account.</p>
                 )}
               </div>
 
               <div className="flex justify-end gap-3 border-t border-slate-100 pt-5">
                 <button type="button" onClick={() => setOpen(false)} disabled={busy} className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancel</button>
-                <button type="submit" disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-[#FBBF24] px-6 py-3 text-sm font-bold text-[#103F78] hover:bg-amber-300 disabled:opacity-60">
+                <button type="submit" disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-[#F9B515] px-6 py-3 text-sm font-bold text-[#12186E] hover:bg-amber-300 disabled:opacity-60">
                   <FiSave size={17} /> {busy ? 'Saving…' : 'Save'}
                 </button>
               </div>
@@ -282,7 +289,7 @@ export default function AdminFacultyPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-10 py-8 shadow-xl">
             <Spinner />
-            <p className="text-sm font-bold text-[#103F78]">Processing…</p>
+            <p className="text-sm font-bold text-[#12186E]">Processing…</p>
           </div>
         </div>
       )}

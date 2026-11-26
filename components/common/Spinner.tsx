@@ -12,7 +12,7 @@ interface Props {
 export default function Spinner({ sm, md, lg, className, label = 'Loading' }: Props) {
   const iconClassName = cn(
     'animate-spin',
-    className?.match(/\btext-/) ? null : 'text-[#103F78]',
+    className?.match(/\btext-/) ? null : 'text-brandNavy',
     {
       'h-4 w-4': sm,
       'h-6 w-6': md || (!sm && !lg),

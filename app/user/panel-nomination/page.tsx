@@ -92,7 +92,7 @@ export default function PanelNominationPage() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC]">
+      <div className="flex min-h-screen bg-[#FAF9F6]">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-12">
@@ -102,11 +102,11 @@ export default function PanelNominationPage() {
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
                     RKIVE / Academic Workflow
                   </p>
-                  <Link href="/user/defense-application" className="inline-flex items-center gap-1 text-xs font-semibold text-[#103F78] hover:underline">
+                  <Link href="/user/defense-application" className="inline-flex items-center gap-1 text-xs font-semibold text-[#12186E] hover:underline">
                     <FiArrowLeft size={14} /> All applications
                   </Link>
                 </div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E] sm:text-4xl">
                   Panel Nomination
                 </h1>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
@@ -126,7 +126,7 @@ export default function PanelNominationPage() {
               <section className="mb-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-base font-bold text-[#103F78]">Nomination status</h2>
+                    <h2 className="text-base font-bold text-[#12186E]">Nomination status</h2>
                     <p className="mt-1 text-xs text-slate-500">
                       {nominationId
                         ? `Record #${nominationId} · Attempt ${attempt}`
@@ -148,7 +148,7 @@ export default function PanelNominationPage() {
                 )}
                 {locked && (
                   <p className="mt-3 flex items-start gap-2 text-xs text-slate-600">
-                    <FiInfo className="mt-0.5 shrink-0 text-[#103F78]" />
+                    <FiInfo className="mt-0.5 shrink-0 text-[#12186E]" />
                     This nomination is read-only. Use the official form download below for your records.
                   </p>
                 )}
@@ -160,7 +160,7 @@ export default function PanelNominationPage() {
               </section>
 
               <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#103F78] px-6 py-6 sm:px-8">
+                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#12186E] px-6 py-6 sm:px-8">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-300">
                     <FiUsers size={24} />
                   </div>
@@ -202,7 +202,7 @@ export default function PanelNominationPage() {
                       <button type="button" onClick={clearPreview} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                         <FiArrowLeft size={16} /> Back to Edit
                       </button>
-                      <a href={previewHref} download={previewName} className="inline-flex items-center gap-2 rounded-xl bg-[#103F78] px-6 py-3 text-sm font-bold text-white hover:bg-blue-800">
+                      <a href={previewHref} download={previewName} className="inline-flex items-center gap-2 rounded-xl bg-[#12186E] px-6 py-3 text-sm font-bold text-white hover:bg-blue-800">
                         <FiDownload size={17} /> Download Nomination
                       </a>
                     </div>
@@ -211,7 +211,7 @@ export default function PanelNominationPage() {
                   <form onSubmit={(event) => { event.preventDefault(); void handleGenerate(); }} className="space-y-10 p-5 sm:p-8">
                     <section className="space-y-5">
                       <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                        <FiFileText size={20} className="text-[#103F78]" />
+                        <FiFileText size={20} className="text-[#12186E]" />
                         <h3 className="text-lg font-bold text-slate-800">Thesis Information</h3>
                       </div>
                       <div>
@@ -245,21 +245,21 @@ export default function PanelNominationPage() {
 
                     <section className="space-y-5">
                       <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                        <FiUsers size={20} className="text-[#103F78]" />
+                        <FiUsers size={20} className="text-[#12186E]" />
                         <h3 className="text-lg font-bold text-slate-800">Research Proponents</h3>
                       </div>
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <p className="text-sm leading-6 text-slate-500">
                           Three proponents are required. Add more when your group has additional members.
                         </p>
-                        <button type="button" onClick={addProponent} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#103F78] px-3 py-1.5 text-xs font-bold text-[#103F78] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">
+                        <button type="button" onClick={addProponent} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#12186E] px-3 py-1.5 text-xs font-bold text-[#12186E] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">
                           <FiPlus size={14} /> Add Proponent
                         </button>
                       </div>
                       <div className="grid grid-cols-1 gap-3">
                         {proponents.map((row, index) => (
                           <div key={row.id} className="flex items-start gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-bold text-[#103F78]">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-sm font-bold text-[#12186E]">
                               {index + 1}
                             </div>
                             <div className="grid min-w-0 flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
@@ -284,15 +284,15 @@ export default function PanelNominationPage() {
 
                     <section className="space-y-5">
                       <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
-                        <FiUser size={20} className="text-[#103F78]" />
-                        <h3 className="text-lg font-bold text-slate-800">Nominated Faculty Members</h3>
+                        <FiUser size={20} className="text-[#12186E]" />
+                        <h3 className="text-lg font-bold text-slate-800">Nominated Panel / Adviser Members</h3>
                       </div>
                       <div className="flex flex-wrap items-center justify-between gap-3">
                         <p className="text-sm leading-6 text-slate-500">
                           Adviser, Panel Chair, and Panel Member 1 are required. At least three distinct
-                          non-adviser faculty members must be nominated.
+                          non-adviser panel members must be nominated.
                         </p>
-                        <button type="button" onClick={addPanelMember} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#103F78] px-3 py-1.5 text-xs font-bold text-[#103F78] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">
+                        <button type="button" onClick={addPanelMember} disabled={!editable || busy} className="inline-flex items-center gap-1.5 rounded-lg border border-[#12186E] px-3 py-1.5 text-xs font-bold text-[#12186E] hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50">
                           <FiPlus size={14} /> Add Panel Member
                         </button>
                       </div>
@@ -302,7 +302,7 @@ export default function PanelNominationPage() {
                           return (
                             <div key={row.id} className="grid grid-cols-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-4 sm:grid-cols-[190px_1fr_auto]">
                               <div className="flex items-center gap-3">
-                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#103F78]">
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#12186E]">
                                   {index + 1}
                                 </div>
                                 <span className="text-xs font-bold text-slate-700">{roleLabel(row.role)}</span>
@@ -314,7 +314,7 @@ export default function PanelNominationPage() {
                                 disabled={!editable || busy}
                                 className={inputClass}
                               >
-                                <option value="">Select Faculty Member</option>
+                                <option value="">Select Panel / Adviser Member</option>
                                 {facultyList.map((faculty) => {
                                   const selectedElsewhere = roster.some((other) => other.id !== row.id && other.faculty_id === String(faculty.facultyID));
                                   return (
@@ -345,9 +345,9 @@ export default function PanelNominationPage() {
                     )}
 
                     <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
-                      <FiInfo size={19} className="mt-0.5 shrink-0 text-[#103F78]" />
+                      <FiInfo size={19} className="mt-0.5 shrink-0 text-[#12186E]" />
                       <div>
-                        <p className="text-sm font-bold text-[#103F78]">Before submitting</p>
+                        <p className="text-sm font-bold text-[#12186E]">Before submitting</p>
                         <p className="mt-1 text-xs leading-6 text-slate-600">
                           Values are saved to the database before a document is generated. After approval,
                           this roster is copied into every defense form and cannot be replaced there.
@@ -371,7 +371,7 @@ export default function PanelNominationPage() {
                         <button type="submit" disabled={!editable || busy || blockers.length > 0} className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-slate-200 px-6 text-sm font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
                           {busy ? <Spinner sm /> : <><FiFileText size={18} /> Save &amp; Generate</>}
                         </button>
-                        <button type="button" onClick={() => void handleSubmit()} disabled={!editable || busy || blockers.length > 0} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#FBBF24] px-8 text-sm font-bold text-[#103F78] shadow-sm transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">
+                        <button type="button" onClick={() => void handleSubmit()} disabled={!editable || busy || blockers.length > 0} className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#F9B515] px-8 text-sm font-bold text-[#12186E] shadow-sm transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto">
                           {busy ? <Spinner sm /> : <><FiSend size={17} /> Submit Nomination</>}
                         </button>
                       </div>
@@ -388,7 +388,7 @@ export default function PanelNominationPage() {
           <div role="status" aria-live="polite" aria-label="Saving panel nomination" className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/45 backdrop-blur-sm">
             <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-10 py-8 shadow-2xl">
               <Spinner />
-              <p className="text-sm font-bold text-[#103F78]">Saving nomination...</p>
+              <p className="text-sm font-bold text-[#12186E]">Saving nomination...</p>
               <p className="text-center text-xs text-slate-500">Please wait while your record is written.</p>
             </div>
           </div>

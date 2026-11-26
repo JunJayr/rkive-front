@@ -54,6 +54,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const apiSlice = createApi({
 	reducerPath: 'api',
 	baseQuery: baseQueryWithReauth,
-	tagTypes: ['Workflow', 'Notifications'],
+	tagTypes: ['Workflow', 'Notifications', 'Accounts', 'Academic'],
 	endpoints: builder => ({}),
 });

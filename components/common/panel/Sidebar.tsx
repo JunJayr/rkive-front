@@ -46,16 +46,16 @@ export default function PanelSidebar() {
   return (
     <>
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 md:hidden">
-        <span className="text-lg font-extrabold text-[#103F78]">RKIVE <span className="text-amber-600">Panel</span></span>
-        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" className="rounded-lg p-2 text-[#103F78]">
+        <span className="text-lg font-extrabold text-[#12186E]">RKIVE <span className="text-amber-600">Panel</span></span>
+        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" className="rounded-lg p-2 text-[#12186E]">
           <FiMenu size={24} />
         </button>
       </div>
       {mobileOpen && <div className="fixed inset-0 z-40 bg-slate-950/50 md:hidden" onClick={() => setMobileOpen(false)} aria-hidden="true" />}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#103F78] text-white shadow-xl transition-transform md:static md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#12186E] text-white shadow-xl transition-transform md:static md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FBBF24] text-[#103F78]"><FiShield size={22} /></div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F9B515] text-[#12186E]"><FiShield size={22} /></div>
             <div>
               <p className="text-lg font-extrabold">RKIVE</p>
               <p className="text-[10px] font-semibold uppercase tracking-widest text-blue-200">Panel Portal</p>
@@ -70,7 +70,7 @@ export default function PanelSidebar() {
               const active = isActive(item.href);
               return (
                 <li key={item.name}>
-                  <Link href={item.href} onClick={() => setMobileOpen(false)} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${active ? 'bg-[#FBBF24] font-bold text-[#103F78]' : 'text-blue-100 hover:bg-white/10'}`}>
+                  <Link href={item.href} onClick={() => setMobileOpen(false)} className={`flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition ${active ? 'bg-[#F9B515] font-bold text-[#12186E]' : 'text-blue-100 hover:bg-white/10'}`}>
                     <Icon size={19} /> {item.name}
                   </Link>
                 </li>

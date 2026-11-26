@@ -56,7 +56,7 @@ export default function Sidebar() {
   const expanded = mobileOpen || !collapsed;
   const isDefenseRoute = pathname.startsWith('/user/defense-application');
   const showHeadPortal = auth.isSuperuser || auth.isDepartmentHead || auth.isHeadDept || auth.canAssignPanels;
-  const showPanelPortal = auth.isFaculty || auth.isSuperuser || auth.isStaff;
+  const showPanelPortal = auth.isPanel || auth.isFaculty || auth.isSuperuser || auth.isStaff;
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
   useEffect(() => { if (isDefenseRoute) setDefenseOpen(true); }, [isDefenseRoute]);
@@ -95,7 +95,7 @@ export default function Sidebar() {
         aria-current={active ? 'page' : undefined}
         className={`group flex h-11 items-center rounded-xl transition-all duration-200 ${
           expanded ? 'gap-3 px-3.5' : 'justify-center'
-        } ${active ? 'bg-[#FBBF24] text-[#103F78] shadow-sm' : 'text-blue-100/90 hover:bg-white/10 hover:text-white'}`}
+        } ${active ? 'bg-[#F9B515] text-[#12186E] shadow-sm' : 'text-blue-100/90 hover:bg-white/10 hover:text-white'}`}
       >
         <Icon size={19} className="shrink-0" />
         {expanded && <span className={`text-[13px] ${active ? 'font-bold' : 'font-semibold'}`}>{item.name}</span>}
@@ -107,10 +107,10 @@ export default function Sidebar() {
     <>
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/95 px-4 backdrop-blur md:hidden">
         <Link href="/user" className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#103F78] text-[#FBBF24]"><FiBookOpen size={18} /></span>
-          <span className="text-lg font-extrabold tracking-tight text-[#103F78]">RKIVE</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#12186E] text-[#F9B515]"><FiBookOpen size={18} /></span>
+          <span className="text-lg font-extrabold tracking-tight text-[#12186E]">RKIVE</span>
         </Link>
-        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open navigation" className="rounded-xl p-2.5 text-[#103F78] hover:bg-slate-100">
+        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open navigation" className="rounded-xl p-2.5 text-[#12186E] hover:bg-slate-100">
           <FiMenu size={22} />
         </button>
       </div>
@@ -122,13 +122,13 @@ export default function Sidebar() {
       <aside
         onMouseEnter={() => { if (window.innerWidth >= 768) setCollapsed(false); }}
         onMouseLeave={() => { if (window.innerWidth >= 768) setCollapsed(true); }}
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col bg-[#103F78] text-white shadow-2xl shadow-blue-950/20 transition-[width,transform] duration-300 md:sticky md:top-0 md:shrink-0 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col bg-[#12186E] text-white shadow-2xl shadow-blue-950/20 transition-[width,transform] duration-300 md:sticky md:top-0 md:shrink-0 ${
           expanded ? 'w-[272px]' : 'w-[272px] md:w-[78px]'
         } ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
       >
         <div className="flex h-[72px] shrink-0 items-center border-b border-white/10 px-3.5">
           <Link href="/user" className="flex min-w-0 flex-1 items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#FBBF24] text-[#103F78] shadow-sm">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F9B515] text-[#12186E] shadow-sm">
               <FiBookOpen size={20} />
             </span>
             <div className={`min-w-0 overflow-hidden transition-opacity duration-200 ${expanded ? 'opacity-100' : 'opacity-0 md:opacity-0'}`}>
@@ -183,7 +183,7 @@ export default function Sidebar() {
                       href={step.href}
                       aria-current={active ? 'page' : undefined}
                       className={`flex min-h-10 items-center justify-between gap-2 rounded-lg px-3 py-2 transition-colors ${
-                        active ? 'bg-[#FBBF24] font-bold text-[#103F78]' : 'text-blue-100/85 hover:bg-white/10 hover:text-white'
+                        active ? 'bg-[#F9B515] font-bold text-[#12186E]' : 'text-blue-100/85 hover:bg-white/10 hover:text-white'
                       }`}
                     >
                       <span className="text-xs font-medium">{step.label}</span>
@@ -218,11 +218,11 @@ export default function Sidebar() {
                   <li>
                     <Link
                       href="/panel"
-                      title={!expanded ? 'Faculty / Panel Workspace' : undefined}
+                      title={!expanded ? 'Panel / Adviser Workspace' : undefined}
                       className={`flex h-11 items-center rounded-xl text-blue-100/90 transition-colors hover:bg-white/10 hover:text-white ${expanded ? 'gap-3 px-3.5' : 'justify-center'}`}
                     >
                       <FiCheckSquare size={19} />
-                      {expanded && <span className="text-[13px] font-semibold">Faculty / Panel Workspace</span>}
+                      {expanded && <span className="text-[13px] font-semibold">Panel / Adviser Workspace</span>}
                     </Link>
                   </li>
                 )}

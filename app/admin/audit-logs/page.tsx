@@ -10,7 +10,7 @@ export default function AuditLogsPage() {
   const { data: logs, isLoading, isFetching, refetch, error } = useGetAuditLogsQuery({ limit: 200 });
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
@@ -18,16 +18,16 @@ export default function AuditLogsPage() {
             <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div>
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Administration</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">Audit Logs</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E] sm:text-4xl">Audit Logs</h1>
                 <p className="mt-3 text-sm text-slate-500">
                   Academic/operational audit visibility for Research Coordinators. Superadmin has full system/security visibility in the Superadmin workspace.
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <button type="button" onClick={() => refetch()} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#103F78] hover:bg-blue-50">
+                <button type="button" onClick={() => refetch()} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#12186E] hover:bg-blue-50">
                   <FiRefreshCw size={16} className={isFetching ? 'animate-spin' : ''} /> Refresh
                 </button>
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]"><FiShield size={26} /></div>
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]"><FiShield size={26} /></div>
               </div>
             </header>
 
@@ -55,7 +55,7 @@ export default function AuditLogsPage() {
                         <tr key={log.logID} className="align-top hover:bg-blue-50/20">
                           <td className="whitespace-nowrap px-6 py-4 text-xs text-slate-600">{log.created_at ? new Date(log.created_at).toLocaleString() : '—'}</td>
                           <td className="px-6 py-4 text-sm text-slate-700">{log.actor_email || 'system'}</td>
-                          <td className="px-6 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-[#103F78]">{log.action}</span></td>
+                          <td className="px-6 py-4"><span className="rounded-md bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-[#12186E]">{log.action}</span></td>
                           <td className="px-6 py-4 text-xs text-slate-500">{log.target_type ? `${log.target_type}${log.target_id ? ` #${log.target_id}` : ''}` : '—'}</td>
                           <td className="px-6 py-4 text-sm text-slate-700">{log.summary || '—'}</td>
                         </tr>

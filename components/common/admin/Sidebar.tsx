@@ -39,7 +39,7 @@ const menuItems = [
     icon: FiBookOpen,
   },
   {
-    name: 'Faculty Links',
+    name: 'Panel / Adviser Links',
     href: '/admin/faculty',
     icon: FiUsers,
   },
@@ -127,7 +127,7 @@ export default function Sidebar() {
           onClick={closeMobile}
           className="flex min-w-0 items-center gap-3"
         >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#FBBF24] text-[#103F78] shadow-sm">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#F9B515] text-[#12186E] shadow-sm">
             <FiBookOpen size={22} />
           </div>
 
@@ -173,7 +173,7 @@ export default function Sidebar() {
                       transition-all duration-200
                       ${
                         active
-                          ? 'bg-[#FBBF24] font-bold text-[#103F78] shadow-sm'
+                          ? 'bg-[#F9B515] font-bold text-[#12186E] shadow-sm'
                           : 'text-blue-100 hover:bg-white/10 hover:text-white'
                       }
                       ${collapsed ? 'justify-center' : 'gap-3'}
@@ -191,7 +191,7 @@ export default function Sidebar() {
                     )}
 
                     {active && !collapsed && (
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-[#103F78]" />
+                      <span className="h-2 w-2 shrink-0 rounded-full bg-[#12186E]" />
                     )}
                   </Link>
                 </li>
@@ -205,7 +205,7 @@ export default function Sidebar() {
       <div className="shrink-0 border-t border-white/10 p-3">
         {!collapsed && (
           <div className="mb-3 flex items-center gap-3 rounded-xl bg-white/10 px-3 py-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#FBBF24] text-[#103F78]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F9B515] text-[#12186E]">
               <FiShield size={19} />
             </div>
 
@@ -254,11 +254,11 @@ export default function Sidebar() {
       {/* MOBILE TOP BAR */}
       <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-5 shadow-sm md:hidden">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#103F78] text-[#FBBF24]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#12186E] text-[#F9B515]">
             <FiBookOpen size={18} />
           </div>
 
-          <span className="text-lg font-extrabold tracking-wide text-[#103F78]">
+          <span className="text-lg font-extrabold tracking-wide text-[#12186E]">
             RKIVE
           </span>
 
@@ -271,7 +271,7 @@ export default function Sidebar() {
           type="button"
           onClick={() => setMobileOpen(true)}
           aria-label="Open admin menu"
-          className="rounded-lg p-2 text-[#103F78] hover:bg-slate-100"
+          className="rounded-lg p-2 text-[#12186E] hover:bg-slate-100"
         >
           <FiMenu size={24} />
         </button>
@@ -291,7 +291,7 @@ export default function Sidebar() {
         className={`
           fixed inset-y-0 left-0 z-50
           w-72 max-w-[85vw]
-          bg-[#103F78]
+          bg-[#12186E]
           shadow-2xl
           transition-transform duration-300
           md:hidden
@@ -314,7 +314,7 @@ export default function Sidebar() {
         {/* Mobile navigation always shows labels */}
         <div className="flex h-full flex-col">
           <div className="flex h-20 items-center gap-3 border-b border-white/10 px-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FBBF24] text-[#103F78]">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F9B515] text-[#12186E]">
               <FiBookOpen size={22} />
             </div>
 
@@ -353,7 +353,7 @@ export default function Sidebar() {
                         transition
                         ${
                           active
-                            ? 'bg-[#FBBF24] font-bold text-[#103F78]'
+                            ? 'bg-[#F9B515] font-bold text-[#12186E]'
                             : 'text-blue-100 hover:bg-white/10'
                         }
                       `}
@@ -385,7 +385,7 @@ export default function Sidebar() {
       <aside
         className={`
           relative hidden h-screen shrink-0
-          flex-col bg-[#103F78]
+          flex-col bg-[#12186E]
           transition-all duration-300
           md:sticky md:top-0 md:flex
           ${collapsed ? 'w-[76px]' : 'w-64'}
@@ -403,7 +403,7 @@ export default function Sidebar() {
           title={
             collapsed ? 'Expand sidebar' : 'Collapse sidebar'
           }
-          className="absolute -right-3 top-24 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-[#103F78] shadow-md transition hover:bg-amber-50"
+          className="absolute -right-3 top-24 z-20 flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-[#12186E] shadow-md transition hover:bg-amber-50"
         >
           {collapsed ? (
             <FiChevronRight size={16} />
@@ -423,7 +423,7 @@ export default function Sidebar() {
           <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-10 py-8 shadow-xl">
             <Spinner />
 
-            <p className="text-sm font-bold text-[#103F78]">
+            <p className="text-sm font-bold text-[#12186E]">
               Signing out...
             </p>
           </div>

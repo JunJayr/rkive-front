@@ -100,16 +100,16 @@ export default function SuperadminDepartmentsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
           <div className="mx-auto w-full max-w-6xl">
             <header className="mb-8">
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / System Owner</p>
-              <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Departments &amp; Department Heads</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Departments &amp; Department Heads</h1>
               <p className="mt-3 max-w-3xl text-sm text-slate-500">
-                Departments are the scope used for panel assignment and routine account creation. Department Heads can create faculty and student accounts in their own department only; privileged role grants remain Superadmin-only.
+                Departments are the scope used for panel assignment and routine account creation. Department Heads can create Panel / Adviser and Student accounts in their own department only; privileged role grants remain Superadmin-only.
               </p>
             </header>
 
@@ -119,12 +119,12 @@ export default function SuperadminDepartmentsPage() {
 
             <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
               <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center gap-3 bg-[#103F78] px-6 py-5"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiGrid size={22} /></div><div><h2 className="text-lg font-bold text-white">Departments</h2><p className="text-xs text-blue-100/80">Create and maintain the department registry</p></div></div>
+                <div className="flex items-center gap-3 bg-[#12186E] px-6 py-5"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiGrid size={22} /></div><div><h2 className="text-lg font-bold text-white">Departments</h2><p className="text-xs text-blue-100/80">Create and maintain the department registry</p></div></div>
                 <div className="p-5 sm:p-6">
                   <form onSubmit={create} className="grid gap-3 sm:grid-cols-[1fr_140px_auto]">
-                    <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Department name" className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#103F78]" />
-                    <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="Code" className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#103F78]" />
-                    <button type="submit" disabled={creatingDepartment} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#103F78] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"><FiPlus size={16} /> Add</button>
+                    <input value={name} onChange={(event) => setName(event.target.value)} required placeholder="Department name" className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#12186E]" />
+                    <input value={code} onChange={(event) => setCode(event.target.value)} placeholder="Code" className="rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#12186E]" />
+                    <button type="submit" disabled={creatingDepartment} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#12186E] px-4 py-2 text-sm font-bold text-white disabled:opacity-50"><FiPlus size={16} /> Add</button>
                   </form>
 
                   <div className="mt-5 divide-y divide-slate-100">
@@ -143,7 +143,7 @@ export default function SuperadminDepartmentsPage() {
                               <p className="text-sm font-bold text-slate-800">{department.name}</p>
                               <p className="text-xs text-slate-500">{department.code || 'No code'}</p>
                             </div>
-                            <button type="button" onClick={() => startEdit(department)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-[#103F78] hover:bg-blue-50">Edit</button>
+                            <button type="button" onClick={() => startEdit(department)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-bold text-[#12186E] hover:bg-blue-50">Edit</button>
                             <button type="button" onClick={() => void remove(department.department_id, department.name)} disabled={deletingDepartment} aria-label={`Delete ${department.name}`} className="rounded-lg p-2 text-rose-600 hover:bg-rose-50 disabled:opacity-50"><FiTrash2 size={16} /></button>
                           </>
                         )}
@@ -155,11 +155,11 @@ export default function SuperadminDepartmentsPage() {
               </section>
 
               <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-                <div className="flex items-center gap-3 bg-[#103F78] px-6 py-5"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiUsers size={22} /></div><div><h2 className="text-lg font-bold text-white">Create Department Head</h2><p className="text-xs text-blue-100/80">Scoped to one department</p></div></div>
+                <div className="flex items-center gap-3 bg-[#12186E] px-6 py-5"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-amber-300"><FiUsers size={22} /></div><div><h2 className="text-lg font-bold text-white">Create Department Head</h2><p className="text-xs text-blue-100/80">Scoped to one department</p></div></div>
                 <form onSubmit={createHead} className="space-y-4 p-5 sm:p-6">
                   <label className="block">
                     <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Department *</span>
-                    <select value={selectedDepartmentId} onChange={(event) => setSelectedDepartmentId(event.target.value ? Number(event.target.value) : '')} required className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#103F78]">
+                    <select value={selectedDepartmentId} onChange={(event) => setSelectedDepartmentId(event.target.value ? Number(event.target.value) : '')} required className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#12186E]">
                       <option value="">Select department</option>
                       {departments.map((department) => <option key={department.department_id} value={department.department_id}>{department.name}</option>)}
                     </select>
@@ -173,14 +173,14 @@ export default function SuperadminDepartmentsPage() {
                     <input value={head.password} onChange={(event) => setHead({ ...head, password: event.target.value })} required type="password" placeholder="Password" className="rounded-xl border border-slate-200 px-3 py-2 text-sm" />
                     <input value={head.repassword} onChange={(event) => setHead({ ...head, repassword: event.target.value })} required type="password" placeholder="Confirm password" className="rounded-xl border border-slate-200 px-3 py-2 text-sm" />
                   </div>
-                  <button type="submit" disabled={creatingHead || !selectedDepartment} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#FBBF24] px-5 py-3 text-sm font-bold text-[#103F78] hover:bg-amber-300 disabled:opacity-50"><FiSave size={16} /> {creatingHead ? 'Creating…' : 'Create Department Head'}</button>
+                  <button type="submit" disabled={creatingHead || !selectedDepartment} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#F9B515] px-5 py-3 text-sm font-bold text-[#12186E] hover:bg-amber-300 disabled:opacity-50"><FiSave size={16} /> {creatingHead ? 'Creating…' : 'Create Department Head'}</button>
                   <p className="text-xs leading-5 text-slate-500">The account receives <code className="rounded bg-slate-100 px-1">department_head</code> access and is bound to {selectedDepartment ? selectedDepartment.name : 'the selected department'}.</p>
                 </form>
               </section>
             </div>
 
             <section className="mt-6 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-              <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4"><FiUsers className="text-[#103F78]" /><h2 className="text-base font-bold text-[#103F78]">Current Department Heads</h2><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{heads.length}</span></div>
+              <div className="flex items-center gap-3 border-b border-slate-100 px-6 py-4"><FiUsers className="text-[#12186E]" /><h2 className="text-base font-bold text-[#12186E]">Current Department Heads</h2><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{heads.length}</span></div>
               {heads.length === 0 ? (
                 <p className="px-6 py-8 text-center text-sm text-slate-500">No Department Head accounts found.</p>
               ) : (

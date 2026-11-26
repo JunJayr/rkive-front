@@ -11,19 +11,34 @@ interface Faculty {
 }
 
 export type AccountType =
-  | 'superadmin'
-  | 'admin'
-  | 'department_head'
-  | 'faculty'
   | 'student'
   | 'panel'
-  | 'user';
+  | 'department_head'
+  | 'admin'
+  | 'superadmin';
 
-export function normalizeAccountType(value?: string | null): Exclude<AccountType, 'panel' | 'user'> {
-  const v = (value || '').toLowerCase();
-  if (v === 'panel') return 'faculty';
-  if (v === 'user') return 'student';
-  if (v === 'superadmin' || v === 'admin' || v === 'department_head' || v === 'faculty' || v === 'student') return v;
+export const ACCOUNT_TYPES: AccountType[] = [
+  'student',
+  'panel',
+  'department_head',
+  'admin',
+  'superadmin',
+];
+
+export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
+  student: 'Student',
+  panel: 'Panel / Adviser',
+  department_head: 'Department Head',
+  admin: 'Admin',
+  superadmin: 'Superadmin',
+};
+
+export function normalizeAccountType(value?: string | null): AccountType {
+  const v = (value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (v === 'faculty' || v === 'panelist' || v === 'adviser' || v === 'panel_adviser') return 'panel';
+  if (v === 'user' || v === 'student') return 'student';
+  if (v === 'headdept' || v === 'head_department' || v === 'department_head') return 'department_head';
+  if (v === 'admin' || v === 'superadmin') return v as AccountType;
   return 'student';
 }
 
@@ -43,6 +58,10 @@ interface User {
   is_faculty: boolean;
   is_student: boolean;
   account_type?: AccountType;
+  role?: AccountType;
+  role_label?: string;
+  program_scope?: string[];
+  role_needs_review?: boolean;
   is_admin?: boolean;
   is_panel?: boolean;
   is_superadmin?: boolean;
@@ -162,15 +181,123 @@ interface AddUserResponse {
   email: string;
 }
   
-interface AddUserInput {
+export interface AddUserInput {
   first_name: string;
   last_name: string;
   email: string;
-  password: string;
-  repassword: string;
+  password?: string;
+  repassword?: string;
   account_type?: AccountType;
   department?: string;
+  program_scope?: string[];
   is_active?: boolean;
+  activation_required?: boolean;
+}
+
+export interface AccountImportRow {
+  _row?: number;
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  account_type?: string;
+  department?: string;
+  program_scope?: string[] | string;
+  is_active?: boolean | string;
+  activation_required?: boolean | string;
+  password?: string;
+  role_label?: string;
+  status: 'valid' | 'invalid' | 'success' | 'failed';
+  errors: string[];
+  userID?: number;
+}
+
+export interface AccountImportResult {
+  rows: AccountImportRow[];
+  summary: {
+    total: number;
+    valid?: number;
+    invalid?: number;
+    created?: number;
+    failed?: number;
+  };
+  headers?: string[];
+}
+
+export interface AcademicEndorsement {
+  id?: number;
+  endorsed: boolean;
+  comments: string;
+  adviser?: string | null;
+  reviewer?: string | null;
+  decided_at?: string | null;
+}
+
+export interface RubricCriterionRecord {
+  id: number;
+  criterion_id: number;
+  name: string;
+  description?: string;
+  max_score: string;
+  order: number;
+}
+
+export interface RubricRecord {
+  id: number;
+  rubric_id: number;
+  name: string;
+  version: string;
+  description?: string;
+  is_active: boolean;
+  criteria: RubricCriterionRecord[];
+}
+
+export interface PanelScoreRecord {
+  id: number;
+  panelist?: string | null;
+  criterion_id: number;
+  criterion_name: string;
+  score: string;
+  max_score: string;
+  rubric_id: number;
+  rubric: RubricRecord;
+  attempt: number;
+  recorded_at?: string | null;
+}
+
+export interface RevisionItemRecord {
+  id: number;
+  item_id: number;
+  application_id: number;
+  requirement: string;
+  student_addressed: boolean;
+  student_note: string;
+  student_addressed_at?: string | null;
+  panel_verified: boolean;
+  panel_note: string;
+  panel_verified_at?: string | null;
+}
+
+export interface DepartmentalClearanceRecord {
+  id?: number;
+  final_grade: string;
+  notes: string;
+  granted_at?: string | null;
+  head?: string | null;
+  pending_revisions?: number;
+}
+
+export interface MentorshipRequestRecord {
+  id: number;
+  request_id: number;
+  research_title: string;
+  message: string;
+  status: 'pending' | 'accepted' | 'declined';
+  response_note: string;
+  panelist: string;
+  panelist_id: number;
+  requester: string;
+  created_at?: string | null;
+  responded_at?: string | null;
 }
 
 export type WorkflowStage = 'panel_nomination' | 'concept' | 'proposal' | 'final' | 'manuscript';
@@ -398,6 +525,8 @@ const authApiSlice = apiSlice.injectEndpoints({
 	  getUserRole: builder.mutation<
 		{
 		  account_type?: AccountType;
+		  role?: AccountType;
+		  program_scope?: string[];
 		  is_admin?: boolean;
 		  is_panel?: boolean;
 		  is_superadmin?: boolean;
@@ -417,9 +546,11 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  can_administer_academics?: boolean;
 		  can_manage_settings?: boolean;
 		  can_create_accounts?: boolean;
+		  can_manage_accounts?: boolean;
+		  can_import_accounts?: boolean;
 		  can_assign_panels?: boolean;
 		},
-		{}
+		Record<string, never>
 	  >({
 		query: () => ({
 		  url: '/user-role/',
@@ -638,18 +769,33 @@ const authApiSlice = apiSlice.injectEndpoints({
 	  listFiles: builder.query<{ generated_documents_files: string[]; manuscripts_files: string[] }, void>({
 		query: () => '/list-files/',
 	  }),
-	  getAuditLogs: builder.query<any[], { action?: string; limit?: number } | void>({
+	  getAuditLogs: builder.query<any[], { action?: string; target_id?: string; limit?: number } | void>({
 		query: (arg) => {
 		  const params = new URLSearchParams();
 		  if (arg && arg.action) params.set('action', arg.action);
+		  if (arg && arg.target_id) params.set('target_id', arg.target_id);
 		  if (arg && arg.limit) params.set('limit', String(arg.limit));
 		  const qs = params.toString();
 		  return `/audit-logs/${qs ? `?${qs}` : ''}`;
 		},
 	  }),
 
-	  listUsers: builder.query<User[], void>({
-		query: () => '/list-users/',
+	  listUsers: builder.query<User[], {
+	    search?: string;
+	    role?: AccountType;
+	    program?: string;
+	    status?: 'active' | 'inactive';
+	  } | void>({
+		query: (arg) => {
+		  const params = new URLSearchParams();
+		  if (arg?.search) params.set('search', arg.search);
+		  if (arg?.role) params.set('role', arg.role);
+		  if (arg?.program) params.set('program', arg.program);
+		  if (arg?.status) params.set('status', arg.status);
+		  const qs = params.toString();
+		  return `/list-users/${qs ? `?${qs}` : ''}`;
+		},
+		providesTags: ['Accounts'],
 	  }),
   
 	  addUser: builder.mutation<AddUserResponse, AddUserInput>({
@@ -658,6 +804,7 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  method: 'POST',
 		  body,
 		}),
+		invalidatesTags: ['Accounts'],
 	  }),
   
 	  updateUser: builder.mutation<User, { userID: string; userData: Partial<User> }>({
@@ -666,6 +813,7 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  method: 'PUT',
 		  body: userData,
 		}),
+		invalidatesTags: ['Accounts'],
 	  }),
   
 	  deleteUser: builder.mutation<{ message: string }, string>({
@@ -673,6 +821,152 @@ const authApiSlice = apiSlice.injectEndpoints({
 		  url: `/list-users/${userID}/`,
 		  method: 'DELETE',
 		}),
+		invalidatesTags: ['Accounts'],
+	  }),
+
+	  sendAccountActivation: builder.mutation<{ message: string }, string>({
+		query: (userID) => ({
+		  url: `/list-users/${userID}/send-activation/`,
+		  method: 'POST',
+		  body: {},
+		}),
+	  }),
+
+	  // --- Dedicated Academic Operations / account management -------------
+	  getAccountTemplate: builder.query<Blob, void>({
+		query: () => ({
+		  url: '/account-template/',
+		  responseHandler: (response: Response) => response.blob(),
+		}),
+	  }),
+	  previewAccountImport: builder.mutation<AccountImportResult, FormData>({
+		query: (body) => ({ url: '/accounts/import/', method: 'POST', body }),
+	  }),
+	  importAccounts: builder.mutation<
+	    AccountImportResult,
+	    FormData | { action: 'commit'; rows: Array<Partial<AccountImportRow>> }
+	  >({
+		query: (body) => ({ url: '/accounts/import/', method: 'POST', body }),
+		invalidatesTags: ['Accounts'],
+	  }),
+
+	  // --- Academic responsibilities --------------------------------------
+	  getMentorshipRequests: builder.query<MentorshipRequestRecord[], void>({
+		query: () => '/mentorship/requests/',
+		providesTags: ['Academic'],
+	  }),
+	  createMentorshipRequest: builder.mutation<MentorshipRequestRecord, {
+	    faculty_id: number;
+	    research_title?: string;
+	    message?: string;
+	    nomination_id?: number;
+	  }>({
+		query: (body) => ({ url: '/mentorship/requests/', method: 'POST', body }),
+		invalidatesTags: ['Academic'],
+	  }),
+	  respondMentorshipRequest: builder.mutation<MentorshipRequestRecord, {
+	    request_id: number;
+	    decision: 'accept' | 'decline';
+	    note?: string;
+	  }>({
+		query: ({ request_id, ...body }) => ({
+		  url: `/mentorship/requests/${request_id}/respond/`,
+		  method: 'POST',
+		  body,
+		}),
+		invalidatesTags: ['Academic'],
+	  }),
+	  getEndorsement: builder.query<AcademicEndorsement | null, number>({
+		query: (applicationID) => `/academic/applications/${applicationID}/endorsement/`,
+		providesTags: ['Academic', 'Workflow'],
+	  }),
+	  setEndorsement: builder.mutation<AcademicEndorsement, {
+	    applicationID: number;
+	    endorsed: boolean;
+	    comments?: string;
+	  }>({
+		query: ({ applicationID, ...body }) => ({
+		  url: `/academic/applications/${applicationID}/endorsement/`,
+		  method: 'POST',
+		  body,
+		}),
+		invalidatesTags: ['Academic', 'Workflow'],
+	  }),
+	  getRubrics: builder.query<RubricRecord[], void>({
+		query: () => '/academic/rubrics/',
+		providesTags: ['Academic'],
+	  }),
+	  createRubric: builder.mutation<RubricRecord, {
+	    name: string;
+	    version?: string;
+	    description?: string;
+	    is_active?: boolean;
+	    criteria: Array<{ name: string; description?: string; max_score?: number | string }>;
+	  }>({
+		query: (body) => ({ url: '/academic/rubrics/', method: 'POST', body }),
+		invalidatesTags: ['Academic'],
+	  }),
+	  getPanelScores: builder.query<PanelScoreRecord[], number>({
+		query: (applicationID) => `/academic/applications/${applicationID}/scores/`,
+		providesTags: ['Academic'],
+	  }),
+	  savePanelScores: builder.mutation<{ saved: number[]; rubric: RubricRecord }, {
+	    applicationID: number;
+	    rubric_id: number;
+	    scores: Array<{ criterion_id: number; score: number | string }>;
+	  }>({
+		query: ({ applicationID, ...body }) => ({
+		  url: `/academic/applications/${applicationID}/scores/`,
+		  method: 'POST',
+		  body,
+		}),
+		invalidatesTags: ['Academic'],
+	  }),
+	  getRevisionItems: builder.query<RevisionItemRecord[], number>({
+		query: (applicationID) => `/academic/applications/${applicationID}/revisions/`,
+		providesTags: ['Academic'],
+	  }),
+	  createRevisionItem: builder.mutation<RevisionItemRecord, {
+	    applicationID: number;
+	    requirement: string;
+	    note?: string;
+	    approval_id?: number;
+	  }>({
+		query: ({ applicationID, ...body }) => ({
+		  url: `/academic/applications/${applicationID}/revisions/`,
+		  method: 'POST',
+		  body,
+		}),
+		invalidatesTags: ['Academic'],
+	  }),
+	  actOnRevisionItem: builder.mutation<RevisionItemRecord, {
+	    applicationID: number;
+	    itemID: number;
+	    action: 'addressed' | 'verify';
+	    note?: string;
+	  }>({
+		query: ({ applicationID, itemID, action, note }) => ({
+		  url: `/academic/applications/${applicationID}/revisions/${itemID}/${action}/`,
+		  method: 'POST',
+		  body: { note },
+		}),
+		invalidatesTags: ['Academic'],
+	  }),
+	  getClearance: builder.query<DepartmentalClearanceRecord | null, number>({
+		query: (applicationID) => `/academic/applications/${applicationID}/clearance/`,
+		providesTags: ['Academic'],
+	  }),
+	  grantClearance: builder.mutation<DepartmentalClearanceRecord, {
+	    applicationID: number;
+	    final_grade: string;
+	    notes?: string;
+	  }>({
+		query: ({ applicationID, ...body }) => ({
+		  url: `/academic/applications/${applicationID}/clearance/`,
+		  method: 'POST',
+		  body,
+		}),
+		invalidatesTags: ['Academic'],
 	  }),
 
 	  // --- Stateful defense workflow -------------------------------------
@@ -906,6 +1200,25 @@ const authApiSlice = apiSlice.injectEndpoints({
 	useAddUserMutation,
 	useUpdateUserMutation,
 	useDeleteUserMutation,
+	useSendAccountActivationMutation,
+	useGetAccountTemplateQuery,
+	useLazyGetAccountTemplateQuery,
+	usePreviewAccountImportMutation,
+	useImportAccountsMutation,
+	useGetMentorshipRequestsQuery,
+	useCreateMentorshipRequestMutation,
+	useRespondMentorshipRequestMutation,
+	useGetEndorsementQuery,
+	useSetEndorsementMutation,
+	useGetRubricsQuery,
+	useCreateRubricMutation,
+	useGetPanelScoresQuery,
+	useSavePanelScoresMutation,
+	useGetRevisionItemsQuery,
+	useCreateRevisionItemMutation,
+	useActOnRevisionItemMutation,
+	useGetClearanceQuery,
+	useGrantClearanceMutation,
 	useGetUserProfileQuery,
 	useGetWorkflowStatusQuery,
 	useGetPanelNominationsQuery,

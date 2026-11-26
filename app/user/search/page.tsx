@@ -118,15 +118,15 @@ function BrowseResearchContent() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+      <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-4 pb-14 pt-20 sm:px-6 md:pt-8 lg:px-10">
             <div className="mx-auto w-full max-w-6xl">
-              <header className="rounded-[26px] bg-[#103F78] px-5 py-7 shadow-[0_20px_50px_-24px_rgba(16,63,120,0.55)] sm:px-8">
+              <header className="rounded-[26px] bg-[#12186E] px-5 py-7 shadow-[0_20px_50px_-24px_rgba(16,63,120,0.55)] sm:px-8">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                   <div className="max-w-2xl">
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#FBBF24]">Repository</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F9B515]">Repository</p>
                     <h1 className="mt-2 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">Browse Research</h1>
                     <p className="mt-2 text-sm leading-6 text-blue-100/85">
                       Find approved manuscripts by title, author, keyword, program, and more.
@@ -154,7 +154,7 @@ function BrowseResearchContent() {
                       </button>
                     )}
                   </div>
-                  <button type="submit" disabled={busy} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#FBBF24] px-6 text-sm font-bold text-[#103F78] transition hover:bg-amber-300 disabled:opacity-60">
+                  <button type="submit" disabled={busy} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#F9B515] px-6 text-sm font-bold text-[#12186E] transition hover:bg-amber-300 disabled:opacity-60">
                     {busy ? <Spinner sm /> : <>Search <FiArrowRight size={16} /></>}
                   </button>
                 </form>
@@ -164,18 +164,18 @@ function BrowseResearchContent() {
                 <aside className="h-fit rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm lg:sticky lg:top-6">
                   <div className="flex items-center justify-between">
                     <button type="button" onClick={() => setShowFilters((v) => !v)} className="inline-flex items-center gap-2 text-sm font-bold text-slate-800 lg:cursor-default">
-                      <FiSliders size={16} className="text-[#103F78]" /> Filters
-                      {activeFilterCount > 0 && <span className="rounded-full bg-[#103F78] px-2 py-0.5 text-[10px] font-bold text-white">{activeFilterCount}</span>}
+                      <FiSliders size={16} className="text-[#12186E]" /> Filters
+                      {activeFilterCount > 0 && <span className="rounded-full bg-[#12186E] px-2 py-0.5 text-[10px] font-bold text-white">{activeFilterCount}</span>}
                     </button>
                     {(activeFilterCount > 0 || query) && (
-                      <button type="button" onClick={clearAll} className="text-xs font-semibold text-slate-500 hover:text-[#103F78]">Clear all</button>
+                      <button type="button" onClick={clearAll} className="text-xs font-semibold text-slate-500 hover:text-[#12186E]">Clear all</button>
                     )}
                   </div>
 
                   <div className={`${showFilters ? 'mt-4 block' : 'mt-4 hidden lg:block'} space-y-3`}>
                     <div>
                       <label htmlFor="f-sort" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Sort</label>
-                      <select id="f-sort" value={filters.sort} onChange={(e) => updateFilter('sort', e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/10">
+                      <select id="f-sort" value={filters.sort} onChange={(e) => updateFilter('sort', e.target.value)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/10">
                         {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                       </select>
                     </div>
@@ -189,7 +189,7 @@ function BrowseResearchContent() {
                     ] as const).map(([key, label, placeholder]) => (
                       <div key={key}>
                         <label htmlFor={`f-${key}`} className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">{label}</label>
-                        <input id={`f-${key}`} value={(filters as any)[key]} onChange={(e) => updateFilter(key as any, e.target.value)} placeholder={placeholder} inputMode={key === 'year' ? 'numeric' : undefined} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/10" />
+                        <input id={`f-${key}`} value={(filters as any)[key]} onChange={(e) => updateFilter(key as any, e.target.value)} placeholder={placeholder} inputMode={key === 'year' ? 'numeric' : undefined} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none transition focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/10" />
                       </div>
                     ))}
                   </div>
@@ -224,13 +224,13 @@ function BrowseResearchContent() {
 
                   {!busy && !isError && manuscripts.length === 0 && (
                     <div className="flex flex-col items-center rounded-2xl border border-slate-200/80 bg-white px-6 py-16 text-center">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]"><FiBookOpen size={26} /></div>
+                      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]"><FiBookOpen size={26} /></div>
                       <h3 className="mt-4 font-bold text-slate-800">No manuscripts found</h3>
                       <p className="mt-1.5 max-w-md text-sm text-slate-500">
                         {query || activeFilterCount ? 'Try different keywords or clear some filters.' : 'No manuscripts have been approved for publication yet.'}
                       </p>
                       {(query || activeFilterCount > 0) && (
-                        <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#103F78] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0b2d57]">Clear search &amp; filters</button>
+                        <button type="button" onClick={clearAll} className="mt-5 rounded-xl bg-[#12186E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0E1358]">Clear search &amp; filters</button>
                       )}
                     </div>
                   )}
@@ -244,13 +244,13 @@ function BrowseResearchContent() {
                         return (
                           <li key={id} className="group rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:border-blue-200/80 hover:shadow-md">
                             <div className="flex gap-4">
-                              <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 text-[#103F78] ring-1 ring-inset ring-slate-100 sm:flex">
+                              <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-slate-50 text-[#12186E] ring-1 ring-inset ring-slate-100 sm:flex">
                                 <FiFileText size={22} />
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
                                   <h3 className="min-w-0 flex-1 text-[17px] font-bold leading-snug text-slate-800">
-                                    <Link href={`/user/repository/${id}`} className="transition group-hover:text-[#103F78] hover:underline">
+                                    <Link href={`/user/repository/${id}`} className="transition group-hover:text-[#12186E] hover:underline">
                                       {m.title || 'Untitled Manuscript'}
                                     </Link>
                                   </h3>
@@ -270,7 +270,7 @@ function BrowseResearchContent() {
                                 )}
                                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
                                   <span className="text-[11px] font-semibold uppercase tracking-wide text-emerald-600">Approved research</span>
-                                  <Link href={`/user/repository/${id}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-[#103F78] hover:underline">
+                                  <Link href={`/user/repository/${id}`} className="inline-flex items-center gap-1.5 text-sm font-bold text-[#12186E] hover:underline">
                                     View details <FiArrowRight size={15} />
                                   </Link>
                                 </div>
@@ -294,7 +294,7 @@ function BrowseResearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#F6F8FC]"><Spinner /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#FAF9F6]"><Spinner /></div>}>
       <BrowseResearchContent />
     </Suspense>
   );

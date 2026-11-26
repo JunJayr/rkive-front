@@ -24,7 +24,7 @@ export default function BookmarksPage() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+      <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-4 pb-14 pt-20 sm:px-6 md:pt-8 lg:px-10">
@@ -32,13 +32,13 @@ export default function BookmarksPage() {
               <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-600">Repository</p>
-                  <h1 className="mt-2 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-[#103F78] sm:text-3xl">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#FBBF24]/20 text-[#103F78]"><FiBookmark size={20} /></span>
+                  <h1 className="mt-2 flex items-center gap-2 text-2xl font-extrabold tracking-tight text-[#12186E] sm:text-3xl">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F9B515]/20 text-[#12186E]"><FiBookmark size={20} /></span>
                     My Collection
                   </h1>
                   <p className="mt-2 text-sm text-slate-500">Approved manuscripts you’ve saved for quick access.</p>
                 </div>
-                <Link href="/user/search" className="inline-flex items-center gap-2 self-start rounded-xl bg-[#103F78] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0b2d57]">
+                <Link href="/user/search" className="inline-flex items-center gap-2 self-start rounded-xl bg-[#12186E] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0E1358]">
                   <FiSearch size={16} /> Browse Research
                 </Link>
               </header>
@@ -53,18 +53,18 @@ export default function BookmarksPage() {
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500"><FiAlertCircle size={26} /></div>
                     <p className="mt-4 font-semibold text-slate-800">Unable to load your collection</p>
                     <p className="mt-1 text-sm text-slate-500">Please try again.</p>
-                    <button type="button" onClick={() => refetch()} className="mt-4 text-sm font-bold text-[#103F78] hover:underline">Retry</button>
+                    <button type="button" onClick={() => refetch()} className="mt-4 text-sm font-bold text-[#12186E] hover:underline">Retry</button>
                   </div>
                 )}
 
                 {!isLoading && !isError && data.length === 0 && (
                   <div className="px-6 py-16 text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]"><FiBookmark size={28} /></div>
+                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]"><FiBookmark size={28} /></div>
                     <h2 className="mt-5 text-lg font-bold text-slate-800">No saved manuscripts yet</h2>
                     <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
                       When you find research worth revisiting, save it from the manuscript details page and it will appear here.
                     </p>
-                    <Link href="/user/search" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#FBBF24] px-5 py-3 text-sm font-bold text-[#103F78] hover:bg-amber-300">
+                    <Link href="/user/search" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#F9B515] px-5 py-3 text-sm font-bold text-[#12186E] hover:bg-amber-300">
                       Browse Research <FiArrowRight size={16} />
                     </Link>
                   </div>
@@ -75,19 +75,19 @@ export default function BookmarksPage() {
                     {data.map((m: any) => {
                       const meta = [(m.authors ?? []).join(', '), m.year_completed, m.department].filter(Boolean).join(' · ');
                       return (
-                        <li key={m.manuscriptID} className="group flex flex-col gap-4 p-5 transition hover:bg-[#F6F8FC]/70 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                        <li key={m.manuscriptID} className="group flex flex-col gap-4 p-5 transition hover:bg-[#FAF9F6]/70 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                           <Link href={`/user/repository/${m.manuscriptID}`} className="flex min-w-0 items-start gap-4">
-                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#103F78] ring-1 ring-inset ring-blue-100/60">
+                            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#12186E] ring-1 ring-inset ring-blue-100/60">
                               <FiFileText size={20} />
                             </span>
                             <span className="min-w-0">
-                              <span className="block text-[15px] font-bold text-slate-800 group-hover:text-[#103F78]">{m.title}</span>
+                              <span className="block text-[15px] font-bold text-slate-800 group-hover:text-[#12186E]">{m.title}</span>
                               {meta && <span className="mt-1 block line-clamp-1 text-sm text-slate-500">{meta}</span>}
                               {m.category && <span className="mt-2 inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">{m.category}</span>}
                             </span>
                           </Link>
                           <div className="flex shrink-0 items-center gap-2 sm:pl-4">
-                            <Link href={`/user/repository/${m.manuscriptID}`} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-bold text-[#103F78] hover:bg-blue-50">
+                            <Link href={`/user/repository/${m.manuscriptID}`} className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-bold text-[#12186E] hover:bg-blue-50">
                               Open <FiArrowRight size={14} />
                             </Link>
                             <button

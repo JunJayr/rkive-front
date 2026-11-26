@@ -9,7 +9,7 @@ import { FiShield, FiRefreshCw } from 'react-icons/fi';
 export default function SuperadminAuditLogsPage() {
   const { data: logs, isLoading, isFetching, refetch, error } = useGetAuditLogsQuery({ limit: 300 });
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
@@ -17,12 +17,12 @@ export default function SuperadminAuditLogsPage() {
             <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
               <div>
                 <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / System Owner</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Security & Audit Logs</h1>
-                <p className="mt-3 text-sm text-slate-500">Full system visibility for Superadmin: permission changes, account/faculty changes, academic decision events, and administrative activities.</p>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Security & Audit Logs</h1>
+                <p className="mt-3 text-sm text-slate-500">Full system visibility for Superadmin: permission changes, account/panel changes, academic decision events, and administrative activities.</p>
               </div>
               <div className="flex items-center gap-3">
-                <button type="button" onClick={() => refetch()} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#103F78] hover:bg-blue-50"><FiRefreshCw size={16} className={isFetching ? 'animate-spin' : ''} /> Refresh</button>
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]"><FiShield size={26} /></div>
+                <button type="button" onClick={() => refetch()} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#12186E] hover:bg-blue-50"><FiRefreshCw size={16} className={isFetching ? 'animate-spin' : ''} /> Refresh</button>
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]"><FiShield size={26} /></div>
               </div>
             </header>
             <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">

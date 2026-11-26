@@ -58,14 +58,14 @@ export default function AdminSettingsPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
           <div className="mx-auto w-full max-w-5xl">
             <header className="mb-8">
               <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Research Administration</p>
-              <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Settings &amp; Official Templates</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Settings &amp; Official Templates</h1>
               <p className="mt-3 max-w-3xl text-sm text-slate-500">Manage shared form numbers, revision codes and the official Word templates used for defense applications.</p>
             </header>
 
@@ -76,7 +76,7 @@ export default function AdminSettingsPage() {
             )}
 
             <section className="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="flex items-center gap-2 text-lg font-bold text-[#103F78]"><FiSettings /> Shared settings</h2>
+              <h2 className="flex items-center gap-2 text-lg font-bold text-[#12186E]"><FiSettings /> Shared settings</h2>
               <p className="mt-1 text-xs text-slate-500">Values are available to the whole RKIVE workflow.</p>
               <form onSubmit={saveSettings} className="mt-4 grid gap-4 sm:grid-cols-2">
                 {Object.entries(currentSettings).map(([key, value]) => (
@@ -85,7 +85,7 @@ export default function AdminSettingsPage() {
                     <input
                       value={value}
                       onChange={(e) => setSettingsDraft({ ...currentSettings, [key]: e.target.value })}
-                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#103F78]"
+                      className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-[#12186E]"
                     />
                   </label>
                 ))}
@@ -104,12 +104,12 @@ export default function AdminSettingsPage() {
                         setSettingsDraft({ ...currentSettings, [key]: valueInput?.value || '' });
                         if (keyInput) keyInput.value = '';
                         if (valueInput) valueInput.value = '';
-                      }} className="rounded-xl border border-[#103F78] px-4 py-2 text-xs font-bold text-[#103F78]">Add</button>
+                      }} className="rounded-xl border border-[#12186E] px-4 py-2 text-xs font-bold text-[#12186E]">Add</button>
                     </div>
                   </label>
                 </div>
                 <div className="sm:col-span-2">
-                  <button type="submit" disabled={savingSettings} className="inline-flex items-center gap-2 rounded-xl bg-[#103F78] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">
+                  <button type="submit" disabled={savingSettings} className="inline-flex items-center gap-2 rounded-xl bg-[#12186E] px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50">
                     <FiSave size={16} /> {savingSettings ? 'Saving…' : 'Save settings'}
                   </button>
                 </div>
@@ -117,7 +117,7 @@ export default function AdminSettingsPage() {
             </section>
 
             <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <h2 className="flex items-center gap-2 text-lg font-bold text-[#103F78]"><FiFileText /> Official document templates</h2>
+              <h2 className="flex items-center gap-2 text-lg font-bold text-[#12186E]"><FiFileText /> Official document templates</h2>
               <div className="mt-4 space-y-4">
                 {(templates || []).map((template) => {
                   const draft = templateDrafts[template.code] || {
@@ -144,7 +144,7 @@ export default function AdminSettingsPage() {
                       </div>
                       <div className="mt-3 flex flex-wrap items-center gap-3">
                         <input type="file" accept=".docx" onChange={(e) => setTemplateDrafts((prev) => ({ ...prev, [template.code]: { ...draft, file: e.target.files?.[0] ?? null } }))} className="text-xs text-slate-600" />
-                        <button type="button" onClick={() => void saveTemplate(template.code)} disabled={savingTemplate} className="rounded-lg bg-[#103F78] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Save template</button>
+                        <button type="button" onClick={() => void saveTemplate(template.code)} disabled={savingTemplate} className="rounded-lg bg-[#12186E] px-4 py-2 text-xs font-bold text-white disabled:opacity-50">Save template</button>
                       </div>
                     </div>
                   );

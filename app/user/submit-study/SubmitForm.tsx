@@ -66,7 +66,7 @@ export default function SubmitForm() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC]">
+      <div className="flex min-h-screen bg-[#FAF9F6]">
         <Sidebar />
 
         {/* CONTENT */}
@@ -80,7 +80,7 @@ export default function SubmitForm() {
                   RKIVE / Academic Repository
                 </p>
 
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78] sm:text-4xl">
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E] sm:text-4xl">
                   Manuscript Submission
                 </h1>
 
@@ -96,7 +96,7 @@ export default function SubmitForm() {
               <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
                 {/* CARD HEADER */}
-                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#103F78] px-6 py-6 sm:px-8">
+                <div className="flex items-center gap-4 border-b border-slate-100 bg-[#12186E] px-6 py-6 sm:px-8">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 text-amber-300">
                     <FiFileText size={24} />
                   </div>
@@ -124,7 +124,7 @@ export default function SubmitForm() {
                     <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
                       <FiBookOpen
                         size={20}
-                        className="text-[#103F78]"
+                        className="text-[#12186E]"
                       />
 
                       <h3 className="text-lg font-bold text-slate-800">
@@ -198,7 +198,7 @@ export default function SubmitForm() {
                     <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
                       <FiUploadCloud
                         size={21}
-                        className="text-[#103F78]"
+                        className="text-[#12186E]"
                       />
 
                       <h3 className="text-lg font-bold text-slate-800">
@@ -260,14 +260,14 @@ export default function SubmitForm() {
                               type="button"
                               disabled={isLoading}
                               onClick={() => fileInputRef.current?.click()}
-                              className="mt-5 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-[#103F78] transition hover:bg-slate-50 disabled:opacity-50"
+                              className="mt-5 rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-[#12186E] transition hover:bg-slate-50 disabled:opacity-50"
                             >
                               Change File
                             </button>
                           </div>
                         ) : (
                           <div className="flex flex-col items-center">
-                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]">
+                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]">
                               <FiUploadCloud size={28} />
                             </div>
 
@@ -284,7 +284,7 @@ export default function SubmitForm() {
                               type="button"
                               disabled={isLoading}
                               onClick={() => fileInputRef.current?.click()}
-                              className="mt-5 rounded-xl bg-[#103F78] px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:opacity-50"
+                              className="mt-5 rounded-xl bg-[#12186E] px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:opacity-50"
                             >
                               Browse Files
                             </button>
@@ -302,11 +302,11 @@ export default function SubmitForm() {
                   <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
                     <FiInfo
                       size={19}
-                      className="mt-0.5 shrink-0 text-[#103F78]"
+                      className="mt-0.5 shrink-0 text-[#12186E]"
                     />
 
                     <div>
-                      <p className="text-sm font-bold text-[#103F78]">
+                      <p className="text-sm font-bold text-[#12186E]">
                         Before submitting
                       </p>
 
@@ -329,7 +329,7 @@ export default function SubmitForm() {
                     <button
                       type="submit"
                       disabled={isLoading}
-                      className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#FBBF24] px-8 text-sm font-bold text-[#103F78] shadow-sm transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                      className="inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-xl bg-[#F9B515] px-8 text-sm font-bold text-[#12186E] shadow-sm transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                     >
                       {isLoading ? (
                         <>
@@ -363,7 +363,7 @@ export default function SubmitForm() {
             <div className="flex flex-col items-center gap-4 rounded-2xl bg-white px-10 py-8 shadow-2xl">
               <Spinner />
 
-              <p className="text-sm font-bold text-[#103F78]">
+              <p className="text-sm font-bold text-[#12186E]">
                 Submitting manuscript...
               </p>
 

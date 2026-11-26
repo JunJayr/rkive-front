@@ -31,7 +31,7 @@ function badge(status?: string) {
   if (s === 'approved') return 'bg-emerald-50 text-emerald-700 ring-emerald-200';
   if (s === 'rejected') return 'bg-red-50 text-red-700 ring-red-200';
   if (s === 'revision_required') return 'bg-amber-50 text-amber-800 ring-amber-200';
-  if (s === 'under_review') return 'bg-blue-50 text-[#103F78] ring-blue-200';
+  if (s === 'under_review') return 'bg-blue-50 text-[#12186E] ring-blue-200';
   return 'bg-slate-100 text-slate-700 ring-slate-200';
 }
 
@@ -63,7 +63,7 @@ export default function AdminManuscriptPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+    <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <main className="flex-1 px-5 pb-12 pt-24 sm:px-8 md:pt-10 lg:px-10">
@@ -71,10 +71,10 @@ export default function AdminManuscriptPage() {
             <header className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
                 <p className="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-amber-600">RKIVE / Administration</p>
-                <h1 className="text-3xl font-extrabold tracking-tight text-[#103F78]">Manuscript Review</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-[#12186E]">Manuscript Review</h1>
                 <p className="mt-2 max-w-2xl text-sm text-slate-500">Review submitted manuscripts and record official approval decisions. Only approved manuscripts become eligible for repository publication based on visibility rules.</p>
               </div>
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#103F78]"><FiBookOpen size={26} /></div>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-[#12186E]"><FiBookOpen size={26} /></div>
             </header>
 
             {notice && (
@@ -89,18 +89,18 @@ export default function AdminManuscriptPage() {
                   <label htmlFor="q" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">Search</label>
                   <div className="relative">
                     <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input id="q" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setQuery(q)} placeholder="Title, author, keyword, category..." className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15" />
+                    <input id="q" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && setQuery(q)} placeholder="Title, author, keyword, category..." className="w-full rounded-xl border border-slate-200 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15" />
                   </div>
                 </div>
                 <div className="w-full lg:w-56">
                   <label htmlFor="status" className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500"><FiFilter className="mr-1 inline" />Status</label>
-                  <select id="status" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15">
+                  <select id="status" value={status} onChange={(e) => setStatus(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15">
                     <option value="">All statuses</option>
                     {statusOptions.filter(Boolean).map((s) => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
                   </select>
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => setQuery(q)} className="rounded-xl bg-[#103F78] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b2d57]">Apply</button>
+                  <button type="button" onClick={() => setQuery(q)} className="rounded-xl bg-[#12186E] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0E1358]">Apply</button>
                   <button type="button" onClick={() => { setQ(''); setQuery(''); setStatus(''); refetch(); }} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"><FiRefreshCw className={isFetching ? 'animate-spin' : ''} /> Reset</button>
                 </div>
               </div>
@@ -127,7 +127,7 @@ export default function AdminManuscriptPage() {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ring-1 ring-inset ${badge(m.status)}`}>{(m.status || 'pending').replace('_', ' ')}</span>
                             <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">{m.visibility}</span>
-                            {m.allow_download ? <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-[#103F78]">download enabled</span> : <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">view only</span>}
+                            {m.allow_download ? <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-[#12186E]">download enabled</span> : <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500">view only</span>}
                           </div>
                           <h2 className="mt-3 text-lg font-bold text-slate-900">{m.title}</h2>
                           <p className="mt-1 text-sm text-slate-600">{(m.authors || []).join(', ') || 'Authors not specified'}</p>
@@ -156,7 +156,7 @@ export default function AdminManuscriptPage() {
                             onChange={(e) => setComments((prev) => ({ ...prev, [m.manuscriptID]: e.target.value }))}
                             rows={3}
                             placeholder="Add context for approval, revision, or rejection..."
-                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15"
+                            className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15"
                           />
                           <div className="mt-3 flex flex-wrap gap-2">
                             <button type="button" disabled={busyRow} onClick={() => onReview(m, 'approved')} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-700 disabled:opacity-60"><FiCheck size={14} /> Approve</button>

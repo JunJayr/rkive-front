@@ -17,7 +17,7 @@ export default function PasswordResetConfirmPage({ params }: Props) {
     useResetPasswordConfirm(uid, token);
 
   const inputClass =
-    'block w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#103F78] focus:ring-2 focus:ring-[#103F78]/15';
+    'block w-full rounded-xl border border-slate-200 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#12186E] focus:ring-2 focus:ring-[#12186E]/15';
 
   return (
     <div className="relative flex min-h-screen flex-col">
@@ -26,7 +26,7 @@ export default function PasswordResetConfirmPage({ params }: Props) {
         style={{ backgroundImage: "url('https://pbs.twimg.com/media/Egbd8bVWAAEtEzP?format=jpg&name=4096x4096')" }}
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-[#103F78]/85 via-[#103F78]/65 to-slate-900/70" aria-hidden="true" />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#12186E]/85 via-[#12186E]/65 to-slate-900/70" aria-hidden="true" />
 
       <main className="relative z-10 flex flex-1 items-center justify-center px-4 py-12 sm:px-6">
         <div className="w-full max-w-md">
@@ -56,13 +56,13 @@ export default function PasswordResetConfirmPage({ params }: Props) {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#103F78] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#0b2d57] disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#12186E] px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-[#0E1358] disabled:opacity-60"
               >
                 {isLoading ? <Spinner sm className="text-white" /> : 'Reset password'}
               </button>
             </form>
             <div className="mt-6 text-center">
-              <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm font-semibold text-[#103F78] hover:underline">
+              <Link href="/auth/login" className="inline-flex items-center gap-2 text-sm font-semibold text-[#12186E] hover:underline">
                 <FiArrowLeft size={15} /> Back to sign in
               </Link>
             </div>

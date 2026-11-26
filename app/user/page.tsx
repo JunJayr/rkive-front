@@ -16,6 +16,7 @@ import Sidebar from '@/components/common/Sidebar';
 import Footer from '@/components/common/Footer';
 import Spinner from '@/components/common/Spinner';
 import Layout from '@/components/utils/Layout';
+import { StudentAcademicTools } from '@/components/common/academic/AcademicWorkflowTools';
 import { useGetWorkflowStatusQuery, useSearchManuscriptsQuery } from '@/redux/features/authApiSlice';
 
 function statusStyle(status?: string | null): string {
@@ -43,28 +44,28 @@ const quickActions = [
     description: 'Search and filter approved manuscripts in the repository.',
     href: '/user/search',
     icon: FiSearch,
-    accent: 'bg-[#103F78] text-white',
+    accent: 'bg-[#12186E] text-white',
   },
   {
     title: 'My Collection',
     description: 'Open manuscripts you’ve saved for quick access.',
     href: '/user/bookmarks',
     icon: FiBookmark,
-    accent: 'bg-[#FBBF24] text-[#103F78]',
+    accent: 'bg-[#F9B515] text-[#12186E]',
   },
   {
     title: 'Submit Manuscript',
     description: 'Upload your manuscript for review and approval.',
     href: '/user/submit-study',
     icon: FiUploadCloud,
-    accent: 'bg-white text-[#103F78] ring-1 ring-slate-200',
+    accent: 'bg-white text-[#12186E] ring-1 ring-slate-200',
   },
   {
     title: 'Defense Workflow',
     description: 'Track panel nomination, concept, proposal, and final defense steps.',
     href: '/user/defense-application',
     icon: FiClipboard,
-    accent: 'bg-white text-[#103F78] ring-1 ring-slate-200',
+    accent: 'bg-white text-[#12186E] ring-1 ring-slate-200',
   },
 ];
 
@@ -76,22 +77,22 @@ export default function UserDashboardPage() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+      <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-4 pb-12 pt-20 sm:px-6 md:pt-8 lg:px-10">
             <div className="mx-auto w-full max-w-6xl">
-              <section className="relative overflow-hidden rounded-[28px] bg-[#103F78] px-6 py-8 shadow-[0_24px_60px_-24px_rgba(16,63,120,0.55)] sm:px-8 sm:py-10">
+              <section className="relative overflow-hidden rounded-[28px] bg-[#12186E] px-6 py-8 shadow-[0_24px_60px_-24px_rgba(16,63,120,0.55)] sm:px-8 sm:py-10">
                 <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-white/5" />
-                <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-10 h-48 w-48 rounded-full bg-[#FBBF24]/10" />
+                <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 right-10 h-48 w-48 rounded-full bg-[#F9B515]/10" />
                 <div className="relative">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#FBBF24]">Student/User Workspace</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#F9B515]">Student/User Workspace</p>
                   <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Welcome to RKIVE</h1>
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-blue-100/85 sm:text-[15px]">
                     Discover approved research, manage your collection, and move through your submission and defense workflow in one place.
                   </p>
                   <div className="mt-6 flex flex-wrap gap-3">
-                    <Link href="/user/search" className="inline-flex items-center gap-2 rounded-xl bg-[#FBBF24] px-5 py-3 text-sm font-bold text-[#103F78] transition hover:bg-amber-300">
+                    <Link href="/user/search" className="inline-flex items-center gap-2 rounded-xl bg-[#F9B515] px-5 py-3 text-sm font-bold text-[#12186E] transition hover:bg-amber-300">
                       <FiSearch size={17} /> Browse Research
                     </Link>
                     <Link href="/user/submit-study" className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-5 py-3 text-sm font-semibold text-white ring-1 ring-inset ring-white/20 transition hover:bg-white/15">
@@ -113,7 +114,7 @@ export default function UserDashboardPage() {
                         <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${action.accent}`}>
                           <Icon size={20} />
                         </div>
-                        <h3 className="mt-4 text-[15px] font-bold text-slate-800 group-hover:text-[#103F78]">{action.title}</h3>
+                        <h3 className="mt-4 text-[15px] font-bold text-slate-800 group-hover:text-[#12186E]">{action.title}</h3>
                         <p className="mt-1.5 text-sm leading-6 text-slate-500">{action.description}</p>
                       </Link>
                     );
@@ -129,7 +130,7 @@ export default function UserDashboardPage() {
                       Stages unlock in order after the previous stage is approved.
                     </p>
                   </div>
-                  <Link href="/user/defense-application" className="text-xs font-bold text-[#103F78] hover:underline">
+                  <Link href="/user/defense-application" className="text-xs font-bold text-[#12186E] hover:underline">
                     Open all applications
                   </Link>
                 </div>
@@ -141,7 +142,7 @@ export default function UserDashboardPage() {
                       <li key={stage.key} className="flex flex-col rounded-xl border border-slate-100 bg-slate-50/70 p-4">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#103F78]">{index + 1}</span>
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-bold text-[#12186E]">{index + 1}</span>
                             <span className="text-sm font-bold text-slate-800">{stage.label}</span>
                           </div>
                           <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${statusStyle(stage.status)}`}>
@@ -155,7 +156,7 @@ export default function UserDashboardPage() {
                           href={workflowHref(stage)}
                           aria-disabled={!stage.available}
                           onClick={(event) => { if (!stage.available) event.preventDefault(); }}
-                          className={`mt-3 inline-flex items-center gap-1.5 text-xs font-bold ${stage.available ? 'text-[#103F78] hover:underline' : 'cursor-not-allowed text-slate-400'}`}
+                          className={`mt-3 inline-flex items-center gap-1.5 text-xs font-bold ${stage.available ? 'text-[#12186E] hover:underline' : 'cursor-not-allowed text-slate-400'}`}
                         >
                           {stage.available ? 'Open stage' : <><FiLock size={13} /> Locked</>}
                         </Link>
@@ -169,10 +170,10 @@ export default function UserDashboardPage() {
                 <div className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
                   <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
                     <div>
-                      <p className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiClock className="text-[#103F78]" /> Recently added research</p>
+                      <p className="flex items-center gap-2 text-sm font-bold text-slate-800"><FiClock className="text-[#12186E]" /> Recently added research</p>
                       <p className="mt-0.5 text-xs text-slate-500">Approved manuscripts from the repository</p>
                     </div>
-                    <Link href="/user/search?sort=newest" className="text-xs font-bold text-[#103F78] hover:underline">View all</Link>
+                    <Link href="/user/search?sort=newest" className="text-xs font-bold text-[#12186E] hover:underline">View all</Link>
                   </div>
                   {isLoading ? (
                     <div className="flex min-h-[220px] items-center justify-center"><Spinner /></div>
@@ -186,8 +187,8 @@ export default function UserDashboardPage() {
                     <ul className="divide-y divide-slate-100">
                       {recent.map((m: any) => (
                         <li key={m.manuscriptID}>
-                          <Link href={`/user/repository/${m.manuscriptID}`} className="block px-5 py-4 transition hover:bg-[#F6F8FC] sm:px-6">
-                            <p className="line-clamp-1 text-sm font-bold text-slate-800 hover:text-[#103F78]">{m.title || 'Untitled Manuscript'}</p>
+                          <Link href={`/user/repository/${m.manuscriptID}`} className="block px-5 py-4 transition hover:bg-[#FAF9F6] sm:px-6">
+                            <p className="line-clamp-1 text-sm font-bold text-slate-800 hover:text-[#12186E]">{m.title || 'Untitled Manuscript'}</p>
                             <p className="mt-1 line-clamp-1 text-xs text-slate-500">
                               {(m.authors ?? []).join(', ') || 'Unknown author'}{m.year_completed ? ` · ${m.year_completed}` : ''}
                             </p>
@@ -202,19 +203,27 @@ export default function UserDashboardPage() {
                 </div>
 
                 <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#103F78]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-[#12186E]">
                     <FiCompass size={20} />
                   </div>
                   <h3 className="mt-4 text-base font-bold text-slate-800">How to use RKIVE</h3>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FBBF24]" /><span><b className="text-slate-700">Browse Research</b> to find approved manuscripts with search and filters.</span></li>
-                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FBBF24]" /><span><b className="text-slate-700">Save</b> manuscripts to your collection for quick access later.</span></li>
-                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#FBBF24]" /><span><b className="text-slate-700">Submit &amp; Defense</b> tools help you manage your research workflow.</span></li>
+                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9B515]" /><span><b className="text-slate-700">Browse Research</b> to find approved manuscripts with search and filters.</span></li>
+                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9B515]" /><span><b className="text-slate-700">Save</b> manuscripts to your collection for quick access later.</span></li>
+                    <li className="flex gap-3"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F9B515]" /><span><b className="text-slate-700">Submit &amp; Defense</b> tools help you manage your research workflow.</span></li>
                   </ul>
-                  <Link href="/user/search" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#103F78] hover:underline">
+                  <Link href="/user/search" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-[#12186E] hover:underline">
                     Open repository <FiArrowRight size={15} />
                   </Link>
                 </div>
+              </section>
+
+              <section id="academic-tools" className="mt-6">
+                <h2 className="rk-section-title mb-1">Academic support</h2>
+                <p className="mb-4 text-xs text-mutedSlate">
+                  Request mentorship from a Panel / Adviser and track revision items across your defense applications. Panel verification is recorded separately.
+                </p>
+                <StudentAcademicTools />
               </section>
             </div>
           </main>

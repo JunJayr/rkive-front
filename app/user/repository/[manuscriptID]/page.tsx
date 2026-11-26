@@ -171,12 +171,12 @@ export default function RepositoryDetailPage() {
 
   return (
     <Layout>
-      <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800">
+      <div className="flex min-h-screen bg-[#FAF9F6] text-slate-800">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col">
           <main className="flex-1 px-4 pb-14 pt-20 sm:px-6 md:pt-8 lg:px-10">
             <div className="mx-auto w-full max-w-6xl">
-              <Link href="/user/search" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#103F78] hover:underline">
+              <Link href="/user/search" className="mb-5 inline-flex items-center gap-2 text-sm font-semibold text-[#12186E] hover:underline">
                 <FiArrowLeft size={16} /> Back to Browse Research
               </Link>
 
@@ -192,20 +192,20 @@ export default function RepositoryDetailPage() {
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50 text-red-500"><FiAlertCircle size={26} /></div>
                   <h2 className="mt-4 text-lg font-bold text-slate-800">Research not available</h2>
                   <p className="mt-2 max-w-md text-sm text-slate-500">This manuscript may not exist, may not be approved, or you may not have permission to view it.</p>
-                  <Link href="/user/search" className="mt-5 rounded-xl bg-[#103F78] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0b2d57]">Browse Research</Link>
+                  <Link href="/user/search" className="mt-5 rounded-xl bg-[#12186E] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0E1358]">Browse Research</Link>
                 </div>
               )}
 
               {manuscript && !isFetching && !isError && (
                 <article className="overflow-hidden rounded-[26px] border border-slate-200/80 bg-white shadow-sm">
-                  <div className="bg-gradient-to-br from-[#103F78] via-[#103F78] to-[#1a5494] px-6 py-7 text-white sm:px-8 sm:py-8">
+                  <div className="bg-gradient-to-br from-[#12186E] via-[#12186E] to-[#1a5494] px-6 py-7 text-white sm:px-8 sm:py-8">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/20 px-3 py-1 text-xs font-bold text-emerald-50 ring-1 ring-inset ring-emerald-300/20">
                           <FiCheckCircle size={13} /> Approved
                         </span>
                         <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-white/15">{visibilityLabel(manuscript.visibility)}</span>
-                        {manuscript.category && <span className="rounded-full bg-[#FBBF24]/20 px-3 py-1 text-xs font-semibold text-amber-100 ring-1 ring-inset ring-[#FBBF24]/25">{manuscript.category}</span>}
+                        {manuscript.category && <span className="rounded-full bg-[#F9B515]/20 px-3 py-1 text-xs font-semibold text-amber-100 ring-1 ring-inset ring-[#F9B515]/25">{manuscript.category}</span>}
                         {manuscript.year_completed && <span className="rounded-full bg-white/12 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-white/15">{manuscript.year_completed}</span>}
                       </div>
                       <button
@@ -213,13 +213,13 @@ export default function RepositoryDetailPage() {
                         onClick={toggleBookmark}
                         disabled={addingBookmark || removingBookmark}
                         className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition disabled:opacity-60 ${
-                          isBookmarked ? 'bg-[#FBBF24] text-[#103F78]' : 'bg-white/12 text-white ring-1 ring-inset ring-white/20 hover:bg-white/18'
+                          isBookmarked ? 'bg-[#F9B515] text-[#12186E]' : 'bg-white/12 text-white ring-1 ring-inset ring-white/20 hover:bg-white/18'
                         }`}
                       >
                         <FiBookmark size={16} className={isBookmarked ? 'fill-current' : ''} /> {isBookmarked ? 'Saved' : 'Save to Collection'}
                       </button>
                     </div>
-                    <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-[#FBBF24]/90">Research Manuscript</p>
+                    <p className="mt-5 text-xs font-bold uppercase tracking-[0.18em] text-[#F9B515]/90">Research Manuscript</p>
                     <h1 className="mt-2 max-w-4xl text-2xl font-extrabold leading-snug tracking-tight sm:text-[2rem]">{manuscript.title}</h1>
                     {(manuscript.authors?.length ?? 0) > 0 && (
                       <p className="mt-4 flex items-start gap-2 text-sm text-blue-100/90">
@@ -232,15 +232,15 @@ export default function RepositoryDetailPage() {
                   <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
                     <div className="space-y-6 p-5 sm:p-7 lg:p-8">
                       <section>
-                        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiFileText size={16} className="text-[#103F78]" /> Abstract</h2>
-                        <div className="rounded-2xl bg-[#F6F8FC] p-5 ring-1 ring-inset ring-slate-100">
+                        <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiFileText size={16} className="text-[#12186E]" /> Abstract</h2>
+                        <div className="rounded-2xl bg-[#FAF9F6] p-5 ring-1 ring-inset ring-slate-100">
                           <p className="whitespace-pre-line text-[15px] leading-7 text-slate-700">{manuscript.description || 'No abstract provided.'}</p>
                         </div>
                       </section>
 
                       {(manuscript.keywords?.length ?? 0) > 0 && (
                         <section>
-                          <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiTag size={16} className="text-[#103F78]" /> Keywords</h2>
+                          <h2 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiTag size={16} className="text-[#12186E]" /> Keywords</h2>
                           <div className="flex flex-wrap gap-2">
                             {manuscript.keywords.map((kw: string) => (
                               <span key={kw} className="rounded-full bg-amber-50 px-3 py-1.5 text-sm font-semibold text-amber-800 ring-1 ring-inset ring-amber-100">{kw}</span>
@@ -260,7 +260,7 @@ export default function RepositoryDetailPage() {
                       </section>
 
                       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <h2 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiBookOpen size={16} className="text-[#103F78]" /> Document Access</h2>
+                        <h2 className="mb-2 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiBookOpen size={16} className="text-[#12186E]" /> Document Access</h2>
                         <p className="text-sm leading-6 text-slate-600">
                           Preview and download are provided through secure, permission-checked access.
                           {!manuscript.allow_download && (
@@ -268,7 +268,7 @@ export default function RepositoryDetailPage() {
                           )}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-3">
-                          <button type="button" onClick={handlePreview} disabled={previewLoading} className="inline-flex items-center gap-2 rounded-xl bg-[#103F78] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0b2d57] disabled:opacity-60">
+                          <button type="button" onClick={handlePreview} disabled={previewLoading} className="inline-flex items-center gap-2 rounded-xl bg-[#12186E] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0E1358] disabled:opacity-60">
                             <FiEye size={16} /> {previewLoading ? 'Loading preview…' : previewUrl ? 'Show Preview' : 'Preview PDF'}
                           </button>
                           <button type="button" onClick={handleDownload} disabled={downloadLoading || !manuscript.allow_download} title={manuscript.allow_download ? 'Download PDF' : 'Download not enabled'} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50">
@@ -291,7 +291,7 @@ export default function RepositoryDetailPage() {
                     </div>
 
                     <aside className="border-t border-slate-100 bg-slate-50/50 p-5 sm:p-7 lg:border-l lg:border-t-0 lg:p-6">
-                      <h2 className="mb-5 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiLayers size={16} className="text-[#103F78]" /> Details</h2>
+                      <h2 className="mb-5 flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-slate-500"><FiLayers size={16} className="text-[#12186E]" /> Details</h2>
                       <dl className="space-y-4 text-sm">
                         {[
                           ['Adviser', manuscript.adviser, <FiAward key="a" size={14} />],
@@ -313,11 +313,11 @@ export default function RepositoryDetailPage() {
                         <div className="grid grid-cols-2 gap-3">
                           <div className="rounded-xl bg-white p-3.5 ring-1 ring-inset ring-slate-100">
                             <dt className="text-xs font-bold uppercase tracking-wide text-slate-400">Views</dt>
-                            <dd className="mt-1 text-lg font-extrabold text-[#103F78]">{manuscript.view_count ?? 0}</dd>
+                            <dd className="mt-1 text-lg font-extrabold text-[#12186E]">{manuscript.view_count ?? 0}</dd>
                           </div>
                           <div className="rounded-xl bg-white p-3.5 ring-1 ring-inset ring-slate-100">
                             <dt className="text-xs font-bold uppercase tracking-wide text-slate-400">Downloads</dt>
-                            <dd className="mt-1 text-lg font-extrabold text-[#103F78]">{manuscript.download_count ?? 0}</dd>
+                            <dd className="mt-1 text-lg font-extrabold text-[#12186E]">{manuscript.download_count ?? 0}</dd>
                           </div>
                         </div>
                       </dl>
@@ -330,8 +330,8 @@ export default function RepositoryDetailPage() {
                       <p className="mt-1 text-sm text-slate-500">Similar approved manuscripts you may find useful.</p>
                       <div className="mt-4 grid gap-3 sm:grid-cols-2">
                         {related.map((item: any) => (
-                          <Link key={item.manuscriptID} href={`/user/repository/${item.manuscriptID}`} className="group rounded-2xl border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-[#F6F8FC]">
-                            <p className="line-clamp-2 text-sm font-bold text-slate-800 group-hover:text-[#103F78]">{item.title}</p>
+                          <Link key={item.manuscriptID} href={`/user/repository/${item.manuscriptID}`} className="group rounded-2xl border border-slate-200 p-4 transition hover:border-blue-200 hover:bg-[#FAF9F6]">
+                            <p className="line-clamp-2 text-sm font-bold text-slate-800 group-hover:text-[#12186E]">{item.title}</p>
                             <p className="mt-1.5 text-xs text-slate-500">{(item.authors ?? []).slice(0, 2).join(', ') || '—'}{item.year_completed ? ` · ${item.year_completed}` : ''}</p>
                           </Link>
                         ))}
